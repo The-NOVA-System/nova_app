@@ -12,12 +12,6 @@ jobs:
         channel: 'stable'  
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
-    - run: sudo gem install cocoapods
-    - run: flutter build ipa
-    - run: flutter build ipa --export-options-plist="./build/ios/archive/Runner.xcarchive/Info.plist"
-    - run: rm ./build/ios/ipa/DistributionSummary.plist
-    - run: rm ./build/ios/ipa/ExportOptions.plist
-    - run: rm ./build/ios/ipa/Packaging.log
     - run: flutter build apk
     - run: flutter build appbundle
     - run: flutter build web
@@ -32,11 +26,6 @@ jobs:
       with:
         name: appbundle
         path: build/app/outputs/bundle/release/app-release.aab
-    - name: 'Upload iOS'
-      uses: actions/upload-artifact@v2
-      with:
-        name: ios
-        path: /Users/runner/work/nova_app/nova_app/build/ios/ipa/
     - name: 'Upload MacOS'
       uses: actions/upload-artifact@v2
       with:
