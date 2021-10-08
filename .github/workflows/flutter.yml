@@ -12,7 +12,8 @@ jobs:
         channel: 'stable'  
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
-    - run: flutter build ios --release --no-codesign
+    - run: flutter build ipa
+    - run: flutter build ipa --export-options-plist="./build/ios/archive/Runner.xcarchive/Info.plist"
     - run: flutter build apk
     - run: flutter build appbundle
     - run: flutter build web
@@ -31,7 +32,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ios
-        path: /Users/runner/work/nova_app/nova_app/build/ios/iphoneos/Runner.app
+        path: /Users/runner/work/nova_app/nova_app/build/ios/ipa/
     - name: 'Upload MacOS'
       uses: actions/upload-artifact@v2
       with:
