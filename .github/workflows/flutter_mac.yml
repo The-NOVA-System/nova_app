@@ -11,10 +11,8 @@ jobs:
       with:
         channel: 'stable'  
     - run: flutter pub get
-    - run: flutter config --enable-windows-desktop
     - run: flutter build ios --release --no-codesign
     - run: flutter build apk
     - run: flutter build appbundle
     - run: flutter build web
-    - run: flutter build windows
     - run: flutter build macos
