@@ -11,8 +11,25 @@ jobs:
       with:
         channel: 'stable'  
     - run: flutter pub get
+    - run: flutter config --enable-macos-desktop
     - run: flutter build ios --release --no-codesign
     - run: flutter build apk
     - run: flutter build appbundle
     - run: flutter build web
     - run: flutter build macos
+    - name: 'Upload APK'
+      uses: actions/upload-artifact@v2
+      with:
+        name: apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+    - name: 'Upload Appbundle'
+      uses: actions/upload-artifact@v2
+      with:
+        name: appbundle
+        path: build/app/outputs/bundle/release/app-release.aab
+    - name: 'Upload iOS'
+      uses: actions/upload-artifact@v2
+      with:
+        name: ios
+        path: /Users/runner/work/nova_app/nova_app/build/ios/iphoneos/Runner.app
+      
