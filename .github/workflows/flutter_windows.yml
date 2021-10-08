@@ -13,3 +13,8 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-windows-desktop
     - run: flutter build windows
+    - name: 'Upload Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows_64
+        path: build/windows/runner/Release/
