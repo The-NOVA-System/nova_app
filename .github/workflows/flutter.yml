@@ -75,4 +75,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: linux
-        path: build/linux/release/bundle/
+        path: build/linux/
