@@ -49,6 +49,7 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-windows-desktop
     - run: flutter build windows
+    - run: flutter pub run msix:create
     - name: 'Upload Windows'
       uses: actions/upload-artifact@v2
       with:
