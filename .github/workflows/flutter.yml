@@ -49,11 +49,17 @@ jobs:
     - run: flutter pub get
     - run: flutter config --enable-windows-desktop
     - run: flutter build windows
+    - run: flutter pub run msix:create
     - name: 'Upload Windows'
       uses: actions/upload-artifact@v2
       with:
         name: windows
         path: build/windows/runner/Release/
+    - name: 'Upload Windows MSIX Certificate'
+      uses: actions/upload-artifact@v2
+      with:
+        name: msix_cert
+        path: C:/hostedtoolcache/windows/flutter/2.5.2-stable/x64/.pub-cache/hosted/pub.dartlang.org/msix-2.2.3/lib/assets/
   build-linux: 
     runs-on: ubuntu-latest
     steps:
