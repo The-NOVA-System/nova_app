@@ -1,7 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class Constants {
   static String appName = "Nova System";
+
+  static List matColors = [
+    [charts.MaterialPalette.indigo.shadeDefault, "3f51b5"],
+    [charts.MaterialPalette.blue.shadeDefault, "2196f3"],
+    [charts.MaterialPalette.cyan.shadeDefault, "00bcd4"],
+    [charts.MaterialPalette.deepOrange.shadeDefault, "ff5722"],
+    [charts.MaterialPalette.green.shadeDefault, "4caf50"],
+    [charts.MaterialPalette.lime.shadeDefault, "cddc39"],
+    [charts.MaterialPalette.pink.shadeDefault, "e91e63"],
+    [charts.MaterialPalette.purple.shadeDefault, "9c27b0"],
+    [charts.MaterialPalette.red.shadeDefault, "f44336"],
+    [charts.MaterialPalette.teal.shadeDefault, "009688"],
+    [charts.MaterialPalette.yellow.shadeDefault, "ffeb3b"],
+  ];
 
   //Colors for theme
   static Color lightPrimary = const Color(0xfffcfcff);

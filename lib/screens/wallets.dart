@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:nova_system/util/const.dart';
 import 'package:nova_system/util/data.dart';
 import 'package:nova_system/widgets/wallet.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,8 @@ class Wallets extends StatefulWidget {
 }
 
 class _WalletsState extends State<Wallets> {
+  var color = Constants.matColors[Random().nextInt(Constants.matColors.length)];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +29,9 @@ class _WalletsState extends State<Wallets> {
               name: coin['name'],
               icon: coin['icon'],
               rate: coin['rate'],
-              color: coin['color'],
+              color: color[0],
+              alt: coin['alt'],
+              colorHex: color[1]
             );
           },
         ),

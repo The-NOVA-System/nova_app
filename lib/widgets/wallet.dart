@@ -1,8 +1,10 @@
-
+import 'dart:math';
+import 'package:nova_system/util/const.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:statusbarz/statusbarz.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 void main() => runApp(const Wallet());
 
@@ -28,15 +30,13 @@ class Config {
     Statusbarz.instance.refresh();
   }
 
-  static loadChartDataList() async
-  {
+  static loadChartDataList() async {
     // fetch data from web ...
     await loadFromWeb();
     _loaded = true;
   }
 
-  static loadFromWeb()
-  {
+  static loadFromWeb() {
     // but here i will add test data
     _chartDataList.clear();
     _chartDataList.add(PointModel(pointX: 0, pointY: 24));
@@ -57,8 +57,17 @@ class Wallet extends StatefulWidget {
   final String? name;
   final String? icon;
   final String? rate;
-  final charts.Color?/*?*/ color;
-  const Wallet({Key? key, this.name, this.icon, this.rate, this.color})
+  final String? alt;
+  final String? colorHex;
+  final charts.Color? color;
+  const Wallet(
+      {Key? key,
+      this.name,
+      this.icon,
+      this.rate,
+      this.color,
+      this.alt,
+      this.colorHex})
       : super(key: key);
 
   @override
@@ -69,6 +78,8 @@ class _WalletState extends State<Wallet> {
   final List<charts.Series<PointModel, num>> _chartDataSeries = [];
   List<PointModel> chartDataList = [];
   Widget lineChart = const Text("Loading ...");
+  final List color =
+      Constants.matColors[Random().nextInt(Constants.matColors.length)];
 
   @override
   Widget build(BuildContext context) {
@@ -76,40 +87,41 @@ class _WalletState extends State<Wallet> {
     // and check if it's loaded so this section will occur only once
     if (!Config.isLoaded()) {
       Config.loadChartDataList().then((value) =>
-    // call the setState() to tell flutter that it should re-evaluate the widget tree based
-    // on this code changing the state of the class (the vars i.e. lineChart) and decide if
-    // it wants to redraw, this is the reason to put lineChart as a var of the class
-    // so when it changes - it changes the class state
-    setState(() {
-      chartDataList = Config.getChartDataList();
-      _chartDataSeries.clear();
+          // call the setState() to tell flutter that it should re-evaluate the widget tree based
+          // on this code changing the state of the class (the vars i.e. lineChart) and decide if
+          // it wants to redraw, this is the reason to put lineChart as a var of the class
+          // so when it changes - it changes the class state
+          setState(() {
+            chartDataList = Config.getChartDataList();
+            _chartDataSeries.clear();
 
-      // construct you're chart data series
-      _chartDataSeries.add(
-        charts.Series<PointModel, num>(
-          colorFn: (_, __) => widget.color!,
-          id: '${widget.name}',
-          data: chartDataList,
-          domainFn: (PointModel pointModel, _) => pointModel.pointX,
-          measureFn: (PointModel pointModel, _) => pointModel.pointY,
-        ),
-      );
+            // construct you're chart data series
+            _chartDataSeries.add(
+              charts.Series<PointModel, num>(
+                colorFn: (_, __) => color[0]!,
+                id: '${widget.name}',
+                data: chartDataList,
+                domainFn: (PointModel pointModel, _) => pointModel.pointX,
+                measureFn: (PointModel pointModel, _) => pointModel.pointY,
+              ),
+            );
 
-      // now change the 'Loading...' widget with the real chart widget
-      lineChart = charts.LineChart(_chartDataSeries,
-          defaultRenderer: charts.LineRendererConfig(
-              includeArea: true, stacked: true),
-          animate: true,
-          animationDuration: const Duration(milliseconds: 500),
-        primaryMeasureAxis: const charts.NumericAxisSpec(
-          renderSpec: charts.NoneRenderSpec(),
-        ),
-        domainAxis: const charts.NumericAxisSpec(
+            // now change the 'Loading...' widget with the real chart widget
+            lineChart = charts.LineChart(
+              _chartDataSeries,
+              defaultRenderer:
+                  charts.LineRendererConfig(includeArea: true, stacked: true),
+              animate: true,
+              animationDuration: const Duration(milliseconds: 500),
+              primaryMeasureAxis: const charts.NumericAxisSpec(
+                renderSpec: charts.NoneRenderSpec(),
+              ),
+              domainAxis: const charts.NumericAxisSpec(
 //                showAxisLine: true,
-          renderSpec: charts.NoneRenderSpec(),
-        ),
-          );
-    }));
+                renderSpec: charts.NoneRenderSpec(),
+              ),
+            );
+          }));
     }
 
     // here return your widget where the chart is drawn
@@ -130,11 +142,21 @@ class _WalletState extends State<Wallet> {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    Image.asset(
-                      "${widget.icon}",
-                      height: 25,
-                      width: 25,
-                    ),
+                    SizedBox(
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              "https://cryptoicons.org/api/icon/${widget.alt!.toLowerCase()}/100/${color[1]!.toLowerCase()}",
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                        height: 25.0,
+                        width: 25.0),
+                    /*FadeInImage(
+                      image: NetworkImage("https://cryptoicons.org/api/icon/${widget.alt!.toLowerCase()}/100/${color[1]!.toLowerCase()}", scale: 4),
+                      placeholder: const AssetImage('assets/placeholder.png'),
+                    )*/
                     const SizedBox(width: 10),
                     Text(
                       "${widget.name}",
@@ -181,4 +203,3 @@ class _WalletState extends State<Wallet> {
     );
   }
 }
-
