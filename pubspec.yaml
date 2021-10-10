@@ -76,14 +76,16 @@ flutter:
 
 msix_config:
   display_name: Nova System
-  publisher_display_name: Garv
-  identity_name: com.garv.nova
+  publisher_display_name: Garv Shah
+  identity_name: 56316GarvShah.NovaSystem
   msix_version: 1.0.0.0
-  logo_path: .\assets\icon\icon.png
-  start_menu_icon_path: .\assets\icon\icon.png
-  tile_icon_path: .\assets\icon\icon.png
+  publisher: CN=EB7020F8-CD5B-4DF0-822F-F281377F7F8B
+  logo_path: .\assets\icon\app.png
+  start_menu_icon_path: .\assets\icon\app.png
+  tile_icon_path: .\assets\icon\app.png
   architecture: x64
   capabilities: 'internetClient'
+  store: true
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
