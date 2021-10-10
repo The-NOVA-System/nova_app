@@ -59,7 +59,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: msix_cert
-        path: build/windows/runner/Release/
+        path: C:/hostedtoolcache/windows/flutter/2.5.2-stable/x64/.pub-cache/hosted/pub.dartlang.org/msix-2.2.3/lib/assets/
   build-linux: 
     runs-on: ubuntu-latest
     steps:
