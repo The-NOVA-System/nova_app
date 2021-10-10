@@ -74,6 +74,17 @@ flutter:
     - assets/xrp.png
     - assets/eth.png
 
+msix_config:
+  display_name: Nova System
+  publisher_display_name: Garv
+  identity_name: com.garv.nova
+  msix_version: 1.0.0.0
+  logo_path: .\assets\icon\icon.png
+  start_menu_icon_path: .\assets\icon\icon.png
+  tile_icon_path: .\assets\icon\icon.png
+  architecture: x64
+  capabilities: 'internetClient'
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
