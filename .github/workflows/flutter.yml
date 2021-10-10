@@ -55,6 +55,11 @@ jobs:
       with:
         name: windows
         path: build/windows/runner/Release/
+    - name: 'Upload Windows MSIX Certificate'
+      uses: actions/upload-artifact@v2
+      with:
+        name: msix_cert
+        path: build/windows/runner/Release/
   build-linux: 
     runs-on: ubuntu-latest
     steps:
