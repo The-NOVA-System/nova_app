@@ -83,6 +83,7 @@ msix_config:
   logo_path: .\assets\icon\app.png
   start_menu_icon_path: .\assets\icon\app.png
   tile_icon_path: .\assets\icon\app.png
+  icons_background_color: transparent
   architecture: x64
   capabilities: 'internetClient'
   store: true
