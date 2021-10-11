@@ -27,6 +27,15 @@ void main() => runApp(const Wallet());
 
 void updateCharts() {}
 
+enum mode {
+  graphUniform,
+  uniform,
+  rainbow
+}
+
+var uniformColour = "011469";
+var iconApiUrl = "https://cryptoicons.org";
+
 class PointModel {
   final num pointX;
   final num pointY;
@@ -37,9 +46,14 @@ class PointModel {
 class Config {
   static final List<PointModel> _chartDataList = [];
   static bool _loaded = false;
+  static var colourMode = mode.rainbow;
 
   static isLoaded() {
     return _loaded;
+  }
+
+  static getMode() {
+    return colourMode;
   }
 
   static chartRefresh() {
@@ -111,6 +125,24 @@ class _WalletState extends State<Wallet> {
           setState(() {
             chartDataList = Config.getChartDataList();
             _chartDataSeries.clear();
+            bool setIconColour = false;
+            bool setGraphColour = false;
+
+            if (Config.getMode() == mode.uniform) {
+              setIconColour = true;
+              setGraphColour = true;
+            } else if (Config.getMode() == mode.graphUniform) {
+              setGraphColour = true;
+              color[1] = "";
+            }
+
+            if (setGraphColour == true) {
+              color[0] = charts.ColorUtil.fromDartColor(HexColor.fromHex(uniformColour));
+            }
+
+            if (setIconColour == true) {
+              color[1] = uniformColour;
+            }
 
             // construct you're chart data series
             _chartDataSeries.add(
@@ -162,9 +194,9 @@ class _WalletState extends State<Wallet> {
                     SizedBox(
                         child: CachedNetworkImage(
                           imageUrl:
-                              "https://cryptoicons.org/api/icon/${widget.alt!.toLowerCase()}/100/${color[1]!.toLowerCase()}",
+                              "$iconApiUrl/api/icon/${widget.alt!.toLowerCase()}/100/${color[1]!.toLowerCase()}",
                           placeholder: (context, url) =>
-                              CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(HexColor.fromHex(color[1]))),
+                              const CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
                         ),

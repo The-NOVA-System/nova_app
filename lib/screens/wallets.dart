@@ -12,7 +12,7 @@ class Wallets extends StatefulWidget {
 }
 
 class _WalletsState extends State<Wallets> {
-  var color = Constants.matColors[Random().nextInt(Constants.matColors.length)];
+  var colorList = (Constants.matColors.toList()..shuffle());
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +24,7 @@ class _WalletsState extends State<Wallets> {
           itemCount: coins.length,
           itemBuilder: (BuildContext context, int index) {
             Map coin = coins[index];
+            var color = colorList[index % Constants.matColors.length];
 
             return Wallet(
               name: coin['name'],
