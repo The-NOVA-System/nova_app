@@ -12,10 +12,10 @@ jobs:
         channel: 'stable'  
     - run: flutter pub get
     - run: flutter config --enable-macos-desktop
-    - run: flutter build apk
-    - run: flutter build appbundle
-    - run: flutter build web
-    - run: flutter build macos
+    - run: flutter build apk --release
+    - run: flutter build appbundle --release
+    - run: flutter build web --release
+    - run: flutter build macos --release
     - name: 'Upload APK'
       uses: actions/upload-artifact@v2
       with:
@@ -48,7 +48,7 @@ jobs:
         channel: 'stable'  
     - run: flutter pub get
     - run: flutter config --enable-windows-desktop
-    - run: flutter build windows
+    - run: flutter build windows --release
     - run: flutter pub run msix:create
     - name: 'Upload Windows'
       uses: actions/upload-artifact@v2
@@ -71,7 +71,7 @@ jobs:
     - run: flutter doctor
     - run: flutter pub get
     - run: flutter config --enable-linux-desktop
-    - run: flutter build linux
+    - run: flutter build linux --release
     - name: 'Upload Linux'
       uses: actions/upload-artifact@v2
       with:
