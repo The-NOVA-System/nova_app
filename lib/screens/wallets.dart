@@ -19,6 +19,7 @@ class _WalletsState extends State<Wallets> {
     return Scaffold(
       body: RefreshIndicator(
         child: ListView.builder(
+          cacheExtent: 20,
           physics: const NeverScrollableScrollPhysics(),
           primary: false,
           itemCount: coins.length,

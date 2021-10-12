@@ -13,6 +13,7 @@ class _TransactionsState extends State<Transactions> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      cacheExtent: 20,
       physics: const NeverScrollableScrollPhysics(),
       primary: false,
       shrinkWrap: true,

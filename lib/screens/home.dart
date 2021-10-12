@@ -51,6 +51,7 @@ class _HomeState extends State<Home> {
           // through the options in the drawer if there isn't enough vertical
           // space to fit everything.
           child: ListView(
+            cacheExtent: 12,
             // Important: Remove any padding from the ListView.
             padding: EdgeInsets.zero,
             children: <Widget>[
@@ -115,6 +116,7 @@ class _HomeState extends State<Home> {
         ),
       ),
       body: ListView(
+        cacheExtent: 50,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         children: <Widget>[
           ListTile(
