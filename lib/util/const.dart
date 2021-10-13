@@ -26,6 +26,8 @@ class Constants {
   static Color lightBG = const Color(0xfffcfcff);
   static Color darkBG = Colors.black;
 
+  static String nomicsKey = "401d022aaa72eaf9855467c267d7598391561d8e";
+
   static ThemeData lightTheme = ThemeData(
     backgroundColor: lightBG,
     primaryColorLight: darkBG,
