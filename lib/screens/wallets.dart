@@ -8,7 +8,7 @@ import 'dart:convert';
 
 Future<Album> fetchAlbum() async {
   final response = await http.get(Uri.parse(
-      'https://api.nomics.com/v1/exchange-rates/history?key=${Constants.nomicsKey}&currency=BTC&start=2021-01-01T00%3A00%3A00Z'));
+      'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=BTC,ETH,XRP,LTC,XMR&start=2018-04-14T00%3A00%3A00Z'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -22,20 +22,24 @@ Future<Album> fetchAlbum() async {
 }
 
 class Album {
-  final List<PointModel> chartData;
+  final List chartData;
 
   Album({
     required this.chartData,
   });
 
   factory Album.fromJson(List<dynamic> json) {
-    List<PointModel> returnData = [];
+    List returnData = [];
+    List<PointModel> chartData = [];
 
     for (var i = 0; i < json.length; i++) {
-      returnData
-          .add(PointModel(pointX: i, pointY: double.parse(json[i]["rate"])));
+      for (var y = 0; y < json[i]["prices"].length; y++) {
+        chartData
+            .add(PointModel(pointX: y, pointY: double.parse(json[i]["prices"][y])));
+      }
+      returnData.add(chartData);
+      chartData = [];
     }
-
     return Album(
       chartData: returnData,
     );
@@ -83,9 +87,27 @@ class _WalletsState extends State<Wallets> {
                       color: color[0],
                       alt: coin['alt'],
                       colorHex: color[1],
-                      data: snapshot.data!.chartData);
+                      data: snapshot.data!.chartData[index]);
                 } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
+                  return SizedBox(
+                    width: 20.0,
+                    height: 225.0,
+                    child: Card(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      child: SizedBox(
+                        height: 25.0,
+                        width: 25.0,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text('${snapshot.error}'),
+                        ),
+                      )
+                  ),
+                  );
                 }
 
                 // By default, show a loading spinner.

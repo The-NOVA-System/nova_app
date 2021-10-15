@@ -62,6 +62,18 @@
       <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/shared_preferences/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/shared_preferences/build" />
       <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/shared_preferences/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/path_provider/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/path_provider/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/path_provider/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/path_provider/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/path_provider/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/path_provider/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/sqflite/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/sqflite/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/sqflite/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/sqflite/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/sqflite/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ios/.symlinks/plugins/sqflite/.dart_tool" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 30 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
