@@ -119,7 +119,6 @@ class _WalletState extends State<Wallet> {
           // so when it changes - it changes the class state
           setState(() {
             chartDataList = widget.data!;
-            print(widget.priceChange);
             _chartDataSeries.clear();
             bool setIconColour = false;
             bool setGraphColour = false;

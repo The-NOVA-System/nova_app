@@ -6,13 +6,14 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-int length = 50;
+int length = 10;
 late IDS idList;
+double page = 1.0;
 
 Future<List> fetchCharts() async {
 
   final cryptoResponse = await http.get(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active'));
+      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=${page.round()}'));
 
   idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
 
@@ -102,12 +103,16 @@ class _WalletsState extends State<Wallets> {
     return Scaffold(
       body: RefreshIndicator(
         child: ListView.builder(
+          shrinkWrap: true,
           cacheExtent: 20,
           physics: const NeverScrollableScrollPhysics(),
           primary: false,
           itemCount: length,
           itemBuilder: (BuildContext context, int index) {
             var color = colorList[index % Constants.matColors.length];
+            print("page before is $page");
+            page = page + 1/length;
+            print("page after is $page");
 
             return FutureBuilder<List>(
               future: futureCharts,
