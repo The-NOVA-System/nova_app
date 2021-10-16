@@ -247,7 +247,7 @@ class _WalletState extends State<Wallet> {
               children: <Widget>[
                 const Text(" "),
                 Text(
-                  "(${(widget.priceChange! * 100).toString()}%) ${(widget.priceChange! * double.parse(widget.rate!)).toStringAsFixed(2)}",
+                  "(${(widget.priceChange! * 100).toStringAsFixed(2)}%) ${(widget.priceChange! * double.parse(widget.rate!)).toStringAsFixed(2)}",
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.green[400],
