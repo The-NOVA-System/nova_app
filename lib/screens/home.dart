@@ -80,37 +80,6 @@ class _HomeState extends State<Home> {
                   Navigator.pop(context);
                 },
               ),
-              /*ListTile(
-                title: Text((() {
-                  if (Config.colourMode == mode.uniform) {
-                    return "Uniform";
-                  } else if (Config.colourMode == mode.graphUniform) {
-                    return "Uniform Graphs";
-                  } else if (Config.colourMode == mode.rainbow) {
-                    return "~rainbow~";
-                  }
-
-                  return "beep boop error";
-                })()),
-                onTap: () {
-                  if (Config.colourMode == mode.uniform) {
-                    setState(() {
-                      Config.colourMode = mode.graphUniform;
-                      Config.chartRefresh();
-                    });
-                  } else if (Config.colourMode == mode.graphUniform) {
-                    setState(() {
-                      Config.colourMode = mode.rainbow;
-                      Config.chartRefresh();
-                    });
-                  } else if (Config.colourMode == mode.rainbow) {
-                    setState(() {
-                      Config.colourMode = mode.uniform;
-                      Config.chartRefresh();
-                    });
-                  }
-                },
-              ),*/
             ],
           ),
         ),
@@ -161,7 +130,7 @@ class _HomeState extends State<Home> {
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 10),
-                    height: MediaQuery.of(context).size.height * 2,
+                    height: MediaQuery.of(context).size.height * (length/2).round(),
                     child: const TabBarView(
                       children: <Widget>[
                         Wallets(),

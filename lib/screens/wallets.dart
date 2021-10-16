@@ -1,19 +1,28 @@
+import 'package:intl/intl.dart';
 import 'package:nova_system/util/const.dart';
-import 'package:nova_system/util/data.dart';
 import 'package:nova_system/widgets/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-Future<Album> fetchAlbum() async {
-  final response = await http.get(Uri.parse(
-      'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=BTC,ETH,XRP,LTC,XMR&start=2018-04-14T00%3A00%3A00Z'));
+int length = 50;
+late IDS idList;
 
-  if (response.statusCode == 200) {
+Future<List> fetchCharts() async {
+
+  final cryptoResponse = await http.get(Uri.parse(
+      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active'));
+
+  idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
+
+  final chartResponse = await http.get(Uri.parse(
+      'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365)))+"T00%3A00%3A00Z"}'));
+
+  if (chartResponse.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return Album.fromJson(jsonDecode(response.body));
+    return [Charts.fromJson(jsonDecode(chartResponse.body)), jsonDecode(cryptoResponse.body)];
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -21,27 +30,52 @@ Future<Album> fetchAlbum() async {
   }
 }
 
-class Album {
+class Charts {
   final List chartData;
 
-  Album({
+  Charts({
     required this.chartData,
   });
 
-  factory Album.fromJson(List<dynamic> json) {
+  factory Charts.fromJson(List<dynamic> json) {
     List returnData = [];
     List<PointModel> chartData = [];
 
-    for (var i = 0; i < json.length; i++) {
-      for (var y = 0; y < json[i]["prices"].length; y++) {
-        chartData
-            .add(PointModel(pointX: y, pointY: double.parse(json[i]["prices"][y])));
+    for (var x = 0; x < json.length; x++) {
+      for (var i = 0; i < json.length; i++) {
+        if (json[i]["currency"] == idList.idList[x]) {
+          for (var y = 0; y < json[i]["prices"].length; y++) {
+            chartData
+                .add(PointModel(
+                pointX: y, pointY: double.parse(json[i]["prices"][y])));
+          }
+          returnData.add(chartData);
+          chartData = [];
+        }
       }
-      returnData.add(chartData);
-      chartData = [];
     }
-    return Album(
+    return Charts(
       chartData: returnData,
+    );
+  }
+}
+
+class IDS {
+  List idList;
+
+  IDS({
+    required this.idList,
+  });
+
+  factory IDS.fromJson(List<dynamic> json) {
+    List returnData = [];
+
+    for (var i = 0; i < json.length; i++) {
+      returnData.add(json[i]["id"]);
+    }
+
+    return IDS(
+      idList: returnData,
     );
   }
 }
@@ -55,12 +89,12 @@ class Wallets extends StatefulWidget {
 
 class _WalletsState extends State<Wallets> {
   var colorList = (Constants.matColors.toList()..shuffle());
-  late Future<Album> futureAlbum;
+  late Future<List> futureCharts;
 
   @override
   void initState() {
     super.initState();
-    futureAlbum = fetchAlbum();
+    futureCharts = fetchCharts();
   }
 
   @override
@@ -71,23 +105,23 @@ class _WalletsState extends State<Wallets> {
           cacheExtent: 20,
           physics: const NeverScrollableScrollPhysics(),
           primary: false,
-          itemCount: coins.length,
+          itemCount: length,
           itemBuilder: (BuildContext context, int index) {
-            Map coin = coins[index];
             var color = colorList[index % Constants.matColors.length];
 
-            return FutureBuilder<Album>(
-              future: futureAlbum,
+            return FutureBuilder<List>(
+              future: futureCharts,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Wallet(
-                      name: coin['name'],
-                      icon: coin['icon'],
-                      rate: coin['rate'],
+                      name: snapshot.data![1][index]["name"],
+                      icon: snapshot.data![1][index]["logo_url"],
+                      rate: snapshot.data![1][index]["price"],
+                      priceChange: double.parse(snapshot.data![1][index]["7d"]["price_change_pct"]),
                       color: color[0],
-                      alt: coin['alt'],
+                      alt: snapshot.data![1][index]["id"],
                       colorHex: color[1],
-                      data: snapshot.data!.chartData[index]);
+                      data: snapshot.data![0].chartData[index]);
                 } else if (snapshot.hasError) {
                   return SizedBox(
                     width: 20.0,
