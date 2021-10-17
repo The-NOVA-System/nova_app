@@ -1,3 +1,4 @@
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:nova_system/util/const.dart';
 import 'package:nova_system/widgets/wallet.dart';
@@ -7,27 +8,36 @@ import 'dart:async';
 import 'dart:convert';
 
 int length = 10;
-late IDS idList;
 double page = 1.0;
+late IDS idList;
 
 Future<List> fetchCharts() async {
+  late Response cryptoResponse;
+  late Response chartResponse;
 
-  final cryptoResponse = await http.get(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=${page.round()}'));
+  var client = http.Client();
+  try {
+    cryptoResponse = await client.post(Uri.parse(
+        'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=${page.round()}&interval=7d'));
 
-  idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
+    idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
 
-  final chartResponse = await http.get(Uri.parse(
-      'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365)))+"T00%3A00%3A00Z"}'));
+    chartResponse = await client.post(Uri.parse(
+        'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365)))+"T00%3A00%3A00Z"}'));
 
+  } finally {
+    client.close();
+  }
   if (chartResponse.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     return [Charts.fromJson(jsonDecode(chartResponse.body)), jsonDecode(cryptoResponse.body)];
+  } else if (chartResponse.statusCode == 429) {
+    throw Exception("woah woah woah, slow down! the api we use only allows 1 request per second (cause we're on the free plan). reload again, just a bit slower :)");
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to load album');
+    throw Exception('Failed to load charts with ${chartResponse.statusCode}: ${chartResponse.body}');
   }
 }
 
@@ -142,7 +152,10 @@ class _WalletsState extends State<Wallets> {
                         width: 25.0,
                         child: Align(
                           alignment: Alignment.center,
-                          child: Text('${snapshot.error}'),
+                          child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text('${snapshot.error}', textAlign: TextAlign.center,)
+                          ),
                         ),
                       )
                   ),
