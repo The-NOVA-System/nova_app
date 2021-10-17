@@ -108,6 +108,15 @@ class _WalletState extends State<Wallet> {
       Constants.matColors[Random().nextInt(Constants.matColors.length)];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!
+        .addPostFrameCallback((_) => setState(() {
+          Config.chartRefresh();
+        }));
+  }
+
+  @override
   Widget build(BuildContext context) {
     // this is where i use Config class to perform my asynchronous load data
     // and check if it's loaded so this section will occur only once
@@ -204,12 +213,11 @@ class _WalletState extends State<Wallet> {
                                   "${widget.icon}",
                                   semanticsLabel: 'crypto logo',
                                   placeholderBuilder: (BuildContext context) =>
-                                  const CircularProgressIndicator(),
+                                      const CircularProgressIndicator(),
                                 );
-                              } catch(error) {
+                              } catch (error) {
                                 return const Icon(Icons.error);
                               }
-
                             }()),
                           ),
                         ),
@@ -220,19 +228,31 @@ class _WalletState extends State<Wallet> {
                       placeholder: const AssetImage('assets/placeholder.png'),
                     )*/
                     const SizedBox(width: 10),
-                    Text(
-                      "${widget.name}",
-                      style: const TextStyle(
-                        fontSize: 20,
+                    SizedBox(
+                      width: (MediaQuery.of(context).size.width) * (2 / 5) - 20,
+                      child: Text(
+                        "${widget.name}",
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                Text(
-                  "${widget.rate}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                SizedBox(
+                  width: (MediaQuery.of(context).size.width) * (2 / 5) - 20,
+                  height: 25.0,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      "${widget.rate}",
+                      overflow: TextOverflow.clip,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],

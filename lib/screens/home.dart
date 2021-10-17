@@ -22,9 +22,16 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   String name = names;
+  TabController? controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TabController(length: 3, vsync: this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,70 +93,70 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const ScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          children: <Widget>[
-            ListTile(
-              leading: CircleAvatar(
-                backgroundImage: AssetImage(
-                  "assets/${name.toLowerCase().replaceAll(" ", "_")}.png",
-                ),
-                radius: 25,
-              ),
-              title: Text(name),
-              subtitle: Text(email),
-            ),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.center,
-              child: DefaultTabController(
-                length: 3,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              pinned: false,
+              backgroundColor: Theme.of(context).backgroundColor,
+              flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.pin,
+                background: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    TabBar(
-                      isScrollable: false,
-                      labelColor: Theme.of(context).colorScheme.secondary,
-                      unselectedLabelColor:
-                          Theme.of(context).textTheme.caption!.color,
-                      tabs: const <Widget>[
-                        Tab(
-                          text: "Wallets",
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: AssetImage(
+                          "assets/${name.toLowerCase().replaceAll(" ", "_")}.png",
                         ),
-                        Tab(
-                          text: "Transactions",
-                        ),
-                        Tab(
-                          text: "Buy/Sell",
-                        ),
-                      ],
-                      onTap: (index) {
-                        setState(() {
-                          page = 0;
-                          Config.chartRefresh();
-                        });
-                      },
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      height: 225.0 * length,
-                      child: const TabBarView(
-                        children: <Widget>[
-                          Wallets(),
-                          Transactions(),
-                          BuyandSell(),
-                        ],
+                        radius: 25,
                       ),
+                      title: Text(name),
+                      subtitle: Text(email),
                     ),
                   ],
                 ),
               ),
-            ),
+              expandedHeight: 125.0,
+              bottom: TabBar(
+                isScrollable: false,
+                labelColor: Theme.of(context).colorScheme.secondary,
+                unselectedLabelColor:
+                    Theme.of(context).textTheme.caption!.color,
+                tabs: const <Widget>[
+                  Tab(
+                    text: "Wallets",
+                  ),
+                  Tab(
+                    text: "Transactions",
+                  ),
+                  Tab(
+                    text: "Buy/Sell",
+                  ),
+                ],
+                onTap: (index) {
+                  if (index == 0) {
+                    setState(() {
+                      page = 0;
+                      Config.chartRefresh();
+                    });
+                  }
+                },
+                controller: controller,
+              ),
+            )
+          ];
+        },
+        body: TabBarView(
+          controller: controller,
+          children: const <Widget>[
+            Wallets(),
+            Transactions(),
+            BuyandSell(),
           ],
         ),
-    ),
+      ),
     );
 
     Widget logOut = Scaffold(
