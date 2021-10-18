@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
 int length = 100;
 double page = 1.0;
@@ -114,16 +115,9 @@ class _WalletsState extends State<Wallets> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-        if (scrollInfo.metrics.atEdge) {
-          if (scrollInfo.metrics.pixels == 0) {
-            print("top");
-          } else {
-            print("end");
-          }
-        }
-          return true;
+      body: LazyLoadScrollView(
+        onEndOfPage: () {
+          print("end!");
         },
         child: RefreshIndicator(
           child: ListView.builder(
@@ -199,8 +193,12 @@ class _WalletsState extends State<Wallets> {
             },
           ),
           onRefresh: () {
-            return Future.delayed(const Duration(seconds: 0), () {
+            return Future.delayed(const Duration(seconds: 0), () async {
+              var chartData = await fetchCharts();
               setState(() {
+                futureCharts = Future.delayed(const Duration(seconds: 0), () {
+                  return chartData;
+                });
                 Config.chartRefresh();
               });
             });
