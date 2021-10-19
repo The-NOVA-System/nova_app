@@ -138,7 +138,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 onTap: (index) {
                   if (index == 0) {
                     setState(() {
-                      page = 0;
+                      page = 1.0;
                       Config.chartRefresh();
                     });
                   }

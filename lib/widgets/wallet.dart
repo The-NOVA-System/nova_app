@@ -31,7 +31,6 @@ void updateCharts() {}
 enum mode { graphUniform, uniform, rainbow }
 
 var uniformColour = "011469";
-var iconApiUrl = "https://cryptoicons.org";
 
 class PointModel {
   final num pointX;
@@ -112,7 +111,54 @@ class _WalletState extends State<Wallet> {
     super.initState();
     WidgetsBinding.instance!
         .addPostFrameCallback((_) => setState(() {
-          Config.chartRefresh();
+      chartDataList = widget.data!;
+      _chartDataSeries.clear();
+      bool setIconColour = false;
+      bool setGraphColour = false;
+
+      if (Config.getMode() == mode.uniform) {
+        setIconColour = true;
+        setGraphColour = true;
+      } else if (Config.getMode() == mode.graphUniform) {
+        setGraphColour = true;
+        color[1] = "";
+      }
+
+      if (setGraphColour == true) {
+        color[0] = charts.ColorUtil.fromDartColor(
+            HexColor.fromHex(uniformColour));
+      }
+
+      if (setIconColour == true) {
+        color[1] = uniformColour;
+      }
+
+      // construct you're chart data series
+      _chartDataSeries.add(
+        charts.Series<PointModel, num>(
+          colorFn: (_, __) => color[0]!,
+          id: '${widget.name}',
+          data: chartDataList,
+          domainFn: (PointModel pointModel, _) => pointModel.pointX,
+          measureFn: (PointModel pointModel, _) => pointModel.pointY,
+        ),
+      );
+
+      // now change the 'Loading...' widget with the real chart widget
+      lineChart = charts.LineChart(
+        _chartDataSeries,
+        defaultRenderer:
+        charts.LineRendererConfig(includeArea: true, stacked: true),
+        animate: true,
+        animationDuration: const Duration(milliseconds: 500),
+        primaryMeasureAxis: const charts.NumericAxisSpec(
+          renderSpec: charts.NoneRenderSpec(),
+        ),
+        domainAxis: const charts.NumericAxisSpec(
+//                showAxisLine: true,
+          renderSpec: charts.NoneRenderSpec(),
+        ),
+      );
         }));
   }
 
@@ -120,64 +166,6 @@ class _WalletState extends State<Wallet> {
   Widget build(BuildContext context) {
     // this is where i use Config class to perform my asynchronous load data
     // and check if it's loaded so this section will occur only once
-    if (!Config.isLoaded()) {
-      Config.loadChartDataList().then((value) =>
-          // call the setState() to tell flutter that it should re-evaluate the widget tree based
-          // on this code changing the state of the class (the vars i.e. lineChart) and decide if
-          // it wants to redraw, this is the reason to put lineChart as a var of the class
-          // so when it changes - it changes the class state
-          setState(() {
-            chartDataList = widget.data!;
-            _chartDataSeries.clear();
-            bool setIconColour = false;
-            bool setGraphColour = false;
-
-            if (Config.getMode() == mode.uniform) {
-              setIconColour = true;
-              setGraphColour = true;
-            } else if (Config.getMode() == mode.graphUniform) {
-              setGraphColour = true;
-              color[1] = "";
-            }
-
-            if (setGraphColour == true) {
-              color[0] = charts.ColorUtil.fromDartColor(
-                  HexColor.fromHex(uniformColour));
-            }
-
-            if (setIconColour == true) {
-              color[1] = uniformColour;
-            }
-
-            // construct you're chart data series
-            _chartDataSeries.add(
-              charts.Series<PointModel, num>(
-                colorFn: (_, __) => color[0]!,
-                id: '${widget.name}',
-                data: chartDataList,
-                domainFn: (PointModel pointModel, _) => pointModel.pointX,
-                measureFn: (PointModel pointModel, _) => pointModel.pointY,
-              ),
-            );
-
-            // now change the 'Loading...' widget with the real chart widget
-            lineChart = charts.LineChart(
-              _chartDataSeries,
-              defaultRenderer:
-                  charts.LineRendererConfig(includeArea: true, stacked: true),
-              animate: true,
-              animationDuration: const Duration(milliseconds: 500),
-              primaryMeasureAxis: const charts.NumericAxisSpec(
-                renderSpec: charts.NoneRenderSpec(),
-              ),
-              domainAxis: const charts.NumericAxisSpec(
-//                showAxisLine: true,
-                renderSpec: charts.NoneRenderSpec(),
-              ),
-            );
-          }));
-    }
-
     // here return your widget where the chart is drawn
     return Card(
       elevation: 4,
@@ -198,12 +186,6 @@ class _WalletState extends State<Wallet> {
                   children: <Widget>[
                     SizedBox(
                         child: CachedNetworkImage(
-                          imageUrl:
-                              "$iconApiUrl/api/icon/${widget.alt!.toLowerCase()}/100/${color[1]!.toLowerCase()}",
-                          placeholder: (context, url) =>
-                              const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              CachedNetworkImage(
                             imageUrl: "${widget.icon}",
                             placeholder: (context, url) =>
                                 const CircularProgressIndicator(),
@@ -220,7 +202,6 @@ class _WalletState extends State<Wallet> {
                               }
                             }()),
                           ),
-                        ),
                         height: 25.0,
                         width: 25.0),
                     /*FadeInImage(

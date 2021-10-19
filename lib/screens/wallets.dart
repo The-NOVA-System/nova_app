@@ -9,17 +9,18 @@ import 'dart:convert';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
 int length = 100;
+int counter = 1;
 double page = 1.0;
 late IDS idList;
 
-Future<List> fetchCharts() async {
+Future<List> fetchCharts(pageInternal) async {
   late Response cryptoResponse;
   late Response chartResponse;
 
   var client = http.Client();
   try {
     cryptoResponse = await client.post(Uri.parse(
-        'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=${page.round()}&interval=7d'));
+        'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&interval=7d'));
 
     idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
 
@@ -105,96 +106,131 @@ class Wallets extends StatefulWidget {
 class _WalletsState extends State<Wallets> {
   var colorList = (Constants.matColors.toList()..shuffle());
   late Future<List> futureCharts;
+  late List<dynamic> aggregateList;
 
   @override
   void initState() {
     super.initState();
-    futureCharts = fetchCharts();
+    page = 1.0;
+    futureCharts = fetchCharts(1);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: LazyLoadScrollView(
-        onEndOfPage: () {
-          print("end!");
+        onEndOfPage: () async {
+          page++;
+          List localCharts = [];
+          try {
+            localCharts = await fetchCharts(page.round());
+          } catch(err) {
+            localCharts = await Future.delayed(const Duration(seconds: 1), () async {return await fetchCharts(page.round());});
+          }
+          aggregateList[1] += localCharts[1];
+          var chartData = [Charts(chartData: aggregateList[0].chartData + localCharts[0].chartData), aggregateList[1]];
+          setState(() {
+            futureCharts = Future.delayed(const Duration(seconds: 0), () {return chartData;});
+            counter++;
+          });
         },
+        scrollOffset: 5625,
         child: RefreshIndicator(
           child: ListView.builder(
-            shrinkWrap: true,
-            cacheExtent: 9999,
-            physics: const AlwaysScrollableScrollPhysics(),
-            primary: false,
-            itemCount: length,
-            itemBuilder: (BuildContext context, int index) {
-              var color = colorList[index % Constants.matColors.length];
+                    shrinkWrap: true,
+                    cacheExtent: 9999,
+                    physics: const ClampingScrollPhysics(),
+                    primary: false,
+                    itemCount: length * counter,
+                    itemBuilder: (BuildContext context, int index) {
+                      var color = colorList[index % Constants.matColors.length];
+                      if (index == length * counter - 1) {
+                        return const SizedBox(
+                          width: 20.0,
+                          height: 225.0,
+                          child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              child: SizedBox(
+                                height: 25.0,
+                                width: 25.0,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )),
+                        );
+                      } else {
+                        return FutureBuilder<List>(
+                          future: futureCharts,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              aggregateList = snapshot.data!;
+                              return Wallet(
+                                  name: snapshot.data![1][index]["name"],
+                                  icon: snapshot.data![1][index]["logo_url"],
+                                  rate: snapshot.data![1][index]["price"],
+                                  priceChange: double.parse(snapshot.data![1]
+                                  [index]["7d"]["price_change_pct"]),
+                                  color: color[0],
+                                  alt: snapshot.data![1][index]["id"],
+                                  colorHex: color[1],
+                                  data: snapshot.data![0].chartData[index]);
+                            } else if (snapshot.hasError) {
+                              return SizedBox(
+                                width: 20.0,
+                                height: 225.0,
+                                child: Card(
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    child: SizedBox(
+                                      height: 25.0,
+                                      width: 25.0,
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Text(
+                                              '${snapshot.error}',
+                                              textAlign: TextAlign.center,
+                                            )),
+                                      ),
+                                    )),
+                              );
+                            }
 
-              return FutureBuilder<List>(
-                future: futureCharts,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Wallet(
-                        name: snapshot.data![1][index]["name"],
-                        icon: snapshot.data![1][index]["logo_url"],
-                        rate: snapshot.data![1][index]["price"],
-                        priceChange: double.parse(
-                            snapshot.data![1][index]["7d"]["price_change_pct"]),
-                        color: color[0],
-                        alt: snapshot.data![1][index]["id"],
-                        colorHex: color[1],
-                        data: snapshot.data![0].chartData[index]);
-                  } else if (snapshot.hasError) {
-                    return SizedBox(
-                      width: 20.0,
-                      height: 225.0,
-                      child: Card(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10),
-                            ),
-                          ),
-                          child: SizedBox(
-                            height: 25.0,
-                            width: 25.0,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Text(
-                                    '${snapshot.error}',
-                                    textAlign: TextAlign.center,
+                            // By default, show a loading spinner.
+                            return const SizedBox(
+                              width: 20.0,
+                              height: 225.0,
+                              child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10),
+                                    ),
+                                  ),
+                                  child: SizedBox(
+                                    height: 25.0,
+                                    width: 25.0,
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: CircularProgressIndicator(),
+                                    ),
                                   )),
-                            ),
-                          )),
-                    );
-                  }
-
-                  // By default, show a loading spinner.
-                  return const SizedBox(
-                    width: 20.0,
-                    height: 225.0,
-                    child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        child: SizedBox(
-                          height: 25.0,
-                          width: 25.0,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: CircularProgressIndicator(),
-                          ),
-                        )),
-                  );
-                },
-              );
-            },
-          ),
+                            );
+                          },
+                        );
+                      }
+                    }),
           onRefresh: () {
             return Future.delayed(const Duration(seconds: 0), () async {
-              var chartData = await fetchCharts();
+              var chartData = await fetchCharts(1);
               setState(() {
                 futureCharts = Future.delayed(const Duration(seconds: 0), () {
                   return chartData;
