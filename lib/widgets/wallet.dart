@@ -250,7 +250,13 @@ class _WalletState extends State<Wallet> {
                   "(${(widget.priceChange! * 100).toStringAsFixed(2)}%) ${(widget.priceChange! * double.parse(widget.rate!)).toStringAsFixed(2)}",
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.green[400],
+                    color: (() {
+                      if (widget.priceChange! > 0) {
+                        return Colors.green[400];
+                      } else {
+                        return Colors.red[400];
+                      }
+                    }()),
                   ),
                 ),
               ],
