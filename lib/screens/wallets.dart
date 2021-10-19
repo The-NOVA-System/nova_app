@@ -175,7 +175,7 @@ class _WalletsState extends State<Wallets> {
           child: ListView.builder(
               shrinkWrap: true,
               cacheExtent: 9999,
-              physics: const ClampingScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(),
               primary: false,
               itemCount: length * counter,
               itemBuilder: (BuildContext context, int index) {
