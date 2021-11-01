@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:nova_system/util/const.dart';
+import 'package:nova/util/const.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

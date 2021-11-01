@@ -4,6 +4,15 @@ import 'package:charts_flutter/flutter.dart' as charts;
 class Constants {
   static String appName = "Nova System";
 
+  static const regularHeading =
+  TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600, color: Colors.black);
+
+  static const boldHeading =
+  TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600, color: Colors.white);
+
+  static const regularDarkText =
+  TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600, color: Colors.black);
+
   static List matColors = [
     [charts.MaterialPalette.indigo.shadeDefault, "3f51b5"],
     [charts.MaterialPalette.blue.shadeDefault, "2196f3"],

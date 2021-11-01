@@ -92,10 +92,10 @@ BEGIN
             VALUE "CompanyName", "dev.jideguru" "\0"
             VALUE "FileDescription", "A new Flutter project." "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "nova_system" "\0"
+            VALUE "InternalName", "nova" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2021 dev.jideguru. All rights reserved." "\0"
-            VALUE "OriginalFilename", "nova_system.exe" "\0"
-            VALUE "ProductName", "nova_system" "\0"
+            VALUE "OriginalFilename", "nova.exe" "\0"
+            VALUE "ProductName", "nova" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

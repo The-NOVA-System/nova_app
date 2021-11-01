@@ -1,4 +1,4 @@
-import 'package:nova_system/util/data.dart';
+import 'package:nova/util/data.dart';
 import 'package:flutter/material.dart';
 
 

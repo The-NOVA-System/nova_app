@@ -1,6 +1,6 @@
 {
-    "name": "nova_system",
-    "short_name": "nova_system",
+    "name": "nova",
+    "short_name": "nova",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,4 +1,4 @@
-import 'package:nova_system/util/const.dart';
+import 'package:nova/util/const.dart';
 
 var lightThemeData = Constants.lightTheme;
 

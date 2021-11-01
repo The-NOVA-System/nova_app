@@ -1,7 +1,7 @@
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:nova_system/util/const.dart';
-import 'package:nova_system/widgets/wallet.dart';
+import 'package:nova/util/const.dart';
+import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';

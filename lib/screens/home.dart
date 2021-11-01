@@ -1,10 +1,15 @@
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
-import 'package:nova_system/screens/buyandsell.dart';
-import 'package:nova_system/screens/transactions.dart';
-import 'package:nova_system/screens/wallets.dart';
-import 'package:nova_system/widgets/wallet.dart';
-import 'package:nova_system/util/data.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:nova/screens/buyandsell.dart';
+import 'package:nova/screens/transactions.dart';
+import 'package:nova/screens/wallets.dart';
+import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final beforeNonLeadingCapitalLetter = RegExp(r"(?=(?!^)[A-Z])");
+List<String> splitPascalCase(String input) =>
+    input.split(beforeNonLeadingCapitalLetter);
 
 enum Section { logOut, home }
 Section section = Section.home;
@@ -24,7 +29,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
-  String name = names;
+
+  String name = FirebaseAuth.instance.currentUser!.email!.split("@")[0];
   TabController? controller;
 
   @override
@@ -85,7 +91,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               ListTile(
                 title: const Text('Logout'),
                 onTap: () {
-                  setState(() => section = Section.logOut);
+                  FirebaseAuth.instance.signOut();
                   Navigator.pop(context);
                 },
               ),
@@ -106,14 +112,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage(
-                          "assets/${name.toLowerCase().replaceAll(" ", "_")}.png",
-                        ),
-                        radius: 25,
-                      ),
+                        leading: ClipOval(
+                            child: SvgPicture.network(
+                          'https://avatars.dicebear.com/api/avataaars/${FirebaseAuth.instance.currentUser!.email!.split("@")[0]}.svg',
+                          width: 50,
+                          height: 50,
+                          semanticsLabel: 'profile picture',
+                          placeholderBuilder: (BuildContext context) => Container(
+                              padding: const EdgeInsets.all(30.0),
+                              child: const CircularProgressIndicator()),
+                        )),
                       title: Text(name),
-                      subtitle: Text(email),
+                      subtitle: Text(FirebaseAuth.instance.currentUser!.email!),
                     ),
                   ],
                 ),

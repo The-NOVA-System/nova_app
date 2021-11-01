@@ -1,4 +1,4 @@
-package com.garv.nova_system
+package com.garv.nova
 
 import io.flutter.embedding.android.FlutterActivity
 
