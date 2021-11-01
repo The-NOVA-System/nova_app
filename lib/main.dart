@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:nova/screens/home.dart';
 import 'package:nova/screens/landing_page.dart';
 import 'package:nova/util/const.dart';
 import 'package:statusbarz/statusbarz.dart';
@@ -9,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
     StatusbarzCapturer(
