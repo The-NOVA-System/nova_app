@@ -457,6 +457,8 @@ PODS:
 
 DEPENDENCIES:
   - cloud_firestore (from `Flutter/ephemeral/.symlinks/plugins/cloud_firestore/macos`)
+  - Firebase/Auth
+  - Firebase/Firestore
   - firebase_auth (from `Flutter/ephemeral/.symlinks/plugins/firebase_auth/macos`)
   - firebase_core (from `Flutter/ephemeral/.symlinks/plugins/firebase_core/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
@@ -524,6 +526,6 @@ SPEC CHECKSUMS:
   shared_preferences_macos: f237eeae888b74d423d2201b7c2eabcb36cb9f09
   sqflite: 123e830ff75de6bff453c08fae1186d722f688fb
 
-PODFILE CHECKSUM: 54580d4d280dbb32cc8a083b9e54b7de70acaf13
+PODFILE CHECKSUM: 999c2d4e70c6e5be1a5d544cef7c6474244248d3
 
 COCOAPODS: 1.11.2

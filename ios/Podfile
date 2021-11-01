@@ -1,6 +1,5 @@
 # Uncomment this line to define a global platform for your project
 platform :ios, '10.0'
-$FirebaseSDKVersion = '8.7.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -29,6 +28,10 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Analytics'
+
   use_frameworks!
   use_modular_headers!
 
@@ -39,12 +42,7 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
   end
+  installer.pods_project.build_configuration_list.build_configurations.each do |configuration|
+      configuration.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+  end
 end
-
-# add the Firebase pod for Google Analytics
-pod 'Firebase/Analytics'
-# or pod ‘Firebase/AnalyticsWithoutAdIdSupport’
-# for Analytics without IDFA collection capability
-
-# add pods for any other desired Firebase products
-# https://firebase.google.com/docs/ios/setup#available-pods
