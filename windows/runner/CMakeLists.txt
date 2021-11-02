@@ -15,7 +15,7 @@ target_compile_definitions(${BINARY_NAME} PRIVATE "NOMINMAX")
 target_link_libraries(${BINARY_NAME} PRIVATE flutter flutter_wrapper_app cocos2d firebase_auth firebase_app firebase_firestore)
 target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 add_dependencies(${BINARY_NAME} flutter_assemble)
-add_subdirectory(third_party/firebase_cpp_sdk)
+add_subdirectory(./third_party/firebase_cpp_sdk)
 
 target_link_options(${BINARY_NAME} PUBLIC -ObjC)
 target_link_libraries(${BINARY_NAME}
