@@ -1,2 +1,0 @@
-echo .git/hooks/presubmit Checking File Formats
-python3 scripts/format_code.py -git_diff -noformat_file
