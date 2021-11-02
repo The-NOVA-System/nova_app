@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                         _passwordFocusNode.requestFocus();
                       },
                       textInputAction: TextInputAction.next,
-                      autoFillHints: const [AutofillHints.email],
+                      autoFillHints: const [AutofillHints.username],
                     ),
                     CustomInput(
                       hintText: "Password...",
