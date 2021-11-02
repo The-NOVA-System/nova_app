@@ -12,6 +12,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController username = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
   // Build an alert dialog to display some errors.
   Future<void> _alertDialogBuilder(String error) async {
     return showDialog(
@@ -126,39 +129,43 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: Constants.boldHeading,
                   ),
                 ),
-                Column(
-                  children: [
-                    CustomInput(
-                      hintText: "Email...",
-                      onChanged: (value) {
-                        _registerEmail = value;
-                      },
-                      onSubmitted: (value) {
-                        _passwordFocusNode.requestFocus();
-                      },
-                      textInputAction: TextInputAction.next,
-                      autoFillHints: const [AutofillHints.newUsername],
-                    ),
-                    CustomInput(
-                      hintText: "Password...",
-                      onChanged: (value) {
-                        _registerPassword = value;
-                      },
-                      focusNode: _passwordFocusNode,
-                      isPasswordField: true,
-                      onSubmitted: (value) {
-                        _submitForm();
-                      },
-                      autoFillHints: const [AutofillHints.newPassword],
-                    ),
-                    CustomBtn(
-                      text: "Create New Account",
-                      onPressed: () {
-                        _submitForm();
-                      },
-                      isLoading: _registerFormLoading,
-                    )
-                  ],
+                AutofillGroup(
+                  child: Column(
+                    children: [
+                      CustomInput(
+                        hintText: "Email...",
+                        autoFillController: username,
+                        onChanged: (value) {
+                          _registerEmail = value;
+                        },
+                        onSubmitted: (value) {
+                          _passwordFocusNode.requestFocus();
+                        },
+                        textInputAction: TextInputAction.next,
+                        autoFillHints: const [AutofillHints.newUsername],
+                      ),
+                      CustomInput(
+                        hintText: "Password...",
+                        autoFillController: password,
+                        onChanged: (value) {
+                          _registerPassword = value;
+                        },
+                        focusNode: _passwordFocusNode,
+                        isPasswordField: true,
+                        onSubmitted: (value) {
+                          _submitForm();
+                        },
+                        autoFillHints: const [AutofillHints.newPassword],
+                      ),
+                      CustomBtn(
+                        text: "Create New Account",
+                        onPressed: () {
+                          _submitForm();
+                        },
+                        isLoading: _registerFormLoading,
+                      )
+                    ],
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(

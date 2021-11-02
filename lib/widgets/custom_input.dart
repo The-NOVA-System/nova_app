@@ -9,7 +9,8 @@ class CustomInput extends StatelessWidget {
   final TextInputAction ?textInputAction;
   final bool ?isPasswordField;
   final Iterable<String> ?autoFillHints;
-  const CustomInput({required this.hintText, required this.onChanged, required this.onSubmitted, this.focusNode, this.textInputAction, this.isPasswordField, this.autoFillHints});
+  final TextEditingController ?autoFillController;
+  const CustomInput({required this.hintText, required this.onChanged, required this.onSubmitted, this.focusNode, this.textInputAction, this.isPasswordField, this.autoFillHints, this.autoFillController});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,7 @@ class CustomInput extends StatelessWidget {
       ),
       child: TextField(
         obscureText: _isPasswordField,
+        controller: autoFillController,
         focusNode: focusNode,
         onChanged: onChanged,
         onSubmitted: onSubmitted,

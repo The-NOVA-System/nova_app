@@ -13,6 +13,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController username = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
   Future<void> _alertDialogBuilder(String error) async {
     return showDialog(
         context: context,
@@ -119,10 +122,12 @@ class _LoginPageState extends State<LoginPage> {
                     style: Constants.boldHeading,
                   ),
                 ),
-                Column(
-                  children: [
+                AutofillGroup(
+                  child: Column(
+                  children: <Widget>[
                     CustomInput(
                       hintText: "Email...",
+                      autoFillController: username,
                       onChanged: (value) {
                         _loginEmail = value;
                       },
@@ -134,6 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     CustomInput(
                       hintText: "Password...",
+                      autoFillController: password,
                       onChanged: (value) {
                         _loginPassword = value;
                       },
@@ -152,6 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                       isLoading: _loginFormLoading,
                     )
                   ],
+                ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
