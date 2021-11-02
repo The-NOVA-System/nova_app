@@ -137,6 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         _passwordFocusNode.requestFocus();
                       },
                       textInputAction: TextInputAction.next,
+                      autoFillHints: const [AutofillHints.newUsername],
                     ),
                     CustomInput(
                       hintText: "Password...",
@@ -148,6 +149,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       onSubmitted: (value) {
                         _submitForm();
                       },
+                      autoFillHints: const [AutofillHints.newPassword],
                     ),
                     CustomBtn(
                       text: "Create New Account",

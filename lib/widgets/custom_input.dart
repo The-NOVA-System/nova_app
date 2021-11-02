@@ -8,7 +8,8 @@ class CustomInput extends StatelessWidget {
   final FocusNode ?focusNode;
   final TextInputAction ?textInputAction;
   final bool ?isPasswordField;
-  const CustomInput({required this.hintText, required this.onChanged, required this.onSubmitted, this.focusNode, this.textInputAction, this.isPasswordField});
+  final Iterable<String> ?autoFillHints;
+  const CustomInput({required this.hintText, required this.onChanged, required this.onSubmitted, this.focusNode, this.textInputAction, this.isPasswordField, this.autoFillHints});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,7 @@ class CustomInput extends StatelessWidget {
         onChanged: onChanged,
         onSubmitted: onSubmitted,
         textInputAction: textInputAction,
+        autofillHints: autoFillHints,
         decoration: InputDecoration(
           border: InputBorder.none,
           hintStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600, color: Colors.grey.shade600),

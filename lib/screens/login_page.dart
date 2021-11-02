@@ -130,6 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                         _passwordFocusNode.requestFocus();
                       },
                       textInputAction: TextInputAction.next,
+                      autoFillHints: const [AutofillHints.email],
                     ),
                     CustomInput(
                       hintText: "Password...",
@@ -138,6 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       focusNode: _passwordFocusNode,
                       isPasswordField: true,
+                      autoFillHints: const [AutofillHints.password],
                       onSubmitted: (value) {
                         _submitForm();
                       },
