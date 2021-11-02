@@ -17,8 +17,9 @@ target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 add_dependencies(${BINARY_NAME} flutter_assemble)
 add_subdirectory(third_party/firebase_cpp_sdk)
 
-target_link_options(${APP_NAME} PUBLIC -ObjC)
-target_link_libraries(${APP_NAME}
+target_link_options(${BINARY_NAME} PUBLIC -ObjC)
+target_link_libraries(${BINARY_NAME}
+    PRIVATE
     ${advapi32}
     ${ws2_32}
     ${crypt32}
