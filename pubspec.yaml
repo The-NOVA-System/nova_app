@@ -12,6 +12,7 @@ description: a simple application to start learning how to trade cryptos
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.0.0+1
+publish_to: none
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -20,7 +21,11 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.3
-  charts_flutter: ^0.11.0
+  charts_flutter:
+    git:
+      url: https://github.com/google/charts.git
+      path: charts_flutter
+      ref: 555c9ab
   flutter_launcher_icons: ^0.9.2
   easy_dynamic_theme: ^2.2.0
   statusbarz: ^1.0.2
@@ -43,10 +48,6 @@ dev_dependencies:
   test: ^1.17.10
 
 dependency_overrides:
-  charts_flutter:
-    git:
-      url: https://github.com/google/charts
-      path: charts_flutter
   flutter_launcher_icons:
     git:
       url: https://github.com/SimonIT/flutter_launcher_icons.git
