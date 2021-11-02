@@ -1,4 +1,5 @@
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nova/screens/buyandsell.dart';
 import 'package:nova/screens/transactions.dart';
@@ -6,12 +7,13 @@ import 'package:nova/screens/wallets.dart';
 import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 final beforeNonLeadingCapitalLetter = RegExp(r"(?=(?!^)[A-Z])");
 List<String> splitPascalCase(String input) =>
     input.split(beforeNonLeadingCapitalLetter);
 
-enum Section { logOut, home }
+enum Section { about, home }
 Section section = Section.home;
 
 extension StringExtension on String {
@@ -86,6 +88,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         .capitalize()),
                 onTap: () {
                   EasyDynamicTheme.of(context).changeTheme();
+                },
+              ),
+              ListTile(
+                title: const Text('About'),
+                onTap: () {
+                  setState(() => section = Section.about);
+                  Navigator.pop(context);
                 },
               ),
               ListTile(
@@ -169,7 +178,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       ),
     );
 
-    Widget logOut = Scaffold(
+    Widget about = Scaffold(
       appBar: AppBar(
           leading: InkWell(
               onTap: () {
@@ -180,10 +189,24 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   color:
                       Theme.of(context).appBarTheme.toolbarTextStyle!.color)),
           backgroundColor: Theme.of(context).primaryColor),
-      body: const Center(
-        child: Text(
-          'This is a new screen',
-          style: TextStyle(fontSize: 24.0),
+      body: Center(
+        child: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            children: [
+              const TextSpan(
+                text: 'Created by Garv Shah\n',
+                style: TextStyle(color: Colors.white),
+              ),
+              TextSpan(
+                text: 'Crypto Market Cap & Pricing Data Provided By Nomics.',
+                style: const TextStyle(color: Colors.blue),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () { launch('https://nomics.com/');
+                  },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -195,8 +218,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         body = home;
         break;
 
-      case Section.logOut:
-        body = logOut;
+      case Section.about:
+        body = about;
         break;
     }
 
