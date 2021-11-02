@@ -50,9 +50,9 @@ find_library(ADVAPI32_LIB advapi32)
 target_link_options(${BINARY_NAME} PUBLIC -ObjC)
 target_link_libraries(${BINARY_NAME}
     PRIVATE
-    ${ADVAPI32_LIB}
-    ${WS2_32_LIB}
-    ${CRYPT32_LIB}
-    ${RPCRT4_LIB}
-    ${OLE32_LIB}
-    ${SHELL32_LIB})
+    ${advapi32.lib}
+    ${ws2_32.lib}
+    ${crypt32.lib}
+    ${rpcrt4.lib}
+    ${ole32.lib}
+    ${shell32.lib})
