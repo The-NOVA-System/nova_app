@@ -48,6 +48,7 @@ dependency_overrides:
     git:
       url: https://github.com/google/charts
       path: charts_flutter
+      ref: "304770"
   flutter_launcher_icons:
     git:
       url: https://github.com/SimonIT/flutter_launcher_icons.git
