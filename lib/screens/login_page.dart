@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:nova/util/const.dart';
 import 'package:nova/screens/register_page.dart';
+import 'package:nova/screens/forgot_password_page.dart';
 import 'package:nova/widgets/custom_btn.dart';
 import 'package:nova/widgets/custom_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -156,7 +158,26 @@ class _LoginPageState extends State<LoginPage> {
                         _submitForm();
                       },
                       isLoading: _loginFormLoading,
-                    )
+                    ),
+                    const SizedBox(height: 10),
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(color: Colors.blueGrey),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: 'Forgot Password?',
+                            style: const TextStyle(color: Colors.grey),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const ForgotPasswordPage()),
+                                );
+                              }),
+                      ],
+                    ),
+                  )
                   ],
                 ),
                 ),

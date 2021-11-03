@@ -56,11 +56,16 @@ class LandingPage extends StatelessWidget {
               }
 
               // Checking the auth state - Loading
-              return const Scaffold(
-                body: Center(
-                  child: Text(
-                    "Checking Authentication...",
-                    style: Constants.regularHeading,
+              return Container(
+                decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFF404e8f), Color(0xFF011569)])),
+                child: const Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: Center(
+                    child: CircularProgressIndicator(),
                   ),
                 ),
               );
