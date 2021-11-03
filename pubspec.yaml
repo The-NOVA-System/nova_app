@@ -44,8 +44,6 @@ dev_dependencies:
   test: ^1.17.10
 
 dependency_overrides:
-  intl: ^0.17.0
-  flutter_svg: ^0.19.3
   charts_flutter:
     git:
       url: https://github.com/google/charts
