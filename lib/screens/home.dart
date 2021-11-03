@@ -194,9 +194,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           textAlign: TextAlign.center,
           text: TextSpan(
             children: [
-              const TextSpan(
+              TextSpan(
                 text: 'Created by Garv Shah\n',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).appBarTheme.toolbarTextStyle!.color),
               ),
               TextSpan(
                 text: 'Crypto Market Cap & Pricing Data Provided By Nomics.',
