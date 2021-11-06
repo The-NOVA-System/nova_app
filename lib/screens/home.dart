@@ -8,6 +8,7 @@ import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
 final beforeNonLeadingCapitalLetter = RegExp(r"(?=(?!^)[A-Z])");
 List<String> splitPascalCase(String input) =>
@@ -43,7 +44,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Widget home = Scaffold(
+    Widget home = DefaultTabController(
+      length: 3,
+      child: Scaffold(
       appBar: AppBar(
           leading: InkWell(
               onTap: () {
@@ -139,6 +142,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               ),
               expandedHeight: 125.0,
               bottom: TabBar(
+                indicator: MaterialIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 isScrollable: false,
                 labelColor: Theme.of(context).colorScheme.secondary,
                 unselectedLabelColor:
@@ -176,6 +182,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           ],
         ),
       ),
+    ),
     );
 
     Widget about = Scaffold(
