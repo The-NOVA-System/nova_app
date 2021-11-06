@@ -207,7 +207,7 @@ class _WalletsState extends State<Wallets> {
                         aggregateList = snapshot.data!;
                         return Wallet(
                             name: snapshot.data![1][index]["name"],
-                            icon: snapshot.data![1][index]["logo_url"],
+                            icon: "https://api.codetabs.com/v1/proxy/?quest=" + snapshot.data![1][index]["logo_url"],
                             rate: snapshot.data![1][index]["price"],
                             priceChange: double.parse(snapshot.data![1][index]
                                 ["7d"]["price_change_pct"]),
