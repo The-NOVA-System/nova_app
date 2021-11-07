@@ -8,6 +8,10 @@ import 'package:statusbarz/statusbarz.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+enum timeInterval { day, week, month, year, ytd }
+timeInterval defaultInt = timeInterval.week;
+timeInterval interval = defaultInt;
+
 extension HexColor on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
   static Color fromHex(String hexString) {
@@ -81,7 +85,11 @@ class Wallet extends StatefulWidget {
   final String? rate;
   final String? alt;
   final String? colorHex;
-  final double? priceChange;
+  final double? day;
+  final double? week;
+  final double? month;
+  final double? year;
+  final double? ytd;
   final charts.Color? color;
   final List<PointModel>? data;
   const Wallet(
@@ -92,7 +100,11 @@ class Wallet extends StatefulWidget {
       this.color,
       this.alt,
       this.colorHex,
-      this.priceChange,
+      this.day,
+      this.week,
+      this.month,
+      this.year,
+      this.ytd,
       this.data})
       : super(key: key);
 
@@ -166,6 +178,27 @@ class _WalletState extends State<Wallet> {
 
   @override
   Widget build(BuildContext context) {
+    double priceChange;
+
+    if (interval == timeInterval.day) {
+      priceChange = widget.day!;
+      print("issa day");
+    } else if (interval == timeInterval.week) {
+      priceChange = widget.week!;
+      print("issa week");
+    } else if (interval == timeInterval.month) {
+      priceChange = widget.month!;
+      print("issa month");
+    } else if (interval == timeInterval.year) {
+      priceChange = widget.year!;
+      print("issa year");
+    } else if (interval == timeInterval.ytd) {
+      priceChange = widget.ytd!;
+      print("issa ytd");
+    } else {
+      print("what's happening");
+      priceChange = widget.week!;
+    }
     // this is where i use Config class to perform my asynchronous load data
     // and check if it's loaded so this section will occur only once
     // here return your widget where the chart is drawn
@@ -180,16 +213,19 @@ class _WalletState extends State<Wallet> {
         contentPadding: const EdgeInsets.all(0),
         child: custom.ExpansionTile(
           onExpansionChanged: (bool expanded) {
-            setState(() => _customTileExpanded = expanded);
+            setState(() {
+              _customTileExpanded = expanded;
+              interval = defaultInt;
+            });
           },
           linechart: lineChart,
           trailing: Padding(
             padding: const EdgeInsets.fromLTRB(0, 7, 16.2, 0),
             child: Icon(
-            _customTileExpanded
-                ? Icons.keyboard_arrow_down_rounded
-                : Icons.keyboard_arrow_up_rounded,
-          ),
+              _customTileExpanded
+                  ? Icons.keyboard_arrow_down_rounded
+                  : Icons.keyboard_arrow_up_rounded,
+            ),
           ),
           //trailing: const SizedBox.shrink(),
           title: Column(
@@ -236,14 +272,18 @@ class _WalletState extends State<Wallet> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 20,
-                              color: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .toolbarTextStyle!
+                                  .color,
                             ),
                           ),
                         ),
                       ],
                     ),
                     SizedBox(
-                      width: (MediaQuery.of(context).size.width) * (2 / 5) - 18.5,
+                      width:
+                          (MediaQuery.of(context).size.width) * (2 / 5) - 18.5,
                       height: 25.0,
                       child: Align(
                         alignment: Alignment.centerRight,
@@ -253,7 +293,10 @@ class _WalletState extends State<Wallet> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
+                            color: Theme.of(context)
+                                .appBarTheme
+                                .toolbarTextStyle!
+                                .color,
                           ),
                         ),
                       ),
@@ -269,11 +312,11 @@ class _WalletState extends State<Wallet> {
                   children: <Widget>[
                     const Text(" "),
                     Text(
-                      "(${(widget.priceChange! * 100).toStringAsFixed(2)}%) ${(widget.priceChange! * double.parse(widget.rate!)).toStringAsFixed(2)}",
+                      "(${(priceChange * 100).toStringAsFixed(2)}%) ${(priceChange * double.parse(widget.rate!)).toStringAsFixed(2)}",
                       style: TextStyle(
                         fontSize: 12,
                         color: (() {
-                          if (widget.priceChange! > 0) {
+                          if (priceChange > 0) {
                             return Colors.green[400];
                           } else {
                             return Colors.red[400];
@@ -286,8 +329,112 @@ class _WalletState extends State<Wallet> {
               ),
             ],
           ),
-          children: const <Widget>[
-            Text('trees'),
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      interval = timeInterval.day;
+                    });
+                  },
+                  child: (() {
+                    if (interval == timeInterval.day) {
+                      return Text('Day',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary));
+                    } else {
+                      return const Text('Day',
+                          style: TextStyle(color: Colors.grey));
+                    }
+                  }()),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      interval = timeInterval.week;
+                    });
+                  },
+                  child: (() {
+                    if (interval == timeInterval.week) {
+                      return Text('Week',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary));
+                    } else {
+                      return const Text('Week',
+                          style: TextStyle(color: Colors.grey));
+                    }
+                  }()),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      interval = timeInterval.month;
+                    });
+                  },
+                  child: (() {
+                    if (interval == timeInterval.month) {
+                      return Text('Month',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary));
+                    } else {
+                      return const Text('Month',
+                          style: TextStyle(color: Colors.grey));
+                    }
+                  }()),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      interval = timeInterval.year;
+                    });
+                  },
+                  child: (() {
+                    if (interval == timeInterval.year) {
+                      return Text('Year',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary));
+                    } else {
+                      return const Text('Year',
+                          style: TextStyle(color: Colors.grey));
+                    }
+                  }()),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      interval = timeInterval.ytd;
+                    });
+                  },
+                  child: (() {
+                    if (interval == timeInterval.ytd) {
+                      return Text('YTD',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary));
+                    } else {
+                      return const Text('YTD',
+                          style: TextStyle(color: Colors.grey));
+                    }
+                  }()),
+                ),
+              ],
+            ),
           ],
         ),
       ),

@@ -20,7 +20,7 @@ Future<List> fetchCharts(pageInternal) async {
   var client = http.Client();
   try {
     cryptoResponse = await client.post(Uri.parse(
-        'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&interval=7d'));
+        'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
 
     idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
 
@@ -41,7 +41,7 @@ Future<List> fetchCharts(pageInternal) async {
       cryptoResponse =
           await Future.delayed(const Duration(seconds: 1), () async {
         return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&interval=7d'));
+            'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
       });
 
       idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
@@ -209,8 +209,11 @@ class _WalletsState extends State<Wallets> {
                             name: snapshot.data![1][index]["name"],
                             icon: "https://api.codetabs.com/v1/proxy/?quest=" + snapshot.data![1][index]["logo_url"],
                             rate: snapshot.data![1][index]["price"],
-                            priceChange: double.parse(snapshot.data![1][index]
-                                ["7d"]["price_change_pct"]),
+                            day: double.parse(snapshot.data![1][index]["1d"]["price_change_pct"]),
+                            week: double.parse(snapshot.data![1][index]["7d"]["price_change_pct"]),
+                            month: double.parse(snapshot.data![1][index]["30d"]["price_change_pct"]),
+                            year: double.parse(snapshot.data![1][index]["365d"]["price_change_pct"]),
+                            ytd: double.parse(snapshot.data![1][index]["ytd"]["price_change_pct"]),
                             color: color[0],
                             alt: snapshot.data![1][index]["id"],
                             colorHex: color[1],
