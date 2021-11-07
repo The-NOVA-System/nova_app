@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:nova/util/const.dart';
+import 'package:nova/widgets/custom_expansion_tile.dart' as custom;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -109,58 +110,59 @@ class _WalletState extends State<Wallet> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!
-        .addPostFrameCallback((_) => setState(() {
-      chartDataList = widget.data!;
-      _chartDataSeries.clear();
-      bool setIconColour = false;
-      bool setGraphColour = false;
+    WidgetsBinding.instance!.addPostFrameCallback((_) => setState(() {
+          chartDataList = widget.data!;
+          _chartDataSeries.clear();
+          bool setIconColour = false;
+          bool setGraphColour = false;
 
-      if (Config.getMode() == mode.uniform) {
-        setIconColour = true;
-        setGraphColour = true;
-      } else if (Config.getMode() == mode.graphUniform) {
-        setGraphColour = true;
-        color[1] = "";
-      }
+          if (Config.getMode() == mode.uniform) {
+            setIconColour = true;
+            setGraphColour = true;
+          } else if (Config.getMode() == mode.graphUniform) {
+            setGraphColour = true;
+            color[1] = "";
+          }
 
-      if (setGraphColour == true) {
-        color[0] = charts.ColorUtil.fromDartColor(
-            HexColor.fromHex(uniformColour));
-      }
+          if (setGraphColour == true) {
+            color[0] =
+                charts.ColorUtil.fromDartColor(HexColor.fromHex(uniformColour));
+          }
 
-      if (setIconColour == true) {
-        color[1] = uniformColour;
-      }
+          if (setIconColour == true) {
+            color[1] = uniformColour;
+          }
 
-      // construct you're chart data series
-      _chartDataSeries.add(
-        charts.Series<PointModel, num>(
-          colorFn: (_, __) => color[0]!,
-          id: '${widget.name}',
-          data: chartDataList,
-          domainFn: (PointModel pointModel, _) => pointModel.pointX,
-          measureFn: (PointModel pointModel, _) => pointModel.pointY,
-        ),
-      );
+          // construct you're chart data series
+          _chartDataSeries.add(
+            charts.Series<PointModel, num>(
+              colorFn: (_, __) => color[0]!,
+              id: '${widget.name}',
+              data: chartDataList,
+              domainFn: (PointModel pointModel, _) => pointModel.pointX,
+              measureFn: (PointModel pointModel, _) => pointModel.pointY,
+            ),
+          );
 
-      // now change the 'Loading...' widget with the real chart widget
-      lineChart = charts.LineChart(
-        _chartDataSeries,
-        defaultRenderer:
-        charts.LineRendererConfig(includeArea: true, stacked: true),
-        animate: true,
-        animationDuration: const Duration(milliseconds: 500),
-        primaryMeasureAxis: const charts.NumericAxisSpec(
-          renderSpec: charts.NoneRenderSpec(),
-        ),
-        domainAxis: const charts.NumericAxisSpec(
+          // now change the 'Loading...' widget with the real chart widget
+          lineChart = charts.LineChart(
+            _chartDataSeries,
+            defaultRenderer:
+                charts.LineRendererConfig(includeArea: true, stacked: true),
+            animate: true,
+            animationDuration: const Duration(milliseconds: 500),
+            primaryMeasureAxis: const charts.NumericAxisSpec(
+              renderSpec: charts.NoneRenderSpec(),
+            ),
+            domainAxis: const charts.NumericAxisSpec(
 //                showAxisLine: true,
-          renderSpec: charts.NoneRenderSpec(),
-        ),
-      );
+              renderSpec: charts.NoneRenderSpec(),
+            ),
+          );
         }));
   }
+
+  bool _customTileExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -174,100 +176,120 @@ class _WalletState extends State<Wallet> {
           Radius.circular(10),
         ),
       ),
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
+      child: ListTileTheme(
+        contentPadding: const EdgeInsets.all(0),
+        child: custom.ExpansionTile(
+          onExpansionChanged: (bool expanded) {
+            setState(() => _customTileExpanded = expanded);
+          },
+          linechart: lineChart,
+          trailing: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 7, 16.2, 0),
+            child: Icon(
+            _customTileExpanded
+                ? Icons.keyboard_arrow_down_rounded
+                : Icons.keyboard_arrow_up_rounded,
+          ),
+          ),
+          //trailing: const SizedBox.shrink(),
+          title: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    SizedBox(
-                        child: CachedNetworkImage(
-                            imageUrl: "${widget.icon}",
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) => (() {
-                              try {
-                                return SvgPicture.network(
-                                  "${widget.icon}",
-                                  semanticsLabel: 'crypto logo',
-                                  placeholderBuilder: (BuildContext context) =>
-                                      const CircularProgressIndicator(),
-                                );
-                              } catch (error) {
-                                return const Icon(Icons.error);
-                              }
-                            }()),
-                          ),
-                        height: 25.0,
-                        width: 25.0),
-                    /*FadeInImage(
+                    Row(
+                      children: <Widget>[
+                        SizedBox(
+                            child: CachedNetworkImage(
+                              imageUrl: "${widget.icon}",
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(),
+                              errorWidget: (context, url, error) => (() {
+                                try {
+                                  return SvgPicture.network(
+                                    "${widget.icon}",
+                                    semanticsLabel: 'crypto logo',
+                                    placeholderBuilder:
+                                        (BuildContext context) =>
+                                            const CircularProgressIndicator(),
+                                  );
+                                } catch (error) {
+                                  return const Icon(Icons.error);
+                                }
+                              }()),
+                            ),
+                            height: 25.0,
+                            width: 25.0),
+                        /*FadeInImage(
                       image: NetworkImage("https://cryptoicons.org/api/icon/${widget.alt!.toLowerCase()}/100/${color[1]!.toLowerCase()}", scale: 4),
                       placeholder: const AssetImage('assets/placeholder.png'),
                     )*/
-                    const SizedBox(width: 10),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: (MediaQuery.of(context).size.width) * (2 / 5) -
+                              18.5,
+                          child: Text(
+                            "${widget.name}",
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     SizedBox(
-                      width: (MediaQuery.of(context).size.width) * (2 / 5) - 20,
-                      child: Text(
-                        "${widget.name}",
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 20,
+                      width: (MediaQuery.of(context).size.width) * (2 / 5) - 18.5,
+                      height: 25.0,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          "${widget.rate}",
+                          overflow: TextOverflow.clip,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                  width: (MediaQuery.of(context).size.width) * (2 / 5) - 20,
-                  height: 25.0,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "${widget.rate}",
-                      overflow: TextOverflow.clip,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 12, 5),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const Text(" "),
+                    Text(
+                      "(${(widget.priceChange! * 100).toStringAsFixed(2)}%) ${(widget.priceChange! * double.parse(widget.rate!)).toStringAsFixed(2)}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: (() {
+                          if (widget.priceChange! > 0) {
+                            return Colors.green[400];
+                          } else {
+                            return Colors.red[400];
+                          }
+                        }()),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 5),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                const Text(" "),
-                Text(
-                  "(${(widget.priceChange! * 100).toStringAsFixed(2)}%) ${(widget.priceChange! * double.parse(widget.rate!)).toStringAsFixed(2)}",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: (() {
-                      if (widget.priceChange! > 0) {
-                        return Colors.green[400];
-                      } else {
-                        return Colors.red[400];
-                      }
-                    }()),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 150,
-            child: lineChart,
-          ),
-        ],
+          children: const <Widget>[
+            Text('trees'),
+          ],
+        ),
       ),
     );
   }
