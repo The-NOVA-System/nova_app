@@ -1,9 +1,9 @@
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:nova/screens/buyandsell.dart';
-import 'package:nova/screens/transactions.dart';
 import 'package:nova/screens/wallets.dart';
+import 'package:nova/screens/transactions.dart';
+import 'package:nova/screens/buy.dart';
 import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -154,10 +154,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     text: "Wallets",
                   ),
                   Tab(
-                    text: "Transactions",
+                    text: "Leaderboard",
                   ),
                   Tab(
-                    text: "Buy/Sell",
+                    text: "Buy",
                   ),
                 ],
                 onTap: (index) {
@@ -178,7 +178,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           children: const <Widget>[
             Wallets(),
             Transactions(),
-            BuyandSell(),
+            Buy(),
           ],
         ),
       ),
