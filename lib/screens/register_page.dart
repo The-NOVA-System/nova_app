@@ -3,6 +3,7 @@ import 'package:nova/widgets/custom_btn.dart';
 import 'package:nova/widgets/custom_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -12,6 +13,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
 
@@ -77,6 +79,14 @@ class _RegisterPageState extends State<RegisterPage> {
       });
     } else {
       // The String was null, user is logged in.
+      users
+          .doc(FirebaseAuth.instance.currentUser!.uid).set({
+        'email': FirebaseAuth.instance.currentUser!.email,
+        'USD': 100,
+        "assets": [],
+      })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
       Navigator.pop(context);
     }
   }
