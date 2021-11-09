@@ -1,7 +1,7 @@
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:nova/screens/wallets.dart';
+import 'package:nova/screens/wallets.dart' as wallets;
 import 'package:nova/screens/transactions.dart';
 import 'package:nova/screens/buy.dart';
 import 'package:nova/widgets/wallet.dart';
@@ -176,7 +176,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         body: TabBarView(
           controller: controller,
           children: const <Widget>[
-            Wallets(),
+            wallets.Wallets(),
             Transactions(),
             Buy(),
           ],

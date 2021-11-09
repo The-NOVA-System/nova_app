@@ -206,18 +206,26 @@ class _BuyState extends State<Buy> {
                       if (snapshot.hasData) {
                         aggregateList = snapshot.data!;
                         return Wallet(
-                            name: snapshot.data![1][index]["name"],
-                            icon: "https://api.codetabs.com/v1/proxy/?quest=" + snapshot.data![1][index]["logo_url"],
-                            rate: snapshot.data![1][index]["price"],
-                            day: double.parse(snapshot.data![1][index]["1d"]["price_change_pct"]),
-                            week: double.parse(snapshot.data![1][index]["7d"]["price_change_pct"]),
-                            month: double.parse(snapshot.data![1][index]["30d"]["price_change_pct"]),
-                            year: double.parse(snapshot.data![1][index]["365d"]["price_change_pct"]),
-                            ytd: double.parse(snapshot.data![1][index]["ytd"]["price_change_pct"]),
-                            color: color[0],
-                            alt: snapshot.data![1][index]["id"],
-                            colorHex: color[1],
-                            data: snapshot.data![0].chartData[index]);
+                          name: snapshot.data![1][index]["name"],
+                          icon: "https://api.codetabs.com/v1/proxy/?quest=" +
+                              snapshot.data![1][index]["logo_url"],
+                          rate: snapshot.data![1][index]["price"],
+                          day: double.parse(snapshot.data![1][index]["1d"]
+                              ["price_change_pct"]),
+                          week: double.parse(snapshot.data![1][index]["7d"]
+                              ["price_change_pct"]),
+                          month: double.parse(snapshot.data![1][index]["30d"]
+                              ["price_change_pct"]),
+                          year: double.parse(snapshot.data![1][index]["365d"]
+                              ["price_change_pct"]),
+                          ytd: double.parse(snapshot.data![1][index]["ytd"]
+                              ["price_change_pct"]),
+                          color: color[0],
+                          alt: snapshot.data![1][index]["id"],
+                          colorHex: color[1],
+                          data: snapshot.data![0].chartData[index],
+                          buy: true,
+                        );
                       } else if (snapshot.hasError) {
                         return SizedBox(
                           width: 20.0,
