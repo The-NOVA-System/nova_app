@@ -213,7 +213,7 @@ class _WalletsState extends State<Wallets> {
                       cacheExtent: 9999,
                       physics: const AlwaysScrollableScrollPhysics(),
                       primary: false,
-                      itemCount: length * counter,
+                      itemCount: data['assets'].length,
                       itemBuilder: (BuildContext context, int index) {
                         var color = colorList[index % Constants.matColors.length];
                         if (index == length * counter - 1) {

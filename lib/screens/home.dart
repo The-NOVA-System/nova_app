@@ -1,8 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nova/screens/wallets.dart' as wallets;
-import 'package:nova/screens/transactions.dart';
+import 'package:nova/screens/leaderboard.dart';
 import 'package:nova/screens/buy.dart';
 import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   String name = FirebaseAuth.instance.currentUser!.email!.split("@")[0];
@@ -135,7 +137,44 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               child: const CircularProgressIndicator()),
                         )),
                       title: Text(name),
-                      subtitle: Text(FirebaseAuth.instance.currentUser!.email!),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(FirebaseAuth.instance.currentUser!.email!),
+                            FutureBuilder<DocumentSnapshot>(
+                              future: users
+                                  .doc(
+                                  FirebaseAuth.instance.currentUser!.uid)
+                                  .get(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<
+                                      DocumentSnapshot> snapshot) {
+                                if (snapshot.hasError) {
+                                  return const Text("Something went wrong");
+                                }
+
+                                if (snapshot.hasData &&
+                                    !snapshot.data!.exists) {
+                                  return const Text(
+                                      "Document does not exist");
+                                }
+
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  Map<String, dynamic> data = snapshot.data!
+                                      .data() as Map<String, dynamic>;
+
+                                  userData = data;
+
+                                  return Text(
+                                      "Balance: ${data['USD'].toStringAsFixed(3)} USD");
+                                }
+
+                                return const Text("Balance: Loading...");
+                              },
+                            ),
+          ],
+                      ),
                     ),
                   ],
                 ),
@@ -177,7 +216,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           controller: controller,
           children: const <Widget>[
             wallets.Wallets(),
-            Transactions(),
+            leaderboard(),
             Buy(),
           ],
         ),

@@ -92,6 +92,7 @@ class ExpansionTile extends StatefulWidget {
     this.leading,
     required this.title,
     required this.linechart,
+    required this.buySellButton,
     this.subtitle,
     this.onExpansionChanged,
     this.children = const <Widget>[],
@@ -132,6 +133,7 @@ class ExpansionTile extends StatefulWidget {
   final Widget title;
 
   final Widget linechart;
+  final Widget buySellButton;
 
   /// Additional content displayed below the title.
   ///
@@ -371,6 +373,7 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
             height: 150,
             child: widget.linechart,
           ),
+          widget.buySellButton,
           ClipRect(
             child: Align(
               alignment: widget.expandedAlignment ?? Alignment.center,
