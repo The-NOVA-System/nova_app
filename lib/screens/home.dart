@@ -103,6 +103,20 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 },
               ),
               ListTile(
+                title: const Text('GitHub'),
+                onTap: () {
+                  launch('https://github.com/The-NOVA-System');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Blog'),
+                onTap: () {
+                  launch("https://the-nova-system.github.io/blog/");
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
                 title: const Text('Logout'),
                 onTap: () {
                   FirebaseAuth.instance.signOut();

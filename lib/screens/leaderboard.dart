@@ -60,7 +60,7 @@ class _leaderboardState extends State<leaderboard> {
                             child: CircularProgressIndicator()),
                   )),
                   title: Text(leaderList[index][1]),
-                  subtitle: Text(leaderList[index][0].toStringAsFixed(2)),
+                  subtitle: Text("\$${leaderList[index][0].toStringAsFixed(2)} USD"),
                   trailing: Text(
                     '${index + 1}',
                     style: TextStyle(

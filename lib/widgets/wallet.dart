@@ -1339,12 +1339,22 @@ class _WalletState extends State<Wallet> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 12, 5),
+                padding: const EdgeInsets.fromLTRB(0, 0, 2, 5),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    const Text(" "),
+                    (() {
+                      if (widget.buy!) {
+                        if (priceChange > 0) {
+                          return Icon(Icons.arrow_drop_up_rounded, color: Colors.green[400]);
+                        } else {
+                          return Icon(Icons.arrow_drop_down_rounded, color: Colors.red[400]);
+                        }
+                      } else {
+                        return const Text("");
+                      }
+                    }()),
                     (() {
                       if (widget.buy!) {
                         return Text(
