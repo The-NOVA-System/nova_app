@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nova/util/data.dart';
 import 'package:flutter/material.dart';
 
-
 class leaderboard extends StatefulWidget {
   const leaderboard({Key? key}) : super(key: key);
 
@@ -19,14 +18,12 @@ class _leaderboardState extends State<leaderboard> {
   Widget build(BuildContext context) {
     return FutureBuilder<QuerySnapshot>(
       future: users.get(),
-      builder: (BuildContext context,
-          AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           throw Exception("Something went wrong");
         }
 
-        if (snapshot.connectionState ==
-            ConnectionState.done) {
+        if (snapshot.connectionState == ConnectionState.done) {
           //print("leaderName is $leaderName");
           for (var value in snapshot.data!.docs) {
             leaderList.add([value['USD'], value['email'].split("@")[0]]);
@@ -52,17 +49,20 @@ class _leaderboardState extends State<leaderboard> {
                 child: ListTile(
                   leading: ClipOval(
                       child: SvgPicture.network(
-                        'https://avatars.dicebear.com/api/avataaars/${leaderList[index][1]}.svg',
-                        width: 50,
-                        height: 50,
-                        semanticsLabel: 'profile picture',
-                        placeholderBuilder: (BuildContext context) => Container(
-                            padding: const EdgeInsets.all(30.0),
-                            child: const CircularProgressIndicator()),
-                      )),
+                    'https://avatars.dicebear.com/api/avataaars/${leaderList[index][1]}.svg',
+                    width: 50,
+                    height: 50,
+                    semanticsLabel: 'profile picture',
+                    placeholderBuilder: (BuildContext context) =>
+                        const SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: CircularProgressIndicator()),
+                  )),
                   title: Text(leaderList[index][1]),
                   subtitle: Text(leaderList[index][0].toStringAsFixed(2)),
-                  trailing: Text('${index + 1}',
+                  trailing: Text(
+                    '${index + 1}',
                     style: TextStyle(
                       color: Theme.of(context).disabledColor,
                       fontWeight: FontWeight.bold,
@@ -71,7 +71,6 @@ class _leaderboardState extends State<leaderboard> {
                 ),
               );
             },
-
           );
         }
 
