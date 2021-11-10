@@ -1257,8 +1257,8 @@ class _WalletState extends State<Wallet> {
             padding: const EdgeInsets.fromLTRB(0, 7, 16.2, 0),
             child: Icon(
               _customTileExpanded
-                  ? Icons.keyboard_arrow_down_rounded
-                  : Icons.keyboard_arrow_up_rounded,
+                  ? Icons.keyboard_arrow_up_rounded
+                  : Icons.keyboard_arrow_down_rounded,
             ),
           ),
           //trailing: const SizedBox.shrink(),

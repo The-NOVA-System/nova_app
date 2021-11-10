@@ -13,8 +13,7 @@ class leaderboard extends StatefulWidget {
 
 class _leaderboardState extends State<leaderboard> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  late List<dynamic> leaderName;
-  late List<dynamic> leaderValue;
+  List<dynamic> leaderList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -28,27 +27,20 @@ class _leaderboardState extends State<leaderboard> {
 
         if (snapshot.connectionState ==
             ConnectionState.done) {
-          leaderName = List.filled(10000000, null, growable: true);
-          leaderValue = List.filled(10000000, null, growable: true);
           //print("leaderName is $leaderName");
           for (var value in snapshot.data!.docs) {
-            leaderValue[int.parse(value['USD'].toStringAsFixed(0))] = value['USD'].toStringAsFixed(2);
-            leaderName[int.parse(value['USD'].toStringAsFixed(0))] = value['email'].split("@")[0];
+            leaderList.add([value['USD'], value['email'].split("@")[0]]);
           }
-          leaderName.removeWhere((value) => value == null);
-          leaderValue.removeWhere((value) => value == null);
-          leaderName = List.from(leaderName.reversed);
-          leaderValue = List.from(leaderValue.reversed);
-
-          print(leaderName);
-          print(leaderValue);
+          print(leaderList);
+          leaderList.sort((b, a) => a[0].compareTo(b[0]));
+          print(leaderList);
 
           return ListView.builder(
             cacheExtent: 999,
             physics: const AlwaysScrollableScrollPhysics(),
             primary: false,
             shrinkWrap: true,
-            itemCount: leaderName.length,
+            itemCount: leaderList.length,
             itemBuilder: (BuildContext context, int index) {
               return Card(
                 elevation: 4,
@@ -60,7 +52,7 @@ class _leaderboardState extends State<leaderboard> {
                 child: ListTile(
                   leading: ClipOval(
                       child: SvgPicture.network(
-                        'https://avatars.dicebear.com/api/avataaars/${leaderName[index]}.svg',
+                        'https://avatars.dicebear.com/api/avataaars/${leaderList[index][1]}.svg',
                         width: 50,
                         height: 50,
                         semanticsLabel: 'profile picture',
@@ -68,8 +60,8 @@ class _leaderboardState extends State<leaderboard> {
                             padding: const EdgeInsets.all(30.0),
                             child: const CircularProgressIndicator()),
                       )),
-                  title: Text(leaderName[index]),
-                  subtitle: Text(leaderValue[index]),
+                  title: Text(leaderList[index][1]),
+                  subtitle: Text(leaderList[index][0].toStringAsFixed(2)),
                   trailing: Text('${index + 1}',
                     style: TextStyle(
                       color: Theme.of(context).disabledColor,

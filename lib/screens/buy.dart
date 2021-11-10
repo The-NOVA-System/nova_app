@@ -207,7 +207,7 @@ class _BuyState extends State<Buy> {
                         aggregateList = snapshot.data!;
                         return Wallet(
                           name: snapshot.data![1][index]["name"],
-                          icon: "https://api.codetabs.com/v1/proxy/?quest=" +
+                          icon: "https://corsproxy.garvshah.workers.dev/?" +
                               snapshot.data![1][index]["logo_url"],
                           rate: snapshot.data![1][index]["price"],
                           day: double.parse(snapshot.data![1][index]["1d"]

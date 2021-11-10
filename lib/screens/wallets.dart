@@ -243,7 +243,7 @@ class _WalletsState extends State<Wallets> {
                                 aggregateList = snapshot.data!;
                                 return Wallet(
                                   name: snapshot.data![1][index]["name"],
-                                  icon: "https://api.codetabs.com/v1/proxy/?quest=" +
+                                  icon: "https://corsproxy.garvshah.workers.dev/?" +
                                       snapshot.data![1][index]["logo_url"],
                                   rate: data[snapshot.data![1][index]["id"]].toString(),
                                   day: double.parse(snapshot.data![1][index]["1d"]
