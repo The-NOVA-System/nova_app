@@ -1300,7 +1300,7 @@ class _WalletState extends State<Wallet> {
                         const SizedBox(width: 10),
                         SizedBox(
                           width: (MediaQuery.of(context).size.width) * (2 / 5) -
-                              18.5,
+                              21,
                           child: Text(
                             "${widget.name}",
                             overflow: TextOverflow.ellipsis,
@@ -1317,7 +1317,7 @@ class _WalletState extends State<Wallet> {
                     ),
                     SizedBox(
                       width:
-                          (MediaQuery.of(context).size.width) * (2 / 5) - 18.5,
+                          (MediaQuery.of(context).size.width) * (2 / 5) - 21,
                       height: 25.0,
                       child: Align(
                         alignment: Alignment.centerRight,

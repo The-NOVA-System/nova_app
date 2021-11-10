@@ -259,10 +259,21 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 style: TextStyle(color: Theme.of(context).appBarTheme.toolbarTextStyle!.color),
               ),
               TextSpan(
-                text: 'Crypto Market Cap & Pricing Data Provided By Nomics.',
+                text: 'Crypto Market Cap & Pricing Data Provided By Nomics.\n\n',
                 style: const TextStyle(color: Colors.blue),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () { launch('https://nomics.com/');
+                  },
+              ),
+              TextSpan(
+                text: 'Big thanks to the rest of The NOVA Team:\nLiam Shaw\nNatsuki Rogers\n\n',
+                style: TextStyle(color: Theme.of(context).appBarTheme.toolbarTextStyle!.color),
+              ),
+              TextSpan(
+                text: 'https://garv-shah.github.io',
+                style: const TextStyle(color: Colors.blue),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () { launch('https://garv-shah.github.io');
                   },
               ),
             ],
