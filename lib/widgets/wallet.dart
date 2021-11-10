@@ -1345,19 +1345,32 @@ class _WalletState extends State<Wallet> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     const Text(" "),
-                    Text(
-                      "(${(priceChange * 100).toStringAsFixed(2)}%) ${(priceChange * double.parse(widget.rate!)).toStringAsFixed(2)}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: (() {
-                          if (priceChange > 0) {
-                            return Colors.green[400];
-                          } else {
-                            return Colors.red[400];
-                          }
-                        }()),
-                      ),
-                    ),
+                    (() {
+                      if (widget.buy!) {
+                        return Text(
+                          "(${(priceChange * 100).toStringAsFixed(
+                              2)}%) ${(priceChange * double.parse(widget.rate!))
+                              .toStringAsFixed(2)}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: (() {
+                              if (priceChange > 0) {
+                                return Colors.green[400];
+                              } else {
+                                return Colors.red[400];
+                              }
+                            }()),
+                          ),
+                        );
+                      } else {
+                        return Text(
+                          "Value in USD: " + (double.parse(widget.altRate!) * double.parse(widget.rate!)).toStringAsFixed(2),
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                        );
+                      }
+                    }()),
                   ],
                 ),
               ),
