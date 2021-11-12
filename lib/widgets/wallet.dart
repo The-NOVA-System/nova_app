@@ -732,7 +732,7 @@ class _WalletState extends State<Wallet> {
                               child: TextField(
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
-                                  labelText: 'How much to spend?',
+                                  labelText: 'How much to sell?',
                                 ),
                                 controller: inputController,
                                 onSubmitted: (String value) async {
