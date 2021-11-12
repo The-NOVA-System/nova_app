@@ -30,9 +30,6 @@ target 'Runner' do
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
 
-  use_frameworks!
-  use_frameworks! :linkage => :static
-
   flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
 end
 
