@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:nova/util/const.dart';
 import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:nova/screens/home.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -19,18 +19,14 @@ Future<List> fetchCharts(pageInternal, idArray) async {
   late Response cryptoResponse;
   late Response chartResponse;
 
-  var client = http.Client();
-  try {
-    cryptoResponse = await client.post(Uri.parse(
-        'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
+  cryptoResponse = await client.post(Uri.parse(
+      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
 
-    idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
+  idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
 
-    chartResponse = await client.post(Uri.parse(
-        'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
-  } finally {
-    client.close();
-  }
+  chartResponse = await client.post(Uri.parse(
+      'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+
   if (chartResponse.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
@@ -39,23 +35,17 @@ Future<List> fetchCharts(pageInternal, idArray) async {
       jsonDecode(cryptoResponse.body)
     ];
   } else if (chartResponse.statusCode == 429) {
-    try {
-      cryptoResponse =
-      await Future.delayed(const Duration(seconds: 1), () async {
-        return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
-      });
+    cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
+      return await client.post(Uri.parse(
+          'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
+    });
 
-      idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
+    idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
 
-      chartResponse =
-      await Future.delayed(const Duration(seconds: 1), () async {
-        return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
-      });
-    } finally {
-      client.close();
-    }
+    chartResponse = await Future.delayed(const Duration(seconds: 1), () async {
+      return await client.post(Uri.parse(
+          'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+    });
 
     if (chartResponse.statusCode == 200) {
       return [
@@ -151,27 +141,20 @@ class _WalletsState extends State<Wallets> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
-      future: users
-          .doc(
-          FirebaseAuth.instance.currentUser!.uid)
-          .get(),
-      builder: (BuildContext context,
-          AsyncSnapshot<
-              DocumentSnapshot> snapshot) {
+      future: users.doc(FirebaseAuth.instance.currentUser!.uid).get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
           return const Text("Something went wrong");
         }
 
-        if (snapshot.hasData &&
-            !snapshot.data!.exists) {
-          return const Text(
-              "Document does not exist");
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return const Text("Document does not exist");
         }
 
-        if (snapshot.connectionState ==
-            ConnectionState.done) {
-          Map<String, dynamic> data = snapshot.data!
-              .data() as Map<String, dynamic>;
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
 
           if (data['assets'].length == 0) {
             return const Scaffold(
@@ -185,22 +168,24 @@ class _WalletsState extends State<Wallets> {
                   page++;
                   List localCharts = [];
                   try {
-                    localCharts = await fetchCharts(page.round(), data['assets']);
-                  } catch (err) {
                     localCharts =
-                    await Future.delayed(const Duration(seconds: 1), () async {
+                        await fetchCharts(page.round(), data['assets']);
+                  } catch (err) {
+                    localCharts = await Future.delayed(
+                        const Duration(seconds: 1), () async {
                       return await fetchCharts(page.round(), data['assets']);
                     });
                   }
                   aggregateList[1] += localCharts[1];
                   var chartData = [
                     Charts(
-                        chartData:
-                        aggregateList[0].chartData + localCharts[0].chartData),
+                        chartData: aggregateList[0].chartData +
+                            localCharts[0].chartData),
                     aggregateList[1]
                   ];
                   setState(() {
-                    futureCharts = Future.delayed(const Duration(seconds: 0), () {
+                    futureCharts =
+                        Future.delayed(const Duration(seconds: 0), () {
                       return chartData;
                     });
                     counter++;
@@ -215,7 +200,8 @@ class _WalletsState extends State<Wallets> {
                       primary: false,
                       itemCount: data['assets'].length,
                       itemBuilder: (BuildContext context, int index) {
-                        var color = colorList[index % Constants.matColors.length];
+                        var color =
+                            colorList[index % Constants.matColors.length];
                         if (index == length * counter - 1) {
                           return const SizedBox(
                             width: 20.0,
@@ -243,19 +229,21 @@ class _WalletsState extends State<Wallets> {
                                 aggregateList = snapshot.data!;
                                 return Wallet(
                                   name: snapshot.data![1][index]["name"],
-                                  icon: "https://corsproxy.garvshah.workers.dev/?" +
-                                      snapshot.data![1][index]["logo_url"],
-                                  rate: data[snapshot.data![1][index]["id"]].toString(),
-                                  day: double.parse(snapshot.data![1][index]["1d"]
-                                  ["price_change_pct"]),
-                                  week: double.parse(snapshot.data![1][index]["7d"]
-                                  ["price_change_pct"]),
-                                  month: double.parse(snapshot.data![1][index]["30d"]
-                                  ["price_change_pct"]),
-                                  year: double.parse(snapshot.data![1][index]["365d"]
-                                  ["price_change_pct"]),
-                                  ytd: double.parse(snapshot.data![1][index]["ytd"]
-                                  ["price_change_pct"]),
+                                  icon:
+                                      "https://corsproxy.garvshah.workers.dev/?" +
+                                          snapshot.data![1][index]["logo_url"],
+                                  rate: data[snapshot.data![1][index]["id"]]
+                                      .toString(),
+                                  day: double.parse(snapshot.data![1][index]
+                                      ["1d"]["price_change_pct"]),
+                                  week: double.parse(snapshot.data![1][index]
+                                      ["7d"]["price_change_pct"]),
+                                  month: double.parse(snapshot.data![1][index]
+                                      ["30d"]["price_change_pct"]),
+                                  year: double.parse(snapshot.data![1][index]
+                                      ["365d"]["price_change_pct"]),
+                                  ytd: double.parse(snapshot.data![1][index]
+                                      ["ytd"]["price_change_pct"]),
                                   color: color[0],
                                   alt: snapshot.data![1][index]["id"],
                                   colorHex: color[1],
@@ -279,7 +267,8 @@ class _WalletsState extends State<Wallets> {
                                         child: Align(
                                           alignment: Alignment.center,
                                           child: Padding(
-                                              padding: const EdgeInsets.all(16.0),
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
                                               child: Text(
                                                 '${snapshot.error}',
                                                 textAlign: TextAlign.center,
@@ -316,7 +305,8 @@ class _WalletsState extends State<Wallets> {
                     return Future.delayed(const Duration(seconds: 0), () async {
                       var chartData = await fetchCharts(1, data['assets']);
                       setState(() {
-                        futureCharts = Future.delayed(const Duration(seconds: 0), () {
+                        futureCharts =
+                            Future.delayed(const Duration(seconds: 0), () {
                           return chartData;
                         });
                         Config.chartRefresh();

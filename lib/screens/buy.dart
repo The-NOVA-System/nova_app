@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:nova/util/const.dart';
 import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:nova/screens/home.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -17,18 +17,14 @@ Future<List> fetchCharts(pageInternal) async {
   late Response cryptoResponse;
   late Response chartResponse;
 
-  var client = http.Client();
-  try {
-    cryptoResponse = await client.post(Uri.parse(
-        'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
+  cryptoResponse = await client.post(Uri.parse(
+      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
 
-    idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
+  idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
 
-    chartResponse = await client.post(Uri.parse(
-        'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
-  } finally {
-    client.close();
-  }
+  chartResponse = await client.post(Uri.parse(
+      'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+
   if (chartResponse.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
@@ -37,23 +33,17 @@ Future<List> fetchCharts(pageInternal) async {
       jsonDecode(cryptoResponse.body)
     ];
   } else if (chartResponse.statusCode == 429) {
-    try {
-      cryptoResponse =
-          await Future.delayed(const Duration(seconds: 1), () async {
-        return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
-      });
+    cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
+      return await client.post(Uri.parse(
+          'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
+    });
 
-      idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
+    idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
 
-      chartResponse =
-          await Future.delayed(const Duration(seconds: 1), () async {
-        return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
-      });
-    } finally {
-      client.close();
-    }
+    chartResponse = await Future.delayed(const Duration(seconds: 1), () async {
+      return await client.post(Uri.parse(
+          'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+    });
 
     if (chartResponse.statusCode == 200) {
       return [

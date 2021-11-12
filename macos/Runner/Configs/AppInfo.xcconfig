@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = nova
+PRODUCT_NAME = The Nova System
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = dev.jideguru.novaSystem
+PRODUCT_BUNDLE_IDENTIFIER = com.garv.nova
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2021 dev.jideguru. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2021 Garv Shah All rights reserved.

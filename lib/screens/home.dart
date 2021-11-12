@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
+import 'package:http/http.dart' as http;
 
 final beforeNonLeadingCapitalLetter = RegExp(r"(?=(?!^)[A-Z])");
 List<String> splitPascalCase(String input) =>
@@ -24,6 +25,8 @@ extension StringExtension on String {
   }
 }
 
+final client = http.Client();
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -32,6 +35,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
+  @override
+  void dispose() {
+    client.close();
+    super.dispose();
+  }
+
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
