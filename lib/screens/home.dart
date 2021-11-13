@@ -4,7 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nova/screens/wallets.dart' as wallets;
 import 'package:nova/screens/leaderboard.dart';
-import 'package:nova/screens/buy.dart';
+import 'package:nova/screens/buy.dart' as buy;
 import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -232,7 +232,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   onTap: (index) {
                     if (index == 0) {
                       setState(() {
-                        page = 1.0;
+                        buy.counter = 1;
+                        wallets.counter = 1;
+                        buy.page = 1.0;
+                        wallets.page = 1.0;
                         Config.chartRefresh();
                       });
                     }
@@ -247,7 +250,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             children: <Widget>[
               wallets.Wallets(notifyParent: refresh),
               const leaderboard(),
-              Buy(notifyParent: refresh),
+              buy.Buy(notifyParent: refresh),
             ],
           ),
         ),

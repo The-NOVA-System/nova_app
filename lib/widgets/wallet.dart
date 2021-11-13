@@ -140,7 +140,7 @@ class _WalletState extends State<Wallet> {
   void initState() {
     super.initState();
     inputController = TextEditingController();
-    WidgetsBinding.instance!.addPostFrameCallback((_) => setState(() {
+    Future.delayed(Duration.zero, () => setState(() {
           chartDataList = widget.data!;
           _chartDataSeries.clear();
           bool setIconColour = false;
