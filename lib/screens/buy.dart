@@ -113,7 +113,8 @@ class IDS {
 }
 
 class Buy extends StatefulWidget {
-  const Buy({Key? key}) : super(key: key);
+  final Function() notifyParent;
+  const Buy({Key? key, required this.notifyParent}) : super(key: key);
 
   @override
   _BuyState createState() => _BuyState();
@@ -196,6 +197,7 @@ class _BuyState extends State<Buy> {
                       if (snapshot.hasData) {
                         aggregateList = snapshot.data!;
                         return Wallet(
+                          notifyParent: widget.notifyParent,
                           name: snapshot.data![1][index]["name"],
                           icon: "https://corsproxy.garvshah.workers.dev/?" +
                               snapshot.data![1][index]["logo_url"],

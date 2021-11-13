@@ -115,7 +115,8 @@ class IDS {
 }
 
 class Wallets extends StatefulWidget {
-  const Wallets({Key? key}) : super(key: key);
+  final Function() notifyParent;
+  const Wallets({Key? key, required this.notifyParent}) : super(key: key);
 
   @override
   _WalletsState createState() => _WalletsState();
@@ -228,6 +229,7 @@ class _WalletsState extends State<Wallets> {
                               if (snapshot.hasData) {
                                 aggregateList = snapshot.data!;
                                 return Wallet(
+                                  notifyParent: widget.notifyParent,
                                   name: snapshot.data![1][index]["name"],
                                   icon:
                                       "https://corsproxy.garvshah.workers.dev/?" +

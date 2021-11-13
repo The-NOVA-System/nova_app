@@ -38,8 +38,6 @@ extension HexColor on Color {
       '${blue.toRadixString(16).padLeft(2, '0')}';
 }
 
-void main() => runApp(const Wallet());
-
 void updateCharts() {}
 
 enum mode { graphUniform, uniform, rainbow }
@@ -103,6 +101,7 @@ class Wallet extends StatefulWidget {
   final bool? buy;
   final charts.Color? color;
   final List<PointModel>? data;
+  final Function() notifyParent;
   const Wallet(
       {Key? key,
       this.name,
@@ -118,7 +117,8 @@ class Wallet extends StatefulWidget {
       this.year,
       this.ytd,
       this.buy,
-      this.data})
+      this.data,
+        required this.notifyParent})
       : super(key: key);
 
   @override
@@ -318,6 +318,8 @@ class _WalletState extends State<Wallet> {
                                         'USD': userData['USD'] -
                                             double.parse(value)
                                       });
+
+                                      widget.notifyParent();
 
                                       await showDialog<void>(
                                         context: context,
@@ -756,6 +758,8 @@ class _WalletState extends State<Wallet> {
                                             double.parse(value)
                                       });
 
+                                      widget.notifyParent();
+
                                       await showDialog<void>(
                                         context: context,
                                         builder: (BuildContext context) {
@@ -878,6 +882,8 @@ class _WalletState extends State<Wallet> {
                                       await fireStoreUserRef.update({
                                         'assets': userData['assets']
                                       });
+
+                                      widget.notifyParent();
 
                                       await showDialog<void>(
                                         context: context,

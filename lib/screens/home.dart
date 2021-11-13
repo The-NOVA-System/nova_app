@@ -25,7 +25,7 @@ extension StringExtension on String {
   }
 }
 
-final client = http.Client();
+http.Client client = http.Client();
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -49,8 +49,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    client = http.Client();
     super.initState();
     controller = TabController(length: 3, vsync: this);
+  }
+
+  refresh() {
+    setState(() {});
   }
 
   @override
@@ -239,10 +244,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           },
           body: TabBarView(
             controller: controller,
-            children: const <Widget>[
-              wallets.Wallets(),
-              leaderboard(),
-              Buy(),
+            children: <Widget>[
+              wallets.Wallets(notifyParent: refresh),
+              const leaderboard(),
+              Buy(notifyParent: refresh),
             ],
           ),
         ),
