@@ -16,41 +16,54 @@ late IDS idList;
 Future<List> fetchCharts(pageInternal) async {
   late Response cryptoResponse;
   late Response chartResponse;
+  bool decodeError = false;
 
   cryptoResponse = await client.post(Uri.parse(
       'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
 
-  idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
+  try {
+    var idData = jsonDecode(cryptoResponse.body);
+    idList = IDS.fromJson(await idData);
 
-  chartResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+    chartResponse = await client.post(Uri.parse(
+        'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+  } catch(error) {
+    chartResponse = cryptoResponse;
+    decodeError = true;
+  }
 
-  if (chartResponse.statusCode == 200) {
+  if (chartResponse.statusCode == 200 && decodeError == false) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     return [
       Charts.fromJson(jsonDecode(chartResponse.body)),
       jsonDecode(cryptoResponse.body)
     ];
-  } else if (chartResponse.statusCode == 429) {
+  } else if (chartResponse.statusCode == 429 || decodeError == true) {
+    decodeError = false;
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
       return await client.post(Uri.parse(
           'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
     });
 
-    idList = IDS.fromJson(jsonDecode(cryptoResponse.body));
+    try {
+      var idData = jsonDecode(cryptoResponse.body);
+      idList = IDS.fromJson(await idData);
+      chartResponse = await Future.delayed(const Duration(seconds: 1), () async {
+        return await client.post(Uri.parse(
+            'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+      });
+    } catch(error) {
+      chartResponse = cryptoResponse;
+      decodeError = true;
+    }
 
-    chartResponse = await Future.delayed(const Duration(seconds: 1), () async {
-      return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
-    });
-
-    if (chartResponse.statusCode == 200) {
+    if (chartResponse.statusCode == 200 && decodeError == false) {
       return [
         Charts.fromJson(jsonDecode(chartResponse.body)),
         jsonDecode(cryptoResponse.body)
       ];
-    } else if (chartResponse.statusCode == 429) {
+    } else if (chartResponse.statusCode == 429 || decodeError == true) {
       throw Exception(
           "woah woah woah, slow down! the api we use only allows 1 request per second (cause we're on the free plan). reload again, just a bit slower :)");
     } else {
