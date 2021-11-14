@@ -41,6 +41,9 @@ platform :ios do
       scheme: "Runner",
       export_method: "app-store"
     )
-    upload_to_testflight
+    upload_to_testflight(
+      distribute_external: true,
+      groups: "Caulfield Grammar School"
+    )
   end
 end

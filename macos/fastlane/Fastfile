@@ -1,0 +1,67 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:mac)
+platform :mac do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    if is_ci
+      create_keychain(
+        name: ENV['MATCH_KEYCHAIN_NAME'],
+        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+        default_keychain: true,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: false
+      )
+    end
+    match(
+      type: "appstore",
+      readonly: is_ci,
+      keychain_name: ENV['MATCH_KEYCHAIN_NAME'],
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+    )
+    # set based on selected app/scheme
+    isMAS = true
+
+    # build app
+    gym
+
+    # gym does not export the archive for Mac, so we need to do so manually to code sign with Developer ID
+    export_method = isMAS ? 'app-store' : 'developer-id'
+    xcexport({export_options_plist: {method: export_method}})
+
+    # remove .ipa extension from output path that xcexport incorrectly adds
+    export_dir = Actions.lane_context[SharedValues::IPA_OUTPUT_PATH].gsub(/\.ipa$/, '')
+
+    # delete incorrect ipa path in lane context
+    Actions.lane_context[SharedValues::IPA_OUTPUT_PATH] = nil
+
+    # fix dSYM path
+    Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH] = "#{ENV['GYM_OUTPUT_DIRECTORY']}/#{ENV['GYM_OUTPUT_NAME']}.app.dSYM.zip"
+
+    # find pkg/app inside export folder and upload / show in Finder
+    if isMAS
+        ENV['DELIVER_PKG_PATH'] = Dir[File.join(export_dir, "*.pkg")].last
+
+        deliver(force: true)
+    else
+        app_path = Dir[File.join(export_dir, "*.app")].last
+
+        sh "open -R #{app_path.shellescape}"
+    end
+    upload_to_testflight
+  end
+end
