@@ -14,6 +14,7 @@ int length = 100;
 int counter = 1;
 double page = 1.0;
 late IDS idList;
+bool locked = false;
 
 Future<List> fetchCharts(pageInternal, idArray) async {
   late Response cryptoResponse;
@@ -150,6 +151,7 @@ class _WalletsState extends State<Wallets> {
   void initState() {
     super.initState();
     page = 1.0;
+    counter = 1;
   }
 
   @override
