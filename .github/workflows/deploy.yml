@@ -59,6 +59,7 @@ jobs:
           pod deintegrate
           sudo gem install cocoapods-clean
           pod clean
+          flutter pub get
           pod setup
           pod install
           bundle exec fastlane beta
