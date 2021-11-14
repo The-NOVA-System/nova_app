@@ -288,7 +288,7 @@ class _WalletState extends State<Wallet> {
                                     value = userData['USD'].toString();
                                   }
 
-                                  if (value != "") {
+                                  if (value != "" && double.parse(value) >= 0) {
                                     if (userData['USD'] -
                                         double.parse(value) >=
                                         0) {
@@ -610,7 +610,7 @@ class _WalletState extends State<Wallet> {
                           value = userData['USD'].toString();
                         }
 
-                        if (value != "") {
+                        if (value != "" && double.parse(value) >= 0) {
                           if (userData['USD'] -
                               double.parse(value) >=
                               0) {
@@ -1444,10 +1444,10 @@ class _WalletState extends State<Wallet> {
                           all = true;
                         }
 
-                        if (value != "") {
-                          if (userData[widget.alt] -
-                              double.parse(value) >
-                              0) {
+                        if (value != "" && double.parse(value) >= 0) {
+                          if (userData['USD'] + (double.parse(value) *
+                              double.parse(widget.altRate!)) >= 0) {
+
                             await fireStoreUserRef.update({
                               'USD': userData['USD'] + (double.parse(value) *
                                   double.parse(widget.altRate!))
