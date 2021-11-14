@@ -14,19 +14,17 @@
 # update_fastlane
 
 default_platform(:ios)
+
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
-    if is_ci
-      create_keychain(
-        name: ENV['MATCH_KEYCHAIN_NAME'],
-        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-        default_keychain: true,
-        unlock: true,
-        timeout: 3600,
-        lock_when_sleeps: false
-      )
-    end
+    app_store_connect_api_key(
+      key_id: ENV["APPLE_KEY_ID"],
+      issuer_id: ENV["APPLE_ISSUER_ID"],
+      key_content: ENV["APPLE_KEY_CONTENT"],
+      duration: 1200, # optional (maximum 1200)
+      in_house: false # optional but may be required if using match/sigh
+    )
     match(
       type: "appstore",
       readonly: is_ci,
