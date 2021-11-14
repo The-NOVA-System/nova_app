@@ -55,7 +55,13 @@ jobs:
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
       - name: Deploy to TestFlight MacOS
         run: |
-          cd ./macos && bundle exec fastlane beta
+          cd ./macos
+          pod deintegrate
+          sudo gem install cocoapods-clean
+          pod clean
+          pod setup
+          pod install
+          bundle exec fastlane beta
         env:
           TEAM_ID: ${{ secrets.TEAM_ID }}
           ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
