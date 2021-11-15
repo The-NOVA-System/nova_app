@@ -526,10 +526,10 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  path_provider_macos: 160cab0d5461f0c0e02995469a98f24bdb9a3f1f
+  path_provider_macos: fe7e9c234c6f7cfc12f7043ad4c6246e283a16f9
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
-  shared_preferences_macos: 480ce071d0666e37cef23fe6c702293a3d21799e
-  sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
+  shared_preferences_macos: f237eeae888b74d423d2201b7c2eabcb36cb9f09
+  sqflite: 123e830ff75de6bff453c08fae1186d722f688fb
   url_launcher_macos: 45af3d61de06997666568a7149c1be98b41c95d4
 
 PODFILE CHECKSUM: ad89d740b50caa6d47dbda18ab56a23185d13bd6
