@@ -393,7 +393,7 @@ class _WalletState extends State<Wallet> {
                                         );
                                       },
                                     );
-                                  } else if (value != "" && value != "0" && value != "-0" && double.parse(value) >= 0) {
+                                  } else if (value != "" && value != "0" && value != "-0" && double.parse(value) > 0) {
                                     if (userData['USD'] -
                                         double.parse(value) >=
                                         0) {
@@ -824,7 +824,7 @@ class _WalletState extends State<Wallet> {
                               );
                             },
                           );
-                        } else if (value != "" && value != "0" && value != "-0" && double.parse(value) >= 0) {
+                        } else if (value != "" && value != "0" && value != "-0" && double.parse(value) > 0) {
                           if (userData['USD'] -
                               double.parse(value) >=
                               0) {
@@ -1881,7 +1881,7 @@ class _WalletState extends State<Wallet> {
                               );
                             },
                           );
-                        } else if (value != "" && value != "0" && value != "-0" && double.parse(value) >= 0) {
+                        } else if (value != "" && value != "0" && value != "-0" && double.parse(value) > 0) {
                           if (userData['USD'] + (double.parse(value) *
                               double.parse(widget.altRate!)) >= 0) {
 
