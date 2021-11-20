@@ -121,13 +121,13 @@ class _leaderboardState extends State<leaderboard> {
                                   SvgPicture.network(
                                     entry.value[0],
                                     fit: BoxFit.fill,
-                                    width: 30,
-                                    height: 30,
+                                    width: 40,
+                                    height: 40,
                                     semanticsLabel: '${entry.key} badge',
                                     placeholderBuilder: (BuildContext context) =>
                                     const SizedBox(
-                                        height: 30,
-                                        width: 30,
+                                        height: 40,
+                                        width: 40,
                                         child: CircularProgressIndicator()),
                                   ),
                                   const SizedBox(width: 10)
@@ -139,17 +139,17 @@ class _leaderboardState extends State<leaderboard> {
                                   CachedNetworkImage(
                                     imageUrl: entry.value[0],
                                     fit: BoxFit.fill,
-                                    width: 30,
-                                    height: 30,
+                                    width: 40,
+                                    height: 40,
                                     placeholder: (context, url) =>
                                     const SizedBox(
-                                        height: 30,
-                                        width: 30,
+                                        height: 40,
+                                        width: 40,
                                         child: CircularProgressIndicator()),
                                     errorWidget: (context, url, error) =>
                                     const SizedBox(
-                                        height: 30,
-                                        width: 30,
+                                        height: 40,
+                                        width: 40,
                                         child: Icon(Icons.error)),
                                   ),
                                   const SizedBox(width: 10)
