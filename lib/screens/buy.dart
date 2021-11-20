@@ -230,6 +230,7 @@ class _BuyState extends State<Buy> {
                           colorHex: color[1],
                           data: snapshot.data![0].chartData[index],
                           buy: true,
+                          index: index,
                         );
                       } else if (snapshot.hasError) {
                         return SizedBox(

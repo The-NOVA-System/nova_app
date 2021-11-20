@@ -1,7 +1,58 @@
+import 'dart:convert';
+
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:nova/util/data.dart';
 import 'package:flutter/material.dart';
+import 'package:nova/util/const.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'home.dart';
+
+firebase_storage.FirebaseStorage storage =
+    firebase_storage.FirebaseStorage.instance;
+
+late String betaURL;
+Map<String, String> badges = {};
+late ListResult storageList;
+
+Future<List> fetchLeader() async {
+  betaURL = await storage.ref('badges/beta-tester.png').getDownloadURL();
+  storageList = await storage.ref('badges').list();
+  for (var value in storageList.items) {
+    badges[value.fullPath.split('.')[0].split('/')[1]] = await storage.ref(value.fullPath).getDownloadURL();
+  }
+
+  print(badges);
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  var userGet = await users.get();
+  var cryptoResponse = await client.post(Uri.parse(
+      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active'));
+
+  List<dynamic> cryptoFinal;
+
+  if (cryptoResponse.statusCode == 429) {
+    cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
+      return await client.post(Uri.parse(
+          'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active'));
+    });
+
+    if (cryptoResponse.statusCode == 429) {
+      cryptoResponse = await Future.delayed(const Duration(seconds: 2), () async {
+        return await client.post(Uri.parse(
+            'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active'));
+      });
+
+      cryptoFinal = jsonDecode(cryptoResponse.body);
+    } else {
+      cryptoFinal = jsonDecode(cryptoResponse.body);
+    }
+  } else {
+    cryptoFinal = jsonDecode(cryptoResponse.body);
+  }
+
+  return [userGet, cryptoFinal];
+}
 
 class leaderboard extends StatefulWidget {
   const leaderboard({Key? key}) : super(key: key);
@@ -11,26 +62,26 @@ class leaderboard extends StatefulWidget {
 }
 
 class _leaderboardState extends State<leaderboard> {
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
   List<dynamic> leaderList = [];
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<QuerySnapshot>(
-      future: users.get(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    return FutureBuilder<List>(
+      future: fetchLeader(),
+      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasError) {
-          throw Exception("Something went wrong");
+          return Center(child: Text("Something went wrong: ${snapshot.error}"));
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          //print("leaderName is $leaderName");
-          for (var value in snapshot.data!.docs) {
-            leaderList.add([value['USD'], value['email'].split("@")[0]]);
+          for (var value in snapshot.data![0].docs) {
+            num money = 0;
+            for (var index in value['assets_id_list']) {
+              money += (double.parse(snapshot.data![1][index]['price']) * value[snapshot.data![1][index]['id']]);
+            }
+            leaderList.add([money + value['USD'], value['email'].split("@")[0], value['badges']]);
           }
-          print(leaderList);
           leaderList.sort((b, a) => a[0].compareTo(b[0]));
-          print(leaderList);
 
           return ListView.builder(
             cacheExtent: 999,
@@ -61,12 +112,47 @@ class _leaderboardState extends State<leaderboard> {
                   )),
                   title: Text(leaderList[index][1]),
                   subtitle: Text("\$${leaderList[index][0].toStringAsFixed(2)} USD"),
-                  trailing: Text(
-                    '${index + 1}',
-                    style: TextStyle(
-                      color: Theme.of(context).disabledColor,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: badges.entries.map((entry) {
+                          if (leaderList[index][2].contains(entry.key)) {
+                            return Row(
+                              children: [
+                                CachedNetworkImage(
+                                  imageUrl: entry.value,
+                                  fit: BoxFit.fill,
+                                  width: 20,
+                                  height: 20,
+                                  placeholder: (context, url) =>
+                                  const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator()),
+                                  errorWidget: (context, url, error) =>
+                                  const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: Icon(Icons.error)),
+                                ),
+                                const SizedBox(width: 10)
+                              ],
+                            );
+                          } else {
+                            return const Text("");
+                          }
+                        }).toList(),
+                      ),
+                      const SizedBox(width: 15),
+                      Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );

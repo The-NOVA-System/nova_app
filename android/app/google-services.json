@@ -1,40 +1,33 @@
 {
   "project_info": {
     "project_number": "517310904511",
+    "firebase_url": "https://the-nova-system-default-rtdb.firebaseio.com",
     "project_id": "the-nova-system",
     "storage_bucket": "the-nova-system.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:517310904511:android:049df031da0d342e212e0a",
+        "mobilesdk_app_id": "1:517310904511:android:ed45e9cdf6c22aac212e0a",
         "android_client_info": {
           "package_name": "com.garv.nova"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "517310904511-h9csn855mci6d6laval0fdjj5qlauhfm.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCqGVCsoUOHgLvTuMYzyXWTKOQ0UzPMSfA"
+          "current_key": "AIzaSyDI40qINvoEpnozIVYWwM-DjaSfi5I2B9w"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "517310904511-h9csn855mci6d6laval0fdjj5qlauhfm.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "517310904511-3br2nake8tnl2vi754a0n8cn3b7fgeqt.apps.googleusercontent.com",
+              "client_id": "517310904511-5t2k0pqb04ldmj8hneqaupnulreikpc0.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.garv.nova"
+                "bundle_id": "com.garv.nova",
+                "app_store_id": "1594831422"
               }
             }
           ]

@@ -267,6 +267,7 @@ class _WalletsState extends State<Wallets> {
                                   altRate: snapshot.data![1][index]["price"],
                                   data: snapshot.data![0].chartData[index],
                                   buy: false,
+                                  index: index,
                                 );
                               } else if (snapshot.hasError) {
                                 print(snapshot.error?.toString());

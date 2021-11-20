@@ -83,7 +83,9 @@ class _RegisterPageState extends State<RegisterPage> {
           .doc(FirebaseAuth.instance.currentUser!.uid).set({
         'email': FirebaseAuth.instance.currentUser!.email,
         'USD': 100,
-        "assets": [],
+        'assets': [],
+        'assets_id_list': [],
+        'badges': [],
       })
           .then((value) => print("User Added"))
           .catchError((error) => print("Failed to add user: $error"));

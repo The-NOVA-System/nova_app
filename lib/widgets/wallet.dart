@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:nova/util/const.dart';
 import 'package:nova/screens/wallets.dart' as wallets;
+import 'package:nova/screens/home.dart' as home;
 import 'package:nova/widgets/custom_expansion_tile.dart' as custom;
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
@@ -92,6 +93,7 @@ class Wallet extends StatefulWidget {
   final String? icon;
   final String? rate;
   final String? alt;
+  final int? index;
   final String? colorHex;
   final double? day;
   final String? altRate;
@@ -107,6 +109,7 @@ class Wallet extends StatefulWidget {
       {Key? key,
       this.name,
       this.icon,
+        this.index,
       this.rate,
       this.color,
         this.altRate,
@@ -401,11 +404,21 @@ class _WalletState extends State<Wallet> {
                                       wallets.locked = true;
 
                                       userData['assets'].add(widget.alt);
+
                                       await fireStoreUserRef.update({
                                         'assets': userData['assets']
                                             .toSet()
                                             .toList()
                                       });
+
+                                      userData['assets_id_list'].add(widget.index);
+
+                                      await fireStoreUserRef.update({
+                                        'assets_id_list': userData['assets_id_list']
+                                            .toSet()
+                                            .toList()
+                                      });
+
                                       if (userData['${widget.alt}'] ==
                                           null) {
                                         await fireStoreUserRef.update({
@@ -837,6 +850,14 @@ class _WalletState extends State<Wallet> {
                                   .toSet()
                                   .toList()
                             });
+
+                            userData['assets_id_list'].add(widget.index);
+                            await fireStoreUserRef.update({
+                              'assets_id_list': userData['assets_id_list']
+                                  .toSet()
+                                  .toList()
+                            });
+
                             if (userData['${widget.alt}'] ==
                                 null) {
                               await fireStoreUserRef.update({
@@ -1228,7 +1249,7 @@ class _WalletState extends State<Wallet> {
                                   if (value == "all") {
                                     value = userData[widget.alt].toString();
                                     all = true;
-                                  }
+                                  } //blip
 
                                   if (wallets.locked == true) {
                                     await showDialog<void>(
@@ -1363,7 +1384,7 @@ class _WalletState extends State<Wallet> {
                                             content: Text(
                                                 'You withdrew $value from ${widget
                                                     .name}, and got ${double.parse(value) *
-                                                    double.parse(widget.altRate!)} USD!'),
+                                                    double.parse(widget.altRate!)} USD! LL'),
                                             actions: <Widget>[
                                               TextButton(
                                                 onPressed: () {
@@ -1479,6 +1500,12 @@ class _WalletState extends State<Wallet> {
 
                                       await fireStoreUserRef.update({
                                         'assets': userData['assets']
+                                      });
+
+                                      userData['assets_id_list'].remove(widget.index);
+
+                                      await fireStoreUserRef.update({
+                                        'assets_id_list': userData['assets_id_list']
                                       });
 
                                       widget.notifyParent();
@@ -1882,8 +1909,8 @@ class _WalletState extends State<Wallet> {
                             },
                           );
                         } else if (value != "" && value != "0" && value != "-0" && double.parse(value) > 0) {
-                          if (userData['USD'] + (double.parse(value) *
-                              double.parse(widget.altRate!)) >= 0) {
+                          if (userData[widget.alt] -
+                              double.parse(value) > 0) {
 
                             wallets.locked = true;
 
@@ -2025,6 +2052,12 @@ class _WalletState extends State<Wallet> {
 
                             await fireStoreUserRef.update({
                               'assets': userData['assets']
+                            });
+
+                            userData['assets_id_list'].remove(widget.index);
+
+                            await fireStoreUserRef.update({
+                              'assets_id_list': userData['assets_id_list']
                             });
 
                             widget.notifyParent();
