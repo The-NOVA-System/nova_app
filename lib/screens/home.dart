@@ -161,36 +161,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       children: <Widget>[
                         ListTile(
                           contentPadding: EdgeInsets.fromLTRB(15, 0, 30, 0),
-                    trailing: FutureBuilder<DocumentSnapshot>(
-                      future: users
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .get(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<DocumentSnapshot> snapshot) {
-                        if (snapshot.hasError) {
-                          return const Text("Something went wrong");
-                        }
-
-                        if (snapshot.hasData &&
-                            !snapshot.data!.exists) {
-                          return const Text(
-                              "Document does not exist");
-                        }
-
-                        if (snapshot.connectionState ==
-                            ConnectionState.done) {
-                          Map<String, dynamic> data = snapshot.data!
-                              .data() as Map<String, dynamic>;
-
-                          userData = data;
-
-                          return Text(
-                              "Balance: ${data['USD'].toStringAsFixed(3)} USD");
-                        }
-
-                        return const Text("Balance: Loading...");
-                      },
-                    ),
                           leading: ClipOval(
                               child: SvgPicture.network(
                             'https://avatars.dicebear.com/api/avataaars/${FirebaseAuth.instance.currentUser!.email!.split("@")[0]}.svg',
@@ -207,6 +177,36 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(FirebaseAuth.instance.currentUser!.email!),
+                              FutureBuilder<DocumentSnapshot>(
+                                future: users
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .get(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                  if (snapshot.hasError) {
+                                    return const Text("Something went wrong");
+                                  }
+
+                                  if (snapshot.hasData &&
+                                      !snapshot.data!.exists) {
+                                    return const Text(
+                                        "Document does not exist");
+                                  }
+
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    Map<String, dynamic> data = snapshot.data!
+                                        .data() as Map<String, dynamic>;
+
+                                    userData = data;
+
+                                    return Text(
+                                        "Balance: ${data['USD'].toStringAsFixed(3)} USD");
+                                  }
+
+                                  return const Text("Balance: Loading...");
+                                },
+                              ),
                             ],
                           ),
                         ),

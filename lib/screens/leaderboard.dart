@@ -22,7 +22,10 @@ Future<List> fetchLeader() async {
   }
   
   CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference global = FirebaseFirestore.instance.collection('global');
   var userGet = await users.get();
+  var badgeGet = await global.doc('badges').get();
+
   var cryptoResponse = await client.post(Uri.parse(
       'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active'));
 
@@ -48,7 +51,7 @@ Future<List> fetchLeader() async {
     cryptoFinal = jsonDecode(cryptoResponse.body);
   }
 
-  return [userGet, cryptoFinal];
+  return [userGet, cryptoFinal, badgeGet];
 }
 
 class leaderboard extends StatefulWidget {
@@ -117,40 +120,46 @@ class _leaderboardState extends State<leaderboard> {
                           if (leaderList[index][2].contains(entry.key)) {
                             if (entry.value[1] == "svg") {
                               return Row(
-                                children: [
-                                  SvgPicture.network(
-                                    entry.value[0],
-                                    fit: BoxFit.fill,
-                                    width: 40,
-                                    height: 40,
-                                    semanticsLabel: '${entry.key} badge',
-                                    placeholderBuilder: (BuildContext context) =>
-                                    const SizedBox(
-                                        height: 40,
+                                  children: [
+                                    Tooltip(
+                                      message: snapshot.data![2][entry.key],
+                                      child: SvgPicture.network(
+                                        entry.value[0],
+                                        fit: BoxFit.fill,
                                         width: 40,
-                                        child: CircularProgressIndicator()),
-                                  ),
-                                  const SizedBox(width: 10)
-                                ],
-                              );
+                                        height: 40,
+                                        semanticsLabel: '${entry.key} badge',
+                                        placeholderBuilder: (BuildContext context) =>
+                                        const SizedBox(
+                                            height: 40,
+                                            width: 40,
+                                            child: CircularProgressIndicator()),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10)
+                                  ],
+                                );
                             } else {
                               return Row(
                                 children: [
-                                  CachedNetworkImage(
-                                    imageUrl: entry.value[0],
-                                    fit: BoxFit.fill,
-                                    width: 40,
-                                    height: 40,
-                                    placeholder: (context, url) =>
-                                    const SizedBox(
-                                        height: 40,
-                                        width: 40,
-                                        child: CircularProgressIndicator()),
-                                    errorWidget: (context, url, error) =>
-                                    const SizedBox(
-                                        height: 40,
-                                        width: 40,
-                                        child: Icon(Icons.error)),
+                                  Tooltip(
+                                    message: snapshot.data![2][entry.key],
+                                    child: CachedNetworkImage(
+                                      imageUrl: entry.value[0],
+                                      fit: BoxFit.fill,
+                                      width: 40,
+                                      height: 40,
+                                      placeholder: (context, url) =>
+                                      const SizedBox(
+                                          height: 40,
+                                          width: 40,
+                                          child: CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) =>
+                                      const SizedBox(
+                                          height: 40,
+                                          width: 40,
+                                          child: Icon(Icons.error)),
+                                    ),
                                   ),
                                   const SizedBox(width: 10)
                                 ],
