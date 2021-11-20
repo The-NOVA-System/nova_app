@@ -12,18 +12,15 @@ import 'home.dart';
 firebase_storage.FirebaseStorage storage =
     firebase_storage.FirebaseStorage.instance;
 
-late String betaURL;
-Map<String, String> badges = {};
+Map<String, List> badges = {};
 late ListResult storageList;
 
 Future<List> fetchLeader() async {
-  betaURL = await storage.ref('badges/beta-tester.png').getDownloadURL();
   storageList = await storage.ref('badges').list();
   for (var value in storageList.items) {
-    badges[value.fullPath.split('.')[0].split('/')[1]] = await storage.ref(value.fullPath).getDownloadURL();
+    badges[value.fullPath.split('.')[0].split('/')[1]] = [await storage.ref(value.fullPath).getDownloadURL(), value.fullPath.split('.')[1]];
   }
-
-  print(badges);
+  
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   var userGet = await users.get();
   var cryptoResponse = await client.post(Uri.parse(
@@ -118,27 +115,47 @@ class _leaderboardState extends State<leaderboard> {
                       Row(
                         children: badges.entries.map((entry) {
                           if (leaderList[index][2].contains(entry.key)) {
-                            return Row(
-                              children: [
-                                CachedNetworkImage(
-                                  imageUrl: entry.value,
-                                  fit: BoxFit.fill,
-                                  width: 20,
-                                  height: 20,
-                                  placeholder: (context, url) =>
-                                  const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator()),
-                                  errorWidget: (context, url, error) =>
-                                  const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: Icon(Icons.error)),
-                                ),
-                                const SizedBox(width: 10)
-                              ],
-                            );
+                            if (entry.value[1] == "svg") {
+                              return Row(
+                                children: [
+                                  SvgPicture.network(
+                                    entry.value[0],
+                                    fit: BoxFit.fill,
+                                    width: 30,
+                                    height: 30,
+                                    semanticsLabel: '${entry.key} badge',
+                                    placeholderBuilder: (BuildContext context) =>
+                                    const SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: CircularProgressIndicator()),
+                                  ),
+                                  const SizedBox(width: 10)
+                                ],
+                              );
+                            } else {
+                              return Row(
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: entry.value[0],
+                                    fit: BoxFit.fill,
+                                    width: 30,
+                                    height: 30,
+                                    placeholder: (context, url) =>
+                                    const SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: CircularProgressIndicator()),
+                                    errorWidget: (context, url, error) =>
+                                    const SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: Icon(Icons.error)),
+                                  ),
+                                  const SizedBox(width: 10)
+                                ],
+                              );
+                            }
                           } else {
                             return const Text("");
                           }
