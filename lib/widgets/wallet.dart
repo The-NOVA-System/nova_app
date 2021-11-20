@@ -411,14 +411,6 @@ class _WalletState extends State<Wallet> {
                                             .toList()
                                       });
 
-                                      userData['assets_id_list'].add(widget.index);
-
-                                      await fireStoreUserRef.update({
-                                        'assets_id_list': userData['assets_id_list']
-                                            .toSet()
-                                            .toList()
-                                      });
-
                                       if (userData['${widget.alt}'] ==
                                           null) {
                                         await fireStoreUserRef.update({
@@ -847,13 +839,6 @@ class _WalletState extends State<Wallet> {
                             userData['assets'].add(widget.alt);
                             await fireStoreUserRef.update({
                               'assets': userData['assets']
-                                  .toSet()
-                                  .toList()
-                            });
-
-                            userData['assets_id_list'].add(widget.index);
-                            await fireStoreUserRef.update({
-                              'assets_id_list': userData['assets_id_list']
                                   .toSet()
                                   .toList()
                             });
@@ -1502,12 +1487,6 @@ class _WalletState extends State<Wallet> {
                                         'assets': userData['assets']
                                       });
 
-                                      userData['assets_id_list'].remove(widget.index);
-
-                                      await fireStoreUserRef.update({
-                                        'assets_id_list': userData['assets_id_list']
-                                      });
-
                                       widget.notifyParent();
 
                                       wallets.locked = false;
@@ -2052,12 +2031,6 @@ class _WalletState extends State<Wallet> {
 
                             await fireStoreUserRef.update({
                               'assets': userData['assets']
-                            });
-
-                            userData['assets_id_list'].remove(widget.index);
-
-                            await fireStoreUserRef.update({
-                              'assets_id_list': userData['assets_id_list']
                             });
 
                             widget.notifyParent();

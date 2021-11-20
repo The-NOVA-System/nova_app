@@ -76,8 +76,13 @@ class _leaderboardState extends State<leaderboard> {
         if (snapshot.connectionState == ConnectionState.done) {
           for (var value in snapshot.data![0].docs) {
             num money = 0;
-            for (var index in value['assets_id_list']) {
-              money += (double.parse(snapshot.data![1][index]['price']) * value[snapshot.data![1][index]['id']]);
+            for (var alt in value['assets']) {
+              for (var i = 0; i < snapshot.data![1].length; i++) {
+                if (snapshot.data![1][i]['id'] == alt) {
+                  money += (double.parse(snapshot.data![1][i]['price']) *
+                      value[snapshot.data![1][i]['id']]);
+                }
+              }
             }
             leaderList.add([money + value['USD'], value['email'].split("@")[0], value['badges']]);
           }

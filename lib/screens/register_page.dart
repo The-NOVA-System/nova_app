@@ -84,7 +84,6 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': FirebaseAuth.instance.currentUser!.email,
         'USD': 100,
         'assets': [],
-        'assets_id_list': [],
         'badges': [],
       })
           .then((value) => print("User Added"))
