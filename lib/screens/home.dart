@@ -47,6 +47,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference global = FirebaseFirestore.instance.collection('global');
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   String name = FirebaseAuth.instance.currentUser!.email!.split("@")[0];
@@ -140,6 +141,48 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   onTap: () {
                     FirebaseAuth.instance.signOut();
                     Navigator.pop(context);
+                  },
+                ),
+                FutureBuilder<DocumentSnapshot>(
+                  future: global
+                      .doc('coffee')
+                      .get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return const Text("Something went wrong");
+                    }
+
+                    if (snapshot.hasData &&
+                        !snapshot.data!.exists) {
+                      return const Text(
+                          "Document does not exist");
+                    }
+
+                    if (snapshot.connectionState ==
+                        ConnectionState.done) {
+                      Map<String, dynamic> data = snapshot.data!
+                          .data() as Map<String, dynamic>;
+
+
+                      if (data['active'] == true) {
+                        return ListTile(
+                          title: const Text('Buy Me A Coffee'),
+                          onTap: () {
+                            launch(data['link']);
+                            Navigator.pop(context);
+                          },
+                        );
+                      } else {
+                        return const ListTile(
+                          title: Text(''),
+                        );
+                      }
+                    }
+
+                    return const ListTile(
+                      title: Text('Loading...'),
+                    );
                   },
                 ),
               ],
