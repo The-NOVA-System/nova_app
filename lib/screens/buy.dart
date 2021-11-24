@@ -13,20 +13,20 @@ int counter = 1;
 double page = 1.0;
 late IDS idList;
 
-Future<List> fetchCharts(pageInternal) async {
+Future<List> fetchCharts(pageInternal, apiKey) async {
   late Response cryptoResponse;
   late Response chartResponse;
   bool decodeError = false;
 
   cryptoResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
+      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&per-page=$length&page=$pageInternal'));
 
   try {
     var idData = jsonDecode(cryptoResponse.body);
     idList = IDS.fromJson(await idData);
 
     chartResponse = await client.post(Uri.parse(
-        'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+        'https://api.nomics.com/v1/currencies/sparkline?key=$apiKey&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
   } catch(error) {
     chartResponse = cryptoResponse;
     decodeError = true;
@@ -43,7 +43,7 @@ Future<List> fetchCharts(pageInternal) async {
     decodeError = false;
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
       return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal'));
+          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&per-page=$length&page=$pageInternal'));
     });
 
     try {
@@ -51,7 +51,7 @@ Future<List> fetchCharts(pageInternal) async {
       idList = IDS.fromJson(await idData);
       chartResponse = await Future.delayed(const Duration(seconds: 1), () async {
         return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+            'https://api.nomics.com/v1/currencies/sparkline?key=$apiKey&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
       });
     } catch(error) {
       chartResponse = cryptoResponse;
@@ -127,7 +127,12 @@ class IDS {
 
 class Buy extends StatefulWidget {
   final Function() notifyParent;
-  const Buy({Key? key, required this.notifyParent}) : super(key: key);
+  final String nomicsApi;
+
+  const Buy({Key? key,
+    required this.notifyParent,
+    required this.nomicsApi
+  }) : super(key: key);
 
   @override
   _BuyState createState() => _BuyState();
@@ -142,7 +147,7 @@ class _BuyState extends State<Buy> {
   void initState() {
     super.initState();
     page = 1.0;
-    futureCharts = fetchCharts(1);
+    futureCharts = fetchCharts(1, widget.nomicsApi);
   }
 
   @override
@@ -153,11 +158,11 @@ class _BuyState extends State<Buy> {
           page++;
           List localCharts = [];
           try {
-            localCharts = await fetchCharts(page.round());
+            localCharts = await fetchCharts(page.round(), widget.nomicsApi);
           } catch (err) {
             localCharts =
                 await Future.delayed(const Duration(seconds: 1), () async {
-              return await fetchCharts(page.round());
+              return await fetchCharts(page.round(), widget.nomicsApi);
             });
           }
           aggregateList[1] += localCharts[1];
@@ -283,7 +288,7 @@ class _BuyState extends State<Buy> {
               }),
           onRefresh: () {
             return Future.delayed(const Duration(seconds: 0), () async {
-              var chartData = await fetchCharts(1);
+              var chartData = await fetchCharts(1, widget.nomicsApi);
               setState(() {
                 futureCharts = Future.delayed(const Duration(seconds: 0), () {
                   return chartData;

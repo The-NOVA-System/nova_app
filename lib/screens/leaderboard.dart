@@ -15,7 +15,7 @@ firebase_storage.FirebaseStorage storage =
 Map<String, List> badges = {};
 late ListResult storageList;
 
-Future<List> fetchLeader() async {
+Future<List> fetchLeader(apiKey) async {
   storageList = await storage.ref('badges').list();
   for (var value in storageList.items) {
     badges[value.fullPath.split('.')[0].split('/')[1]] = [await storage.ref(value.fullPath).getDownloadURL(), value.fullPath.split('.')[1]];
@@ -35,20 +35,20 @@ Future<List> fetchLeader() async {
   }
 
   var cryptoResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&ids=${assetList.join(',')}'));
+      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
 
   List<dynamic> cryptoFinal;
 
   if (cryptoResponse.statusCode == 429) {
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
       return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&ids=${assetList.join(',')}'));
+          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
     });
 
     if (cryptoResponse.statusCode == 429) {
       cryptoResponse = await Future.delayed(const Duration(seconds: 2), () async {
         return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&ids=${assetList.join(',')}'));
+            'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
       });
 
       cryptoFinal = jsonDecode(cryptoResponse.body);
@@ -63,7 +63,8 @@ Future<List> fetchLeader() async {
 }
 
 class leaderboard extends StatefulWidget {
-  const leaderboard({Key? key}) : super(key: key);
+  final String nomicsApi;
+  const leaderboard({Key? key, required this.nomicsApi}) : super(key: key);
 
   @override
   _leaderboardState createState() => _leaderboardState();
@@ -75,7 +76,7 @@ class _leaderboardState extends State<leaderboard> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List>(
-      future: fetchLeader(),
+      future: fetchLeader(widget.nomicsApi),
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text("Something went wrong: ${snapshot.error}"));

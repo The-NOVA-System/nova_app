@@ -1,4 +1,4 @@
-import 'dart:convert';
+import "dart:math";
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 import 'package:http/http.dart' as http;
 import 'package:webfeed/webfeed.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 final beforeNonLeadingCapitalLetter = RegExp(r"(?=(?!^)[A-Z])");
 List<String> splitPascalCase(String input) =>
@@ -144,26 +145,20 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   },
                 ),
                 FutureBuilder<DocumentSnapshot>(
-                  future: global
-                      .doc('coffee')
-                      .get(),
+                  future: global.doc('coffee').get(),
                   builder: (BuildContext context,
                       AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasError) {
                       return const Text("Something went wrong");
                     }
 
-                    if (snapshot.hasData &&
-                        !snapshot.data!.exists) {
-                      return const Text(
-                          "Document does not exist");
+                    if (snapshot.hasData && !snapshot.data!.exists) {
+                      return const Text("Document does not exist");
                     }
 
-                    if (snapshot.connectionState ==
-                        ConnectionState.done) {
-                      Map<String, dynamic> data = snapshot.data!
-                          .data() as Map<String, dynamic>;
-
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      Map<String, dynamic> data =
+                          snapshot.data!.data() as Map<String, dynamic>;
 
                       if (data['active'] == true) {
                         return ListTile(
@@ -203,7 +198,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         ListTile(
-                          contentPadding: EdgeInsets.fromLTRB(15, 0, 30, 0),
+                          contentPadding: const EdgeInsets.fromLTRB(15, 0, 30, 0),
                           leading: ClipOval(
                               child: SvgPicture.network(
                             'https://avatars.dicebear.com/api/avataaars/${FirebaseAuth.instance.currentUser!.email!.split("@")[0]}.svg',
@@ -294,14 +289,63 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               )
             ];
           },
-          body: TabBarView(
-            controller: controller,
-            children: <Widget>[
-              wallets.Wallets(notifyParent: refresh),
-              const leaderboard(),
-              buy.Buy(notifyParent: refresh),
-            ],
-          ),
+          body: FutureBuilder<DocumentSnapshot>(
+              future: global.doc('api-keys').get(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  if (kIsWeb) {
+                    return TabBarView(
+                      controller: controller,
+                      children: <Widget>[
+                        wallets.Wallets(
+                          notifyParent: refresh,
+                          nomicsApi: data['web'],
+                        ),
+                        leaderboard(
+                          nomicsApi: data['web'],
+                        ),
+                        buy.Buy(
+                            notifyParent: refresh,
+                          nomicsApi: data['web'],
+                        ),
+                      ],
+                    );
+                  } else {
+                    final _random = Random();
+
+                    return TabBarView(
+                      controller: controller,
+                      children: <Widget>[
+                        wallets.Wallets(
+                          notifyParent: refresh,
+                          nomicsApi: data['local'][_random.nextInt(data['local'].length)],
+                        ),
+                        leaderboard(
+                          nomicsApi: data['local'][_random.nextInt(data['local'].length)],
+                        ),
+                        buy.Buy(
+                          notifyParent: refresh,
+                          nomicsApi: data['local'][_random.nextInt(data['local'].length)],
+                        ),
+                      ],
+                    );
+                  }
+                } else {
+                  return const Center(
+                    child: SizedBox(
+                      height: 25.0,
+                      width: 25.0,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  );
+                }
+              }),
         ),
       ),
     );
@@ -414,79 +458,82 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                           child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              atomFeed.items![index - 2].title!,
-                              style: TextStyle(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                atomFeed.items![index - 2].title!,
+                                style: TextStyle(
                                   fontStyle: FontStyle.normal,
-                                  fontWeight:
-                                      FontWeight.normal, //
-                                // regular weight
+                                  fontWeight: FontWeight.normal, //
+                                  // regular weight
                                   color: (() {
-                                    if (Theme.of(context).brightness == Brightness.light) {
+                                    if (Theme.of(context).brightness ==
+                                        Brightness.light) {
                                       return Colors.grey.shade800;
                                     } else {
                                       return Colors.white;
                                     }
-                          }()),
+                                  }()),
                                   fontSize: 18.0,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "By ${atomFeed.items![index - 2].authors!.first.name!} - ${inputFormat.format(atomFeed.items![index - 2].updated!)}",
-                              style: TextStyle(
-                                  fontStyle: FontStyle.normal,
-                                  fontWeight:
-                                  FontWeight.normal, // regular weight
-                                  color: (() {
-                                    if (Theme.of(context).brightness == Brightness.light) {
-                                      return Colors.grey.shade600;
-                                    } else {
-                                      return Colors.white70;
-                                    }
-                                  }()),
-                                  fontSize: 14.0),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              atomFeed.items![index - 2].summary!,
-                              style: TextStyle(
-                                  fontStyle: FontStyle.normal,
-                                  fontWeight:
-                                  FontWeight.normal, // regular weight
-                                  color: (() {
-                                    if (Theme.of(context).brightness == Brightness.light) {
-                                      return Colors.grey.shade700;
-                                    } else {
-                                      return Colors.white54;
-                                    }
-                                  }()),
-                                  fontSize: 16.0),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text:
-                                    'Read More',
-                                    style: const TextStyle(color: Colors.blue),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        launch(atomFeed.items![index - 2].links!.first.href!);
-                                      },
-                                  ),
-                                ],
+                              const SizedBox(height: 8),
+                              Text(
+                                "By ${atomFeed.items![index - 2].authors!.first.name!} - ${inputFormat.format(atomFeed.items![index - 2].updated!)}",
+                                style: TextStyle(
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight:
+                                        FontWeight.normal, // regular weight
+                                    color: (() {
+                                      if (Theme.of(context).brightness ==
+                                          Brightness.light) {
+                                        return Colors.grey.shade600;
+                                      } else {
+                                        return Colors.white70;
+                                      }
+                                    }()),
+                                    fontSize: 14.0),
+                                textAlign: TextAlign.center,
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(height: 8),
+                              Text(
+                                atomFeed.items![index - 2].summary!,
+                                style: TextStyle(
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight:
+                                        FontWeight.normal, // regular weight
+                                    color: (() {
+                                      if (Theme.of(context).brightness ==
+                                          Brightness.light) {
+                                        return Colors.grey.shade700;
+                                      } else {
+                                        return Colors.white54;
+                                      }
+                                    }()),
+                                    fontSize: 16.0),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Read More',
+                                      style:
+                                          const TextStyle(color: Colors.blue),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          launch(atomFeed.items![index - 2]
+                                              .links!.first.href!);
+                                        },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

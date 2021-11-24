@@ -16,20 +16,20 @@ double page = 1.0;
 late IDS idList;
 bool locked = false;
 
-Future<List> fetchCharts(pageInternal, idArray) async {
+Future<List> fetchCharts(pageInternal, idArray, apiKey) async {
   late Response cryptoResponse;
   late Response chartResponse;
   bool decodeError = false;
 
   cryptoResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
+      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
 
   try {
     var idData = jsonDecode(cryptoResponse.body);
     idList = IDS.fromJson(await idData);
 
     chartResponse = await client.post(Uri.parse(
-        'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+        'https://api.nomics.com/v1/currencies/sparkline?key=$apiKey&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
   } catch(error) {
     chartResponse = cryptoResponse;
     decodeError = true;
@@ -46,7 +46,7 @@ Future<List> fetchCharts(pageInternal, idArray) async {
     decodeError = false;
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
       return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
+          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
     });
 
     try {
@@ -54,7 +54,7 @@ Future<List> fetchCharts(pageInternal, idArray) async {
       idList = IDS.fromJson(await idData);
       chartResponse = await Future.delayed(const Duration(seconds: 1), () async {
         return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/sparkline?key=${Constants.nomicsKey}&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
+            'https://api.nomics.com/v1/currencies/sparkline?key=$apiKey&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
       });
     } catch(error) {
       chartResponse = cryptoResponse;
@@ -130,7 +130,11 @@ class IDS {
 
 class Wallets extends StatefulWidget {
   final Function() notifyParent;
-  const Wallets({Key? key, required this.notifyParent}) : super(key: key);
+  final String nomicsApi;
+  const Wallets({Key? key,
+    required this.notifyParent,
+    required this.nomicsApi,
+  }) : super(key: key);
 
   @override
   _WalletsState createState() => _WalletsState();
@@ -177,7 +181,7 @@ class _WalletsState extends State<Wallets> {
               body: Center(child: Text("You have no assets yet!")),
             );
           } else {
-            futureCharts = fetchCharts(1, data['assets']);
+            futureCharts = fetchCharts(1, data['assets'], widget.nomicsApi);
             return Scaffold(
               body: LazyLoadScrollView(
                 onEndOfPage: () async {
@@ -185,11 +189,11 @@ class _WalletsState extends State<Wallets> {
                   List localCharts = [];
                   try {
                     localCharts =
-                        await fetchCharts(page.round(), data['assets']);
+                        await fetchCharts(page.round(), data['assets'], widget.nomicsApi);
                   } catch (err) {
                     localCharts = await Future.delayed(
                         const Duration(seconds: 1), () async {
-                      return await fetchCharts(page.round(), data['assets']);
+                      return await fetchCharts(page.round(), data['assets'], widget.nomicsApi);
                     });
                   }
                   aggregateList[1] += localCharts[1];
@@ -322,7 +326,7 @@ class _WalletsState extends State<Wallets> {
                       }),
                   onRefresh: () {
                     return Future.delayed(const Duration(seconds: 0), () async {
-                      var chartData = await fetchCharts(1, data['assets']);
+                      var chartData = await fetchCharts(1, data['assets'], widget.nomicsApi);
                       setState(() {
                         futureCharts =
                             Future.delayed(const Duration(seconds: 0), () {
