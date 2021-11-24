@@ -79,17 +79,6 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/garv_shah.png
-    - assets/placeholder.png
-    - assets/btc.png
-    - assets/ltc.png
-    - assets/xmr.png
-    - assets/xrp.png
-    - assets/eth.png
-    - assets/login_logo.png
-
 msix_config:
   display_name: Nova System
   publisher_display_name: Garv Shah

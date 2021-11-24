@@ -9,6 +9,7 @@ import 'package:nova/screens/home.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 int length = 100;
 int counter = 1;
@@ -242,44 +243,72 @@ class _WalletsState extends State<Wallets> {
                                 )),
                           );
                         } else {
-                          return FutureBuilder<List>(
-                            future: futureCharts,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                aggregateList = snapshot.data!;
-                                return Wallet(
-                                  notifyParent: widget.notifyParent,
-                                  name: snapshot.data![1][index]["name"],
-                                  icon:
-                                      "https://corsproxy.garvshah.workers.dev/?" +
-                                          snapshot.data![1][index]["logo_url"],
-                                  rate: data[snapshot.data![1][index]["id"]]
-                                      .toString(),
-                                  day: double.parse(snapshot.data![1][index]
-                                      ["1d"]["price_change_pct"]),
-                                  week: double.parse(snapshot.data![1][index]
-                                      ["7d"]["price_change_pct"]),
-                                  month: double.parse(snapshot.data![1][index]
-                                      ["30d"]["price_change_pct"]),
-                                  year: double.parse(snapshot.data![1][index]
-                                      ["365d"]["price_change_pct"]),
-                                  ytd: double.parse(snapshot.data![1][index]
-                                      ["ytd"]["price_change_pct"]),
-                                  color: color[0],
-                                  alt: snapshot.data![1][index]["id"],
-                                  colorHex: color[1],
-                                  altRate: snapshot.data![1][index]["price"],
-                                  data: snapshot.data![0].chartData[index],
-                                  buy: false,
-                                  index: index,
-                                );
-                              } else if (snapshot.hasError) {
-                                print(snapshot.error?.toString());
-                                return SizedBox(
+                          if (kIsWeb) {
+                            return FutureBuilder<List>(
+                              future: futureCharts,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  aggregateList = snapshot.data!;
+                                  return Wallet(
+                                    notifyParent: widget.notifyParent,
+                                    name: snapshot.data![1][index]["name"],
+                                    icon:
+                                    "https://corsproxy.garvshah.workers.dev/?" +
+                                        snapshot.data![1][index]["logo_url"],
+                                    rate: data[snapshot.data![1][index]["id"]]
+                                        .toString(),
+                                    day: double.parse(snapshot.data![1][index]
+                                    ["1d"]["price_change_pct"]),
+                                    week: double.parse(snapshot.data![1][index]
+                                    ["7d"]["price_change_pct"]),
+                                    month: double.parse(snapshot.data![1][index]
+                                    ["30d"]["price_change_pct"]),
+                                    year: double.parse(snapshot.data![1][index]
+                                    ["365d"]["price_change_pct"]),
+                                    ytd: double.parse(snapshot.data![1][index]
+                                    ["ytd"]["price_change_pct"]),
+                                    color: color[0],
+                                    alt: snapshot.data![1][index]["id"],
+                                    colorHex: color[1],
+                                    altRate: snapshot.data![1][index]["price"],
+                                    data: snapshot.data![0].chartData[index],
+                                    buy: false,
+                                    index: index,
+                                  );
+                                } else if (snapshot.hasError) {
+                                  print(snapshot.error?.toString());
+                                  return SizedBox(
+                                    width: 20.0,
+                                    height: 240.0,
+                                    child: Card(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
+                                        ),
+                                        child: SizedBox(
+                                          height: 25.0,
+                                          width: 25.0,
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Padding(
+                                                padding:
+                                                const EdgeInsets.all(16.0),
+                                                child: Text(
+                                                  '${snapshot.error}',
+                                                  textAlign: TextAlign.center,
+                                                )),
+                                          ),
+                                        )),
+                                  );
+                                }
+
+                                // By default, show a loading spinner.
+                                return const SizedBox(
                                   width: 20.0,
                                   height: 240.0,
                                   child: Card(
-                                      shape: const RoundedRectangleBorder(
+                                      shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(10),
                                         ),
@@ -289,39 +318,92 @@ class _WalletsState extends State<Wallets> {
                                         width: 25.0,
                                         child: Align(
                                           alignment: Alignment.center,
-                                          child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Text(
-                                                '${snapshot.error}',
-                                                textAlign: TextAlign.center,
-                                              )),
+                                          child: CircularProgressIndicator(),
                                         ),
                                       )),
                                 );
-                              }
+                              },
+                            );
+                          } else {
+                            return FutureBuilder<List>(
+                              future: futureCharts,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  aggregateList = snapshot.data!;
+                                  return Wallet(
+                                    notifyParent: widget.notifyParent,
+                                    name: snapshot.data![1][index]["name"],
+                                    icon: snapshot.data![1][index]["logo_url"],
+                                    rate: data[snapshot.data![1][index]["id"]]
+                                        .toString(),
+                                    day: double.parse(snapshot.data![1][index]
+                                    ["1d"]["price_change_pct"]),
+                                    week: double.parse(snapshot.data![1][index]
+                                    ["7d"]["price_change_pct"]),
+                                    month: double.parse(snapshot.data![1][index]
+                                    ["30d"]["price_change_pct"]),
+                                    year: double.parse(snapshot.data![1][index]
+                                    ["365d"]["price_change_pct"]),
+                                    ytd: double.parse(snapshot.data![1][index]
+                                    ["ytd"]["price_change_pct"]),
+                                    color: color[0],
+                                    alt: snapshot.data![1][index]["id"],
+                                    colorHex: color[1],
+                                    altRate: snapshot.data![1][index]["price"],
+                                    data: snapshot.data![0].chartData[index],
+                                    buy: false,
+                                    index: index,
+                                  );
+                                } else if (snapshot.hasError) {
+                                  print(snapshot.error?.toString());
+                                  return SizedBox(
+                                    width: 20.0,
+                                    height: 240.0,
+                                    child: Card(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
+                                        ),
+                                        child: SizedBox(
+                                          height: 25.0,
+                                          width: 25.0,
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Padding(
+                                                padding:
+                                                const EdgeInsets.all(16.0),
+                                                child: Text(
+                                                  '${snapshot.error}',
+                                                  textAlign: TextAlign.center,
+                                                )),
+                                          ),
+                                        )),
+                                  );
+                                }
 
-                              // By default, show a loading spinner.
-                              return const SizedBox(
-                                width: 20.0,
-                                height: 240.0,
-                                child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
+                                // By default, show a loading spinner.
+                                return const SizedBox(
+                                  width: 20.0,
+                                  height: 240.0,
+                                  child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
+                                        ),
                                       ),
-                                    ),
-                                    child: SizedBox(
-                                      height: 25.0,
-                                      width: 25.0,
-                                      child: Align(
-                                        alignment: Alignment.center,
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    )),
-                              );
-                            },
-                          );
+                                      child: SizedBox(
+                                        height: 25.0,
+                                        width: 25.0,
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )),
+                                );
+                              },
+                            );
+                          }
                         }
                       }),
                   onRefresh: () {

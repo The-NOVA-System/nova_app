@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.garv.nova">
    <application
-        android:label="nova"
+        android:label="Nova System"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
