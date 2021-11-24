@@ -38,6 +38,7 @@ Future<List> fetchLeader(apiKey) async {
   var cryptoResponse = await client.post(Uri.parse(
       'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
 
+
   List<dynamic> cryptoFinal;
   final _random = Random();
   int next(int min, int max) => min + _random.nextInt(max - min);
