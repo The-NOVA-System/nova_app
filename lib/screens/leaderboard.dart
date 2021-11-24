@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:convert';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -37,7 +38,10 @@ Future<List> fetchLeader(apiKey) async {
   var cryptoResponse = await client.post(Uri.parse(
       'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
 
+
   List<dynamic> cryptoFinal;
+  final _random = Random();
+  int next(int min, int max) => min + _random.nextInt(max - min);
 
   if (cryptoResponse.statusCode == 429) {
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
@@ -51,7 +55,16 @@ Future<List> fetchLeader(apiKey) async {
             'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
       });
 
-      cryptoFinal = jsonDecode(cryptoResponse.body);
+      if (cryptoResponse.statusCode == 429) {
+        cryptoResponse = await Future.delayed(Duration(seconds: next(1, 5)), () async {
+          return await client.post(Uri.parse(
+              'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active'));
+        });
+
+        cryptoFinal = jsonDecode(cryptoResponse.body);
+      } else {
+        cryptoFinal = jsonDecode(cryptoResponse.body);
+      }
     } else {
       cryptoFinal = jsonDecode(cryptoResponse.body);
     }
