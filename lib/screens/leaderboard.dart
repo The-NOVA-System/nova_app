@@ -58,7 +58,7 @@ Future<List> fetchLeader(apiKey) async {
       if (cryptoResponse.statusCode == 429) {
         cryptoResponse = await Future.delayed(Duration(seconds: next(1, 5)), () async {
           return await client.post(Uri.parse(
-              'https://api.nomics.com/v1/currencies/ticker?key=${Constants.nomicsKey}&status=active'));
+              'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active'));
         });
 
         cryptoFinal = jsonDecode(cryptoResponse.body);
