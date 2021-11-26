@@ -1,5 +1,6 @@
 import "dart:math";
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/gestures.dart';
@@ -17,6 +18,14 @@ import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 import 'package:http/http.dart' as http;
 import 'package:webfeed/webfeed.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:mime/mime.dart';
+import 'dart:io' show Platform;
+import 'package:file_selector/file_selector.dart';
+
+firebase_storage.FirebaseStorage storage =
+    firebase_storage.FirebaseStorage.instance;
 
 final beforeNonLeadingCapitalLetter = RegExp(r"(?=(?!^)[A-Z])");
 List<String> splitPascalCase(String input) =>
@@ -46,6 +55,20 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     client.close();
     super.dispose();
   }
+
+  Widget profile = const SizedBox(
+    width: 50,
+    height: 50,
+    child: Center(
+        child: SizedBox(
+            width: 25,
+            height: 25,
+            child: CircularProgressIndicator()
+        )
+    )
+  );
+
+  bool profileSet = false;
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference global = FirebaseFirestore.instance.collection('global');
@@ -199,17 +222,198 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       children: <Widget>[
                         ListTile(
                           contentPadding: const EdgeInsets.fromLTRB(15, 0, 30, 0),
-                          leading: ClipOval(
-                              child: SvgPicture.network(
-                            'https://avatars.dicebear.com/api/avataaars/${FirebaseAuth.instance.currentUser!.email!.split("@")[0]}.svg',
-                            width: 50,
-                            height: 50,
-                            semanticsLabel: 'profile picture',
-                            placeholderBuilder: (BuildContext context) =>
-                                Container(
-                                    padding: const EdgeInsets.all(30.0),
-                                    child: const CircularProgressIndicator()),
-                          )),
+                          leading:
+                          InkWell(
+                            customBorder: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            onTap: () async {
+                              if (kIsWeb) {
+                                final XFile? profileImage = await ImagePicker()
+                                    .pickImage(
+                                    source: ImageSource
+                                        .gallery);
+                                var bytes = await profileImage!.readAsBytes();
+
+                                if (userData['superNova'] == false) {
+                                  if (lookupMimeType('', headerBytes: bytes) == 'image/gif') {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Sorry!'),
+                                            content: const Text(
+                                                "Animated profile pictures are only available for Super NOVA users."),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    setState(() {
+                                      profile = CircleAvatar(
+                                        backgroundImage: MemoryImage(bytes),
+                                        radius: 25,
+                                      );
+                                    });
+                                    await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
+
+                                    firebase_storage.SettableMetadata metadata =
+                                    firebase_storage.SettableMetadata(
+                                        contentType: lookupMimeType('', headerBytes: bytes)
+                                    );
+
+                                    await ref.putData(bytes, metadata);
+                                    await fireStoreUserRef.update({
+                                      'defaultProfile': false,
+                                      'profileType': lookupMimeType('', headerBytes: bytes)
+                                    });
+                                  }
+                                } else {
+                                  setState(() {
+                                    profile = CircleAvatar(
+                                      backgroundImage: MemoryImage(bytes),
+                                      radius: 25,
+                                    );
+                                  });
+                                  await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                  firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
+
+                                  firebase_storage.SettableMetadata metadata =
+                                  firebase_storage.SettableMetadata(
+                                      contentType: lookupMimeType('', headerBytes: bytes)
+                                  );
+
+                                  await ref.putData(bytes, metadata);
+                                  await fireStoreUserRef.update({
+                                    'defaultProfile': false,
+                                    'profileType': lookupMimeType('', headerBytes: bytes)
+                                  });
+                                }
+                              } else if (Platform.isMacOS) {
+                                XTypeGroup typeGroup;
+                                if (userData['superNova'] == true) {
+                                  typeGroup = XTypeGroup(label: 'images',
+                                      extensions: [
+                                        'jpg',
+                                        'png',
+                                        'gif',
+                                        'jpeg'
+                                      ]);
+                                } else {
+                                  typeGroup = XTypeGroup(label: 'images',
+                                      extensions: [
+                                        'jpg',
+                                        'png',
+                                        'jpeg'
+                                      ]);
+                                }
+
+                                final XFile? profileImage = await openFile(acceptedTypeGroups: [typeGroup]);
+                                var bytes = await profileImage!.readAsBytes();
+                                setState(() {
+                                  profile = CircleAvatar(
+                                    backgroundImage: MemoryImage(bytes),
+                                    radius: 25,
+                                  );
+                                });
+                                await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
+
+                                firebase_storage.SettableMetadata metadata =
+                                firebase_storage.SettableMetadata(
+                                    contentType: lookupMimeType('', headerBytes: bytes)
+                                );
+
+                                await ref.putData(bytes, metadata);
+                                await fireStoreUserRef.update({
+                                  'defaultProfile': false,
+                                  'profileType': lookupMimeType('', headerBytes: bytes)
+                                });
+                              } else {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return SimpleDialog(
+                                          title: const Text(
+                                              "Change Profile Picture"),
+                                          children: <Widget>[
+                                            SimpleDialogOption(
+                                              onPressed: () async {
+                                                final XFile? profileImage = await ImagePicker()
+                                                    .pickImage(
+                                                    source: ImageSource
+                                                        .gallery);
+                                                var bytes = await profileImage!.readAsBytes();
+                                                setState(() {
+                                                  profile = CircleAvatar(
+                                                    backgroundImage: MemoryImage(bytes),
+                                                    radius: 25,
+                                                  );
+                                                });
+
+                                                Navigator.pop(context);
+                                                await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                                firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
+
+                                                firebase_storage.SettableMetadata metadata =
+                                                firebase_storage.SettableMetadata(
+                                                    contentType: lookupMimeType('', headerBytes: bytes)
+                                                );
+
+                                                await ref.putData(bytes, metadata);
+                                                await fireStoreUserRef.update({
+                                                  'defaultProfile': false,
+                                                  'profileType': lookupMimeType('', headerBytes: bytes)
+                                                });
+                                              },
+                                              child: const Text(
+                                                  'Pick From Gallery'),
+                                            ),
+                                            SimpleDialogOption(
+                                              onPressed: () async {
+                                                final XFile? profileImage = await ImagePicker()
+                                                    .pickImage(
+                                                    source: ImageSource
+                                                        .camera);
+                                                var bytes = await profileImage!.readAsBytes();
+                                                setState(() {
+                                                  profile = CircleAvatar(
+                                                    backgroundImage: MemoryImage(bytes),
+                                                    radius: 25,
+                                                  );
+                                                });
+
+                                                Navigator.pop(context);
+                                                await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                                firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
+
+                                                firebase_storage.SettableMetadata metadata =
+                                                firebase_storage.SettableMetadata(
+                                                    contentType: lookupMimeType('', headerBytes: bytes)
+                                                );
+
+                                                await ref.putData(bytes, metadata);
+                                                await fireStoreUserRef.update({
+                                                  'defaultProfile': false,
+                                                  'profileType': lookupMimeType('', headerBytes: bytes)
+                                                });
+                                              },
+                                              child: const Text(
+                                                  'Take A New Picture'),
+                                            ),
+                                          ]);
+                                    });
+                              }
+                            },
+                            child: profile,
+                          ),
                           title: Text(name),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,6 +441,64 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                         .data() as Map<String, dynamic>;
 
                                     userData = data;
+
+                                    WidgetsBinding.instance!
+                                        .addPostFrameCallback((_) => Future.delayed(const Duration(milliseconds: 0), () {
+                                      if (profileSet == false) {
+                                        if (data['defaultProfile'] == false) {
+                                          firebase_storage
+                                              .Reference ref = firebase_storage
+                                              .FirebaseStorage.instance.ref(
+                                              'profiles/${FirebaseAuth.instance
+                                                  .currentUser!
+                                                  .uid}/profile.${data['profileType'].split('/')[1]}');
+                                          ref.getDownloadURL().then((value) =>
+                                          {
+                                            setState(() {
+                                              profile = ClipOval(
+                                                child: CachedNetworkImage(
+                                                  imageUrl: value,
+                                                  fit: BoxFit.fill,
+                                                  width: 50,
+                                                  height: 50,
+                                                  placeholder: (context, url) =>
+                                                  const SizedBox(
+                                                      height: 50,
+                                                      width: 50,
+                                                      child: CircularProgressIndicator()),
+                                                  errorWidget: (context, url, error) =>
+                                                  const SizedBox(
+                                                      height: 50,
+                                                      width: 50,
+                                                      child: Icon(Icons.error)),
+                                                ),
+                                              );
+                                              profileSet = true;
+                                            })
+                                          });
+                                        } else {
+                                          setState(() {
+                                            profile = ClipOval(
+                                                child: SvgPicture.network(
+                                                  'https://avatars.dicebear.com/api/avataaars/${FirebaseAuth
+                                                      .instance.currentUser!
+                                                      .email!.split("@")[0]}.svg',
+                                                  width: 50,
+                                                  height: 50,
+                                                  semanticsLabel: 'profile picture',
+                                                  placeholderBuilder: (
+                                                      BuildContext context) =>
+                                                  const SizedBox(
+                                                      height: 50,
+                                                      width: 50,
+                                                      child: CircularProgressIndicator()
+                                                  ),
+                                                ));
+                                            profileSet = true;
+                                          });
+                                        }
+                                      }
+                                    }));
 
                                     return Text(
                                         "Balance: ${data['USD'].toStringAsFixed(3)} USD");

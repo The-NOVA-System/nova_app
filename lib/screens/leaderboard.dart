@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:nova/util/const.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'home.dart';
 
@@ -14,11 +13,12 @@ firebase_storage.FirebaseStorage storage =
     firebase_storage.FirebaseStorage.instance;
 
 Map<String, List> badges = {};
-late ListResult storageList;
+late ListResult badgesList;
+Map<String, String> customProfiles = {};
 
 Future<List> fetchLeader(apiKey) async {
-  storageList = await storage.ref('badges').list();
-  for (var value in storageList.items) {
+  badgesList = await storage.ref('badges').list();
+  for (var value in badgesList.items) {
     badges[value.fullPath.split('.')[0].split('/')[1]] = [await storage.ref(value.fullPath).getDownloadURL(), value.fullPath.split('.')[1]];
   }
   
@@ -29,6 +29,11 @@ Future<List> fetchLeader(apiKey) async {
   var assetList = [];
 
   for (var value in userGet.docs) {
+    if (value['defaultProfile'] == false) {
+      customProfiles[value['email'].split('@')[0]] = await storage.ref(
+          'profiles/${value.id}/profile.${value['profileType'].split('/')[1]}')
+          .getDownloadURL();
+    }
     for (var asset in value['assets']) {
       assetList.add(asset);
       assetList = assetList.toSet().toList();
@@ -85,6 +90,7 @@ class leaderboard extends StatefulWidget {
 
 class _leaderboardState extends State<leaderboard> {
   List<dynamic> leaderList = [];
+  Map<String, Widget> profileList = {};
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +103,14 @@ class _leaderboardState extends State<leaderboard> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           for (var value in snapshot.data![0].docs) {
+
+            /*CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+            users.doc(value.id).set({
+              'superNova': false,
+            },
+              SetOptions(merge: true),);*/
+
             num money = 0;
             for (var alt in value['assets']) {
               for (var i = 0; i < snapshot.data![1].length; i++) {
@@ -107,6 +121,40 @@ class _leaderboardState extends State<leaderboard> {
               }
             }
             leaderList.add([money + value['USD'], value['email'].split("@")[0], value['badges']]);
+            if (value['defaultProfile'] == true) {
+              profileList[value['email'].split("@")[0]] = ClipOval(
+                  child: SvgPicture.network(
+                    'https://avatars.dicebear.com/api/avataaars/${value['email']
+                        .split("@")[0]}.svg',
+                    width: 50,
+                    height: 50,
+                    semanticsLabel: 'profile picture',
+                    placeholderBuilder: (BuildContext context) =>
+                    const SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: CircularProgressIndicator()),
+                  ));
+            } else {
+              profileList[value['email'].split("@")[0]] = ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: customProfiles[value['email'].split("@")[0]]!,
+                  fit: BoxFit.fill,
+                  width: 50,
+                  height: 50,
+                  placeholder: (context, url) =>
+                  const SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) =>
+                  const SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: Icon(Icons.error)),
+                ),
+              );
+            }
           }
           leaderList.sort((b, a) => a[0].compareTo(b[0]));
 
@@ -126,18 +174,7 @@ class _leaderboardState extends State<leaderboard> {
                   ),
                 ),
                 child: ListTile(
-                  leading: ClipOval(
-                      child: SvgPicture.network(
-                    'https://avatars.dicebear.com/api/avataaars/${leaderList[index][1]}.svg',
-                    width: 50,
-                    height: 50,
-                    semanticsLabel: 'profile picture',
-                    placeholderBuilder: (BuildContext context) =>
-                        const SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: CircularProgressIndicator()),
-                  )),
+                  leading: profileList[leaderList[index][1]],
                   title: Text(leaderList[index][1]),
                   subtitle: Text("\$${leaderList[index][0].toStringAsFixed(2)} USD"),
                   trailing: Row(

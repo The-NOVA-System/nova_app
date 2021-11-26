@@ -85,6 +85,8 @@ class _RegisterPageState extends State<RegisterPage> {
         'USD': 100,
         'assets': [],
         'badges': [],
+        'defaultProfile': true,
+        'profileType': ''
       })
           .then((value) => print("User Added"))
           .catchError((error) => print("Failed to add user: $error"));
