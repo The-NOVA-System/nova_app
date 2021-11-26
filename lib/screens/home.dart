@@ -217,12 +217,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             return [
               SliverAppBar(
                 automaticallyImplyLeading: false,
-                pinned: false,
+                pinned: true,
                 backgroundColor: Theme.of(context).backgroundColor,
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.pin,
-                  background: MediaQuery(
-                    child: Column(
+                title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         ListTile(
@@ -517,10 +514,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         ),
                       ],
                     ),
-                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                  ),
-                ),
-                expandedHeight: 125.0,
+                expandedHeight: 80,
+                collapsedHeight: 80,
                 bottom: TabBar(
                   indicator: MaterialIndicator(
                     color: Theme.of(context).colorScheme.secondary,
@@ -549,6 +544,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         wallets.page = 1.0;
                         Config.chartRefresh();
                       });
+                    } else {
+                      buy.counter = 1;
+                      wallets.counter = 1;
+                      buy.page = 1.0;
+                      wallets.page = 1.0;
                     }
                   },
                   controller: controller,

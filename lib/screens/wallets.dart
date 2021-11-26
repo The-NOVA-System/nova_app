@@ -259,16 +259,46 @@ class _WalletsState extends State<Wallets> {
                                         snapshot.data![1][index]["logo_url"],
                                     rate: data[snapshot.data![1][index]["id"]]
                                         .toString(),
-                                    day: double.parse(snapshot.data![1][index]
-                                    ["1d"]["price_change_pct"]),
-                                    week: double.parse(snapshot.data![1][index]
-                                    ["7d"]["price_change_pct"]),
-                                    month: double.parse(snapshot.data![1][index]
-                                    ["30d"]["price_change_pct"]),
-                                    year: double.parse(snapshot.data![1][index]
-                                    ["365d"]["price_change_pct"]),
-                                    ytd: double.parse(snapshot.data![1][index]
-                                    ["ytd"]["price_change_pct"]),
+                                    day: (() {
+                                      try {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["1d"]["price_change_pct"]);
+                                      } catch (err) {
+                                        return 0.0;
+                                      }
+                                    }()),
+                                    week: (() {
+                                      try {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["7d"]["price_change_pct"]);
+                                      } catch (err) {
+                                        return 0.0;
+                                      }
+                                    }()),
+                                    month: (() {
+                                      try {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["30d"]["price_change_pct"]);
+                                      } catch (err) {
+                                        return 0.0;
+                                      }
+                                    }()),
+                                    year: (() {
+                                      try {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["365d"]["price_change_pct"]);
+                                      } catch (err) {
+                                        return 0.0;
+                                      }
+                                    }()),
+                                    ytd: (() {
+                                      try {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["ytd"]["price_change_pct"]);
+                                      } catch (err) {
+                                        return 0.0;
+                                      }
+                                    }()),
                                     color: color[0],
                                     alt: snapshot.data![1][index]["id"],
                                     colorHex: color[1],

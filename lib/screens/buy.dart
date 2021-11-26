@@ -28,7 +28,7 @@ Future<List> fetchCharts(pageInternal, apiKey) async {
 
     chartResponse = await client.post(Uri.parse(
         'https://api.nomics.com/v1/currencies/sparkline?key=$apiKey&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
-  } catch(error) {
+  } catch (error) {
     chartResponse = cryptoResponse;
     decodeError = true;
   }
@@ -50,11 +50,12 @@ Future<List> fetchCharts(pageInternal, apiKey) async {
     try {
       var idData = jsonDecode(cryptoResponse.body);
       idList = IDS.fromJson(await idData);
-      chartResponse = await Future.delayed(const Duration(seconds: 1), () async {
+      chartResponse =
+          await Future.delayed(const Duration(seconds: 1), () async {
         return await client.post(Uri.parse(
             'https://api.nomics.com/v1/currencies/sparkline?key=$apiKey&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
       });
-    } catch(error) {
+    } catch (error) {
       chartResponse = cryptoResponse;
       decodeError = true;
     }
@@ -130,10 +131,8 @@ class Buy extends StatefulWidget {
   final Function() notifyParent;
   final String nomicsApi;
 
-  const Buy({Key? key,
-    required this.notifyParent,
-    required this.nomicsApi
-  }) : super(key: key);
+  const Buy({Key? key, required this.notifyParent, required this.nomicsApi})
+      : super(key: key);
 
   @override
   _BuyState createState() => _BuyState();
@@ -148,6 +147,7 @@ class _BuyState extends State<Buy> {
   void initState() {
     super.initState();
     page = 1.0;
+    counter = 1;
     futureCharts = fetchCharts(1, widget.nomicsApi);
   }
 
@@ -223,15 +223,15 @@ class _BuyState extends State<Buy> {
                                 snapshot.data![1][index]["logo_url"],
                             rate: snapshot.data![1][index]["price"],
                             day: double.parse(snapshot.data![1][index]["1d"]
-                            ["price_change_pct"]),
+                                ["price_change_pct"]),
                             week: double.parse(snapshot.data![1][index]["7d"]
-                            ["price_change_pct"]),
+                                ["price_change_pct"]),
                             month: double.parse(snapshot.data![1][index]["30d"]
-                            ["price_change_pct"]),
+                                ["price_change_pct"]),
                             year: double.parse(snapshot.data![1][index]["365d"]
-                            ["price_change_pct"]),
+                                ["price_change_pct"]),
                             ytd: double.parse(snapshot.data![1][index]["ytd"]
-                            ["price_change_pct"]),
+                                ["price_change_pct"]),
                             color: color[0],
                             alt: snapshot.data![1][index]["id"],
                             colorHex: color[1],
@@ -297,16 +297,46 @@ class _BuyState extends State<Buy> {
                             name: snapshot.data![1][index]["name"],
                             icon: snapshot.data![1][index]["logo_url"],
                             rate: snapshot.data![1][index]["price"],
-                            day: double.parse(snapshot.data![1][index]["1d"]
-                            ["price_change_pct"]),
-                            week: double.parse(snapshot.data![1][index]["7d"]
-                            ["price_change_pct"]),
-                            month: double.parse(snapshot.data![1][index]["30d"]
-                            ["price_change_pct"]),
-                            year: double.parse(snapshot.data![1][index]["365d"]
-                            ["price_change_pct"]),
-                            ytd: double.parse(snapshot.data![1][index]["ytd"]
-                            ["price_change_pct"]),
+                            day: (() {
+                              try {
+                                return double.parse(snapshot.data![1][index]
+                                    ["1d"]["price_change_pct"]);
+                              } catch (err) {
+                                return 0.0;
+                              }
+                            }()),
+                            week: (() {
+                              try {
+                                return double.parse(snapshot.data![1][index]
+                                    ["7d"]["price_change_pct"]);
+                              } catch (err) {
+                                return 0.0;
+                              }
+                            }()),
+                            month: (() {
+                              try {
+                                return double.parse(snapshot.data![1][index]
+                                    ["30d"]["price_change_pct"]);
+                              } catch (err) {
+                                return 0.0;
+                              }
+                            }()),
+                            year: (() {
+                              try {
+                                return double.parse(snapshot.data![1][index]
+                                    ["365d"]["price_change_pct"]);
+                              } catch (err) {
+                                return 0.0;
+                              }
+                            }()),
+                            ytd: (() {
+                              try {
+                                return double.parse(snapshot.data![1][index]
+                                    ["ytd"]["price_change_pct"]);
+                              } catch (err) {
+                                return 0.0;
+                              }
+                            }()),
                             color: color[0],
                             alt: snapshot.data![1][index]["id"],
                             colorHex: color[1],
