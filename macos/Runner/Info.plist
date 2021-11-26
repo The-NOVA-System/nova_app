@@ -24,15 +24,15 @@
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>The Nova System requires the camera to change profile pictures</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>The Nova System requires the photo library to change profile pictures</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-    <string>The Nova System requires the photo library to change profile pictures</string>
-    <key>NSCameraUsageDescription</key>
-    <string>The Nova System requires the camera to change profile pictures</string>
 </dict>
 </plist>
