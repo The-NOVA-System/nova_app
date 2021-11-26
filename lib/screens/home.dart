@@ -23,6 +23,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mime/mime.dart';
 import 'dart:io' show Platform;
 import 'package:file_selector/file_selector.dart';
+import 'package:nova/util/buy_me_a_coffee/buy_me_a_coffee_widget.dart';
 
 firebase_storage.FirebaseStorage storage =
     firebase_storage.FirebaseStorage.instance;
@@ -111,10 +112,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             // Add a ListView to the drawer. This ensures the user can scroll
             // through the options in the drawer if there isn't enough vertical
             // space to fit everything.
-            child: ListView(
-              cacheExtent: 12,
-              // Important: Remove any padding from the ListView.
-              padding: EdgeInsets.zero,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 SizedBox(
                   child: DrawerHeader(
@@ -167,41 +166,47 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     Navigator.pop(context);
                   },
                 ),
-                FutureBuilder<DocumentSnapshot>(
-                  future: global.doc('coffee').get(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return const Text("Something went wrong");
-                    }
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: FutureBuilder<DocumentSnapshot>(
+                        future: global.doc('coffee').get(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DocumentSnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return const Text("Something went wrong");
+                          }
 
-                    if (snapshot.hasData && !snapshot.data!.exists) {
-                      return const Text("Document does not exist");
-                    }
+                          if (snapshot.hasData && !snapshot.data!.exists) {
+                            return const Text("Document does not exist");
+                          }
 
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      Map<String, dynamic> data =
-                          snapshot.data!.data() as Map<String, dynamic>;
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            Map<String, dynamic> data =
+                            snapshot.data!.data() as Map<String, dynamic>;
 
-                      if (data['active'] == true) {
-                        return ListTile(
-                          title: const Text('Buy Me A Coffee'),
-                          onTap: () {
-                            launch(data['link']);
-                            Navigator.pop(context);
-                          },
-                        );
-                      } else {
-                        return const ListTile(
-                          title: Text(''),
-                        );
-                      }
-                    }
+                            if (data['active'] == true) {
+                              return BuyMeACoffeeWidget(
+                                customText: data['text'],
+                                sponsorID: "nova.system",
+                                theme: OrangeTheme(),
+                              );
+                            } else {
+                              return const ListTile(
+                                title: Text(''),
+                              );
+                            }
+                          }
 
-                    return const ListTile(
-                      title: Text('Loading...'),
-                    );
-                  },
+                          return const ListTile(
+                            title: Text('Loading...'),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
