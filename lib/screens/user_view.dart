@@ -4,6 +4,7 @@ import 'package:nova/util/const.dart';
 import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:nova/screens/home.dart';
+import 'package:nova/screens/leaderboard.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -212,9 +213,16 @@ class _UserWalletsState extends State<UserWallets> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 16.0),
                       child: ListTile(
-                        leading: Hero(
-                          tag: widget.userData['email'].split('@')[0],
-                            child: widget.profile
+                        leading: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: Transform.scale(
+                            scale: 4,
+                            child: Hero(
+                              tag: widget.userData['email'].split('@')[0],
+                                child: widget.profile
+                            ),
+                          ),
                         ),
                         title: Hero(
                             tag: widget.userData['email'].split('@')[0] + " name",
@@ -222,7 +230,7 @@ class _UserWalletsState extends State<UserWallets> {
                                 color: Colors.transparent,
                                 child: Text(
                                     widget.userData['email'].split('@')[0],
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 20.0,
                                   ),
                                 )

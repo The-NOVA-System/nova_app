@@ -94,8 +94,6 @@ class leaderboard extends StatefulWidget {
 class _leaderboardState extends State<leaderboard> {
   List<dynamic> leaderList = [];
   Map<String, Widget> profileList = {};
-  Map<String, Widget> profileListBig = {};
-  double profileListBigSize = 100.0;
 
   @override
   Widget build(BuildContext context) {
@@ -130,66 +128,41 @@ class _leaderboardState extends State<leaderboard> {
             leaderList.add([money + value['USD'], value['email'].split("@")[0], value['badges']]);
             if (value['defaultProfile'] == true) {
               profileList[value['email'].split("@")[0]] = ClipOval(
-                  child: SvgPicture.network(
-                    'https://avatars.dicebear.com/api/avataaars/${value['email']
-                        .split("@")[0]}.svg',
+                  child: AspectRatio(
+                    aspectRatio: 1.0,
+                    child: SvgPicture.network(
+                      'https://avatars.dicebear.com/api/avataaars/${value['email']
+                          .split("@")[0]}.svg',
+                      width: 50,
+                      height: 50,
+                      semanticsLabel: 'profile picture',
+                      placeholderBuilder: (BuildContext context) =>
+                      const SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator()),
+                    ),
+                  ));
+            } else {
+              profileList[value['email'].split("@")[0]] = ClipOval(
+                child: AspectRatio(
+                  aspectRatio: 1.0,
+                  child: CachedNetworkImage(
+                    imageUrl: customProfiles[value['email'].split("@")[0]]!,
+                    fit: BoxFit.fill,
                     width: 50,
                     height: 50,
-                    semanticsLabel: 'profile picture',
-                    placeholderBuilder: (BuildContext context) =>
+                    placeholder: (context, url) =>
                     const SizedBox(
                         height: 50,
                         width: 50,
                         child: CircularProgressIndicator()),
-                  ));
-              profileListBig[value['email'].split("@")[0]] = ClipOval(
-                  child: SvgPicture.network(
-                    'https://avatars.dicebear.com/api/avataaars/${value['email']
-                        .split("@")[0]}.svg',
-                    width: profileListBigSize,
-                    height: profileListBigSize,
-                    semanticsLabel: 'profile picture',
-                    placeholderBuilder: (BuildContext context) =>
-                    SizedBox(
-                        height: profileListBigSize,
-                        width: profileListBigSize,
-                        child: const CircularProgressIndicator()),
-                  ));
-            } else {
-              profileList[value['email'].split("@")[0]] = ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: customProfiles[value['email'].split("@")[0]]!,
-                  fit: BoxFit.fill,
-                  width: 50,
-                  height: 50,
-                  placeholder: (context, url) =>
-                  const SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) =>
-                  const SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: Icon(Icons.error)),
-                ),
-              );
-              profileListBig[value['email'].split("@")[0]] = ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: customProfiles[value['email'].split("@")[0]]!,
-                  fit: BoxFit.fill,
-                  width: profileListBigSize,
-                  height: profileListBigSize,
-                  placeholder: (context, url) =>
-                  SizedBox(
-                      height: profileListBigSize,
-                      width: profileListBigSize,
-                      child: const CircularProgressIndicator()),
-                  errorWidget: (context, url, error) =>
-                  SizedBox(
-                      height: profileListBigSize,
-                      width: profileListBigSize,
-                      child: const Icon(Icons.error)),
+                    errorWidget: (context, url, error) =>
+                    const SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Icon(Icons.error)),
+                  ),
                 ),
               );
             }
@@ -213,7 +186,7 @@ class _leaderboardState extends State<leaderboard> {
                   Navigator.push(
                       context,
                       UserProfileRoute(builder: (_) => UserWallets(
-                        profile: profileListBig[leaderList[index][1]]!,
+                        profile: profileList[leaderList[index][1]]!,
                         userData: userInfo[leaderList[index][1]],
                         notifyParent: widget.notifyParent,
                         nomicsApi: widget.nomicsApi,
