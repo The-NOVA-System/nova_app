@@ -97,6 +97,7 @@ class Wallet extends StatefulWidget {
   final String? colorHex;
   final double? day;
   final String? altRate;
+  final bool buttonActive;
   final double? week;
   final double? month;
   final double? year;
@@ -109,6 +110,7 @@ class Wallet extends StatefulWidget {
       {Key? key,
       this.name,
       this.icon,
+        required this.buttonActive,
         this.index,
       this.rate,
       this.color,
@@ -235,7 +237,8 @@ class _WalletState extends State<Wallet> {
         contentPadding: const EdgeInsets.all(0),
         child: custom.ExpansionTile(
           buySellButton: (() {
-            if (widget.buy == true) {
+            if (widget.buttonActive == true) {
+              if (widget.buy == true) {
               return GestureDetector(
                 onTap: () {
                   setState(() {
@@ -271,7 +274,9 @@ class _WalletState extends State<Wallet> {
                                   userData = data;
 
                                   return Text(
-                                      "You have ${data['USD']} USD available");
+                                      "You have ${data['USD']} USD available",
+                                    textAlign: TextAlign.center,
+                                  );
                                 }
 
                                 return const CircularProgressIndicator();
@@ -1213,7 +1218,9 @@ class _WalletState extends State<Wallet> {
                                   userData = data;
 
                                   return Text(
-                                      "You have ${data[widget.alt]} ${widget.name} available");
+                                      "You have ${data[widget.alt]} ${widget.name} available",
+                                    textAlign: TextAlign.center,
+                                  );
                                 }
 
                                 return const CircularProgressIndicator();
@@ -2347,6 +2354,9 @@ class _WalletState extends State<Wallet> {
                   ),
                 ),
               );
+            }
+            } else {
+              return SizedBox();
             }
           }()),
           onExpansionChanged: (bool expanded) {

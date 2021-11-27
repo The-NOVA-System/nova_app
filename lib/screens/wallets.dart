@@ -252,6 +252,7 @@ class _WalletsState extends State<Wallets> {
                                 if (snapshot.hasData) {
                                   aggregateList = snapshot.data!;
                                   return Wallet(
+                                    buttonActive: true,
                                     notifyParent: widget.notifyParent,
                                     name: snapshot.data![1][index]["name"],
                                     icon:
@@ -363,6 +364,7 @@ class _WalletsState extends State<Wallets> {
                                 if (snapshot.hasData) {
                                   aggregateList = snapshot.data!;
                                   return Wallet(
+                                    buttonActive: true,
                                     notifyParent: widget.notifyParent,
                                     name: snapshot.data![1][index]["name"],
                                     icon: snapshot.data![1][index]["logo_url"],

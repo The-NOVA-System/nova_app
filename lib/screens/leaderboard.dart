@@ -8,11 +8,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'home.dart';
+import 'package:nova/screens/user_view.dart';
 
 firebase_storage.FirebaseStorage storage =
     firebase_storage.FirebaseStorage.instance;
 
 Map<String, List> badges = {};
+Map userInfo = {};
 late ListResult badgesList;
 Map<String, String> customProfiles = {};
 
@@ -82,7 +84,8 @@ Future<List> fetchLeader(apiKey) async {
 
 class leaderboard extends StatefulWidget {
   final String nomicsApi;
-  const leaderboard({Key? key, required this.nomicsApi}) : super(key: key);
+  final Function() notifyParent;
+  const leaderboard({Key? key, required this.nomicsApi, required this.notifyParent}) : super(key: key);
 
   @override
   _leaderboardState createState() => _leaderboardState();
@@ -91,6 +94,8 @@ class leaderboard extends StatefulWidget {
 class _leaderboardState extends State<leaderboard> {
   List<dynamic> leaderList = [];
   Map<String, Widget> profileList = {};
+  Map<String, Widget> profileListBig = {};
+  double profileListBigSize = 100.0;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +115,8 @@ class _leaderboardState extends State<leaderboard> {
               'superNova': false,
             },
               SetOptions(merge: true),);*/
+
+            userInfo[value['email'].split("@")[0]] = value.data();
 
             num money = 0;
             for (var alt in value['assets']) {
@@ -135,6 +142,19 @@ class _leaderboardState extends State<leaderboard> {
                         width: 50,
                         child: CircularProgressIndicator()),
                   ));
+              profileListBig[value['email'].split("@")[0]] = ClipOval(
+                  child: SvgPicture.network(
+                    'https://avatars.dicebear.com/api/avataaars/${value['email']
+                        .split("@")[0]}.svg',
+                    width: profileListBigSize,
+                    height: profileListBigSize,
+                    semanticsLabel: 'profile picture',
+                    placeholderBuilder: (BuildContext context) =>
+                    SizedBox(
+                        height: profileListBigSize,
+                        width: profileListBigSize,
+                        child: const CircularProgressIndicator()),
+                  ));
             } else {
               profileList[value['email'].split("@")[0]] = ClipOval(
                 child: CachedNetworkImage(
@@ -154,10 +174,27 @@ class _leaderboardState extends State<leaderboard> {
                       child: Icon(Icons.error)),
                 ),
               );
+              profileListBig[value['email'].split("@")[0]] = ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: customProfiles[value['email'].split("@")[0]]!,
+                  fit: BoxFit.fill,
+                  width: profileListBigSize,
+                  height: profileListBigSize,
+                  placeholder: (context, url) =>
+                  SizedBox(
+                      height: profileListBigSize,
+                      width: profileListBigSize,
+                      child: const CircularProgressIndicator()),
+                  errorWidget: (context, url, error) =>
+                  SizedBox(
+                      height: profileListBigSize,
+                      width: profileListBigSize,
+                      child: const Icon(Icons.error)),
+                ),
+              );
             }
           }
           leaderList.sort((b, a) => a[0].compareTo(b[0]));
-
 
           return ListView.builder(
             cacheExtent: 999,
@@ -166,84 +203,114 @@ class _leaderboardState extends State<leaderboard> {
             shrinkWrap: true,
             itemCount: leaderList.length,
             itemBuilder: (BuildContext context, int index) {
-              return Card(
-                elevation: 4,
-                shape: const RoundedRectangleBorder(
+              return InkWell(
+                customBorder: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10),
                   ),
                 ),
-                child: ListTile(
-                  leading: profileList[leaderList[index][1]],
-                  title: Text(leaderList[index][1]),
-                  subtitle: Text("\$${leaderList[index][0].toStringAsFixed(2)} USD"),
-                  trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: badges.entries.map((entry) {
-                          if (leaderList[index][2].contains(entry.key)) {
-                            if (entry.value[1] == "svg") {
-                              return Row(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      UserProfileRoute(builder: (_) => UserWallets(
+                        profile: profileListBig[leaderList[index][1]]!,
+                        userData: userInfo[leaderList[index][1]],
+                        notifyParent: widget.notifyParent,
+                        nomicsApi: widget.nomicsApi,
+                      ))
+                  );
+                },
+                child: Card(
+                  elevation: 4,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                  ),
+                  child: ListTile(
+                    leading: Hero(
+                      tag: leaderList[index][1],
+                        child: profileList[leaderList[index][1]]!
+                    ),
+                    title: Hero(
+                        tag: leaderList[index][1] + " name",
+                        child: Material(
+                          color: Colors.transparent,
+                            child: Text(leaderList[index][1],
+                              style: TextStyle(
+                                fontSize: 20.0,
+                              ),)
+                        )
+                    ),
+                    subtitle: Text("\$${leaderList[index][0].toStringAsFixed(2)} USD"),
+                    trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: badges.entries.map((entry) {
+                            if (leaderList[index][2].contains(entry.key)) {
+                              if (entry.value[1] == "svg") {
+                                return Row(
+                                    children: [
+                                      Tooltip(
+                                        message: snapshot.data![2][entry.key],
+                                        child: SvgPicture.network(
+                                          entry.value[0],
+                                          fit: BoxFit.fill,
+                                          width: 40,
+                                          height: 40,
+                                          semanticsLabel: '${entry.key} badge',
+                                          placeholderBuilder: (BuildContext context) =>
+                                          const SizedBox(
+                                              height: 40,
+                                              width: 40,
+                                              child: CircularProgressIndicator()),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10)
+                                    ],
+                                  );
+                              } else {
+                                return Row(
                                   children: [
                                     Tooltip(
                                       message: snapshot.data![2][entry.key],
-                                      child: SvgPicture.network(
-                                        entry.value[0],
+                                      child: CachedNetworkImage(
+                                        imageUrl: entry.value[0],
                                         fit: BoxFit.fill,
                                         width: 40,
                                         height: 40,
-                                        semanticsLabel: '${entry.key} badge',
-                                        placeholderBuilder: (BuildContext context) =>
+                                        placeholder: (context, url) =>
                                         const SizedBox(
                                             height: 40,
                                             width: 40,
                                             child: CircularProgressIndicator()),
+                                        errorWidget: (context, url, error) =>
+                                        const SizedBox(
+                                            height: 40,
+                                            width: 40,
+                                            child: Icon(Icons.error)),
                                       ),
                                     ),
                                     const SizedBox(width: 10)
                                   ],
                                 );
+                              }
                             } else {
-                              return Row(
-                                children: [
-                                  Tooltip(
-                                    message: snapshot.data![2][entry.key],
-                                    child: CachedNetworkImage(
-                                      imageUrl: entry.value[0],
-                                      fit: BoxFit.fill,
-                                      width: 40,
-                                      height: 40,
-                                      placeholder: (context, url) =>
-                                      const SizedBox(
-                                          height: 40,
-                                          width: 40,
-                                          child: CircularProgressIndicator()),
-                                      errorWidget: (context, url, error) =>
-                                      const SizedBox(
-                                          height: 40,
-                                          width: 40,
-                                          child: Icon(Icons.error)),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10)
-                                ],
-                              );
+                              return const Text("");
                             }
-                          } else {
-                            return const Text("");
-                          }
-                        }).toList(),
-                      ),
-                      const SizedBox(width: 15),
-                      Text(
-                        '${index + 1}',
-                        style: TextStyle(
-                          color: Theme.of(context).disabledColor,
-                          fontWeight: FontWeight.bold,
+                          }).toList(),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 15),
+                        Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            color: Theme.of(context).disabledColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -262,4 +329,11 @@ class _leaderboardState extends State<leaderboard> {
       },
     );
   }
+}
+
+class UserProfileRoute extends MaterialPageRoute {
+  UserProfileRoute({required WidgetBuilder builder}) : super(builder: builder);
+
+  @override
+  Duration get transitionDuration => const Duration(seconds: 1);
 }

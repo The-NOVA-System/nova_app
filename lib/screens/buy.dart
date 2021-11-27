@@ -217,6 +217,7 @@ class _BuyState extends State<Buy> {
                         if (snapshot.hasData) {
                           aggregateList = snapshot.data!;
                           return Wallet(
+                            buttonActive: true,
                             notifyParent: widget.notifyParent,
                             name: snapshot.data![1][index]["name"],
                             icon: "https://corsproxy.garvshah.workers.dev/?" +
@@ -293,6 +294,7 @@ class _BuyState extends State<Buy> {
                         if (snapshot.hasData) {
                           aggregateList = snapshot.data!;
                           return Wallet(
+                            buttonActive: true,
                             notifyParent: widget.notifyParent,
                             name: snapshot.data![1][index]["name"],
                             icon: snapshot.data![1][index]["logo_url"],

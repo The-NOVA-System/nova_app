@@ -785,6 +785,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           nomicsApi: data['web'],
                         ),
                         leaderboard(
+                          notifyParent: refresh,
                           nomicsApi: data['web'],
                         ),
                         buy.Buy(
@@ -804,6 +805,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           nomicsApi: data['local'][_random.nextInt(data['local'].length)],
                         ),
                         leaderboard(
+                          notifyParent: refresh,
                           nomicsApi: data['local'][_random.nextInt(data['local'].length)],
                         ),
                         buy.Buy(
