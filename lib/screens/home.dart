@@ -91,6 +91,213 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    Widget about = Scaffold(
+      appBar: AppBar(
+          leading: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                Config.chartRefresh();
+              },
+              child: Icon(Icons.arrow_back_ios_new_rounded,
+                  color:
+                  Theme.of(context).appBarTheme.toolbarTextStyle!.color)),
+          backgroundColor: Theme.of(context).primaryColor),
+      body: Center(
+        child: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'Created by Garv Shah\n',
+                style: TextStyle(
+                    color:
+                    Theme.of(context).appBarTheme.toolbarTextStyle!.color),
+              ),
+              TextSpan(
+                text:
+                'Crypto Market Cap & Pricing Data Provided By Nomics.\n\n',
+                style: const TextStyle(color: Colors.blue),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    launch('https://nomics.com/');
+                  },
+              ),
+              TextSpan(
+                text:
+                'Big thanks to the rest of The NOVA Team:\nLiam Shaw\nNatsuki Rogers\n\n',
+                style: TextStyle(
+                    color:
+                    Theme.of(context).appBarTheme.toolbarTextStyle!.color),
+              ),
+              TextSpan(
+                text: 'https://garv-shah.github.io',
+                style: const TextStyle(color: Colors.blue),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    launch('https://garv-shah.github.io');
+                  },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    Widget blog = Scaffold(
+      appBar: AppBar(
+          leading: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                Config.chartRefresh();
+              },
+              child: Icon(Icons.arrow_back_ios_new_rounded,
+                  color:
+                  Theme.of(context).appBarTheme.toolbarTextStyle!.color)),
+          backgroundColor: Theme.of(context).primaryColor),
+      body: FutureBuilder<Response>(
+        future: http
+            .get(Uri.parse('https://the-nova-system.github.io/blog/feed.xml')),
+        builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
+          if (snapshot.hasError) {
+            return const Text("Something went wrong");
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            var atomFeed = AtomFeed.parse(snapshot.data!.body.toString());
+            double width = MediaQuery.of(context).size.width;
+            var inputFormat = DateFormat('dd/MM/yyyy');
+
+            return Scaffold(
+              body: ListView.builder(
+                  shrinkWrap: true,
+                  cacheExtent: 9999,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  primary: false,
+                  itemCount: atomFeed.items!.length + 2,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == 0) {
+                      return Center(
+                          child: Text(
+                            atomFeed.title!,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: width * 0.08,
+                            ),
+                          ));
+                    } else if (index == 1) {
+                      return const SizedBox(height: 20);
+                    }
+                    return SizedBox(
+                      width: 20.0,
+                      height: 240.0,
+                      child: Card(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                atomFeed.items![index - 2].title!,
+                                style: TextStyle(
+                                  fontStyle: FontStyle.normal,
+                                  fontWeight: FontWeight.normal, //
+                                  // regular weight
+                                  color: (() {
+                                    if (Theme.of(context).brightness ==
+                                        Brightness.light) {
+                                      return Colors.grey.shade800;
+                                    } else {
+                                      return Colors.white;
+                                    }
+                                  }()),
+                                  fontSize: 18.0,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "By ${atomFeed.items![index - 2].authors!.first.name!} - ${inputFormat.format(atomFeed.items![index - 2].updated!)}",
+                                style: TextStyle(
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight:
+                                    FontWeight.normal, // regular weight
+                                    color: (() {
+                                      if (Theme.of(context).brightness ==
+                                          Brightness.light) {
+                                        return Colors.grey.shade600;
+                                      } else {
+                                        return Colors.white70;
+                                      }
+                                    }()),
+                                    fontSize: 14.0),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                atomFeed.items![index - 2].summary!,
+                                style: TextStyle(
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight:
+                                    FontWeight.normal, // regular weight
+                                    color: (() {
+                                      if (Theme.of(context).brightness ==
+                                          Brightness.light) {
+                                        return Colors.grey.shade700;
+                                      } else {
+                                        return Colors.white54;
+                                      }
+                                    }()),
+                                    fontSize: 16.0),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Read More',
+                                      style:
+                                      const TextStyle(color: Colors.blue),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          launch(atomFeed.items![index - 2]
+                                              .links!.first.href!);
+                                        },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+            );
+          }
+
+          return const Center(
+            child: SizedBox(
+              height: 25.0,
+              width: 25.0,
+              child: Align(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+    Widget body;
+
     Widget home = DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -141,8 +348,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ListTile(
                   title: const Text('About'),
                   onTap: () {
-                    setState(() => section = Section.about);
                     Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => about)
+                    );
                   },
                 ),
                 ListTile(
@@ -155,8 +365,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ListTile(
                   title: const Text('Blog'),
                   onTap: () {
-                    setState(() => section = Section.blog);
                     Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => blog)
+                    );
                   },
                 ),
                 ListTile(
@@ -616,213 +829,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ),
       ),
     );
-
-    Widget about = Scaffold(
-      appBar: AppBar(
-          leading: InkWell(
-              onTap: () {
-                setState(() => section = Section.home);
-                Config.chartRefresh();
-              },
-              child: Icon(Icons.arrow_back_ios_new_rounded,
-                  color:
-                      Theme.of(context).appBarTheme.toolbarTextStyle!.color)),
-          backgroundColor: Theme.of(context).primaryColor),
-      body: Center(
-        child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'Created by Garv Shah\n',
-                style: TextStyle(
-                    color:
-                        Theme.of(context).appBarTheme.toolbarTextStyle!.color),
-              ),
-              TextSpan(
-                text:
-                    'Crypto Market Cap & Pricing Data Provided By Nomics.\n\n',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    launch('https://nomics.com/');
-                  },
-              ),
-              TextSpan(
-                text:
-                    'Big thanks to the rest of The NOVA Team:\nLiam Shaw\nNatsuki Rogers\n\n',
-                style: TextStyle(
-                    color:
-                        Theme.of(context).appBarTheme.toolbarTextStyle!.color),
-              ),
-              TextSpan(
-                text: 'https://garv-shah.github.io',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    launch('https://garv-shah.github.io');
-                  },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    Widget blog = Scaffold(
-      appBar: AppBar(
-          leading: InkWell(
-              onTap: () {
-                setState(() => section = Section.home);
-                Config.chartRefresh();
-              },
-              child: Icon(Icons.arrow_back_ios_new_rounded,
-                  color:
-                      Theme.of(context).appBarTheme.toolbarTextStyle!.color)),
-          backgroundColor: Theme.of(context).primaryColor),
-      body: FutureBuilder<Response>(
-        future: http
-            .get(Uri.parse('https://the-nova-system.github.io/blog/feed.xml')),
-        builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
-          if (snapshot.hasError) {
-            return const Text("Something went wrong");
-          }
-
-          if (snapshot.connectionState == ConnectionState.done) {
-            var atomFeed = AtomFeed.parse(snapshot.data!.body.toString());
-            double width = MediaQuery.of(context).size.width;
-            var inputFormat = DateFormat('dd/MM/yyyy');
-
-            return Scaffold(
-              body: ListView.builder(
-                  shrinkWrap: true,
-                  cacheExtent: 9999,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  primary: false,
-                  itemCount: atomFeed.items!.length + 2,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return Center(
-                          child: Text(
-                        atomFeed.title!,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: width * 0.08,
-                        ),
-                      ));
-                    } else if (index == 1) {
-                      return const SizedBox(height: 20);
-                    }
-                    return SizedBox(
-                      width: 20.0,
-                      height: 240.0,
-                      child: Card(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                atomFeed.items![index - 2].title!,
-                                style: TextStyle(
-                                  fontStyle: FontStyle.normal,
-                                  fontWeight: FontWeight.normal, //
-                                  // regular weight
-                                  color: (() {
-                                    if (Theme.of(context).brightness ==
-                                        Brightness.light) {
-                                      return Colors.grey.shade800;
-                                    } else {
-                                      return Colors.white;
-                                    }
-                                  }()),
-                                  fontSize: 18.0,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                "By ${atomFeed.items![index - 2].authors!.first.name!} - ${inputFormat.format(atomFeed.items![index - 2].updated!)}",
-                                style: TextStyle(
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight:
-                                        FontWeight.normal, // regular weight
-                                    color: (() {
-                                      if (Theme.of(context).brightness ==
-                                          Brightness.light) {
-                                        return Colors.grey.shade600;
-                                      } else {
-                                        return Colors.white70;
-                                      }
-                                    }()),
-                                    fontSize: 14.0),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                atomFeed.items![index - 2].summary!,
-                                style: TextStyle(
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight:
-                                        FontWeight.normal, // regular weight
-                                    color: (() {
-                                      if (Theme.of(context).brightness ==
-                                          Brightness.light) {
-                                        return Colors.grey.shade700;
-                                      } else {
-                                        return Colors.white54;
-                                      }
-                                    }()),
-                                    fontSize: 16.0),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 16),
-                              RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Read More',
-                                      style:
-                                          const TextStyle(color: Colors.blue),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          launch(atomFeed.items![index - 2]
-                                              .links!.first.href!);
-                                        },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-            );
-          }
-
-          return const Center(
-            child: SizedBox(
-              height: 25.0,
-              width: 25.0,
-              child: Align(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-
-    Widget body;
 
     switch (section) {
       case Section.home:
