@@ -476,7 +476,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                         radius: 25,
                                       );
                                     });
-                                    await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                    if (userData['profileType'] != "") {
+                                      await storage.ref(
+                                          'profiles/${FirebaseAuth.instance
+                                              .currentUser!
+                                              .uid}/profile.${userData['profileType']
+                                              .split('/')[1]}').delete();
+                                    }
                                     firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
 
                                     firebase_storage.SettableMetadata metadata =
@@ -497,7 +503,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                       radius: 25,
                                     );
                                   });
-                                  await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                  if (userData['profileType'] != "") {
+                                    await storage.ref(
+                                        'profiles/${FirebaseAuth.instance
+                                            .currentUser!
+                                            .uid}/profile.${userData['profileType']
+                                            .split('/')[1]}').delete();
+                                  }
                                   firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
 
                                   firebase_storage.SettableMetadata metadata =
@@ -538,7 +550,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                     radius: 25,
                                   );
                                 });
-                                await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                if (userData['profileType'] != "") {
+                                  await storage.ref(
+                                      'profiles/${FirebaseAuth.instance
+                                          .currentUser!
+                                          .uid}/profile.${userData['profileType']
+                                          .split('/')[1]}').delete();
+                                }
                                 firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
 
                                 firebase_storage.SettableMetadata metadata =
@@ -574,7 +592,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                                 });
 
                                                 Navigator.pop(context);
-                                                await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                                if (userData['profileType'] != "") {
+                                                  await storage.ref(
+                                                      'profiles/${FirebaseAuth
+                                                          .instance.currentUser!
+                                                          .uid}/profile.${userData['profileType']
+                                                          .split('/')[1]}')
+                                                      .delete();
+                                                }
                                                 firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
 
                                                 firebase_storage.SettableMetadata metadata =
@@ -606,7 +631,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                                 });
 
                                                 Navigator.pop(context);
-                                                await storage.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${userData['profileType'].split('/')[1]}').delete();
+                                                if (userData['profileType'] != "") {
+                                                  await storage.ref(
+                                                      'profiles/${FirebaseAuth
+                                                          .instance.currentUser!
+                                                          .uid}/profile.${userData['profileType']
+                                                          .split('/')[1]}')
+                                                      .delete();
+                                                }
                                                 firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('profiles/${FirebaseAuth.instance.currentUser!.uid}/profile.${lookupMimeType('', headerBytes: bytes)!.split('/')[1]}');
 
                                                 firebase_storage.SettableMetadata metadata =
