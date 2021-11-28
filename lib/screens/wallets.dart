@@ -228,7 +228,7 @@ class _WalletsState extends State<Wallets> {
                         if (index == length * counter - 1) {
                           return const SizedBox(
                             width: 20.0,
-                            height: 240.0,
+                            height: 288.0,
                             child: Card(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(
@@ -312,7 +312,7 @@ class _WalletsState extends State<Wallets> {
                                   print(snapshot.error?.toString());
                                   return SizedBox(
                                     width: 20.0,
-                                    height: 240.0,
+                                    height: 288.0,
                                     child: Card(
                                         shape: const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.all(
@@ -339,7 +339,7 @@ class _WalletsState extends State<Wallets> {
                                 // By default, show a loading spinner.
                                 return const SizedBox(
                                   width: 20.0,
-                                  height: 240.0,
+                                  height: 288.0,
                                   child: Card(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
@@ -392,7 +392,7 @@ class _WalletsState extends State<Wallets> {
                                   print(snapshot.error?.toString());
                                   return SizedBox(
                                     width: 20.0,
-                                    height: 240.0,
+                                    height: 288.0,
                                     child: Card(
                                         shape: const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.all(
@@ -419,7 +419,7 @@ class _WalletsState extends State<Wallets> {
                                 // By default, show a loading spinner.
                                 return const SizedBox(
                                   width: 20.0,
-                                  height: 240.0,
+                                  height: 288.0,
                                   child: Card(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
@@ -460,7 +460,7 @@ class _WalletsState extends State<Wallets> {
 
         return const SizedBox(
           width: 20.0,
-          height: 240.0,
+          height: 288.0,
           child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(

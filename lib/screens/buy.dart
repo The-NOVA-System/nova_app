@@ -193,7 +193,7 @@ class _BuyState extends State<Buy> {
                 if (index == length * counter - 1) {
                   return const SizedBox(
                     width: 20.0,
-                    height: 240.0,
+                    height: 288.0,
                     child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(
@@ -243,7 +243,7 @@ class _BuyState extends State<Buy> {
                         } else if (snapshot.hasError) {
                           return SizedBox(
                             width: 20.0,
-                            height: 240.0,
+                            height: 288.0,
                             child: Card(
                                 shape: const RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(
@@ -269,7 +269,7 @@ class _BuyState extends State<Buy> {
                         // By default, show a loading spinner.
                         return const SizedBox(
                           width: 20.0,
-                          height: 240.0,
+                          height: 288.0,
                           child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(
@@ -349,7 +349,7 @@ class _BuyState extends State<Buy> {
                         } else if (snapshot.hasError) {
                           return SizedBox(
                             width: 20.0,
-                            height: 240.0,
+                            height: 288.0,
                             child: Card(
                                 shape: const RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(
@@ -375,7 +375,7 @@ class _BuyState extends State<Buy> {
                         // By default, show a loading spinner.
                         return const SizedBox(
                           width: 20.0,
-                          height: 240.0,
+                          height: 288.0,
                           child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(
