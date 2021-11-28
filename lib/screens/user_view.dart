@@ -183,7 +183,7 @@ class _UserWalletsState extends State<UserWallets> {
                 children: [
                   Padding(
                     padding: EdgeInsets.fromLTRB(
-                        MediaQuery.of(context).size.width / 2 - 110,
+                        MediaQuery.of(context).size.width / 2 - 120,
                         53.0,
                         8.0,
                         0),
@@ -234,15 +234,18 @@ class _UserWalletsState extends State<UserWallets> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Hero(
+                              FittedBox(
+                                  fit: BoxFit.fitWidth,
+                                  child: Hero(
                                   tag: widget.userData['email'].split('@')[0] +
                                       " name",
                                   child: Material(
                                       color: Colors.transparent,
                                       child: Text(
-                                        widget.userData['email'].split('@')[0],
-                                        style: const TextStyle(
-                                          fontSize: 20.0,
+                                          widget.userData['email'].split('@')[0],
+                                          style: const TextStyle(
+                                            fontSize: 20.0,
+                                          ),
                                         ),
                                       ))),
                               Hero(
@@ -322,7 +325,7 @@ class _UserWalletsState extends State<UserWallets> {
                       children: [
                         Padding(
                           padding: EdgeInsets.fromLTRB(
-                              MediaQuery.of(context).size.width / 2 - 110,
+                              MediaQuery.of(context).size.width / 2 - 120,
                               53.0,
                               8.0,
                               61.0),
@@ -373,17 +376,20 @@ class _UserWalletsState extends State<UserWallets> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Hero(
+                                    FittedBox(
+                                        fit: BoxFit.fitWidth,
+                                        child: Hero(
                                         tag: widget.userData['email']
                                                 .split('@')[0] +
                                             " name",
                                         child: Material(
                                             color: Colors.transparent,
                                             child: Text(
-                                              widget.userData['email']
-                                                  .split('@')[0],
-                                              style: const TextStyle(
-                                                fontSize: 20.0,
+                                                widget.userData['email']
+                                                    .split('@')[0],
+                                                style: const TextStyle(
+                                                  fontSize: 20.0,
+                                                ),
                                               ),
                                             ))),
                                     Hero(

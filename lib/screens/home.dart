@@ -633,102 +633,108 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(FirebaseAuth.instance.currentUser!.email!),
-                              FutureBuilder<DocumentSnapshot>(
-                                future: users
-                                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                                    .get(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                  if (snapshot.hasError) {
-                                    return const Text("Something went wrong");
-                                  }
+                              FittedBox(
+                                  fit: BoxFit.fitWidth,
+                                  child: Text(FirebaseAuth.instance.currentUser!.email!)
+                              ),
+                              FittedBox(
+                                fit: BoxFit.fitWidth,
+                                child: FutureBuilder<DocumentSnapshot>(
+                                  future: users
+                                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                                      .get(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                    if (snapshot.hasError) {
+                                      return const Text("Something went wrong");
+                                    }
 
-                                  if (snapshot.hasData &&
-                                      !snapshot.data!.exists) {
-                                    return const Text(
-                                        "Document does not exist");
-                                  }
+                                    if (snapshot.hasData &&
+                                        !snapshot.data!.exists) {
+                                      return const Text(
+                                          "Document does not exist");
+                                    }
 
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    Map<String, dynamic> data = snapshot.data!
-                                        .data() as Map<String, dynamic>;
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      Map<String, dynamic> data = snapshot.data!
+                                          .data() as Map<String, dynamic>;
 
-                                    userData = data;
+                                      userData = data;
 
-                                    WidgetsBinding.instance!
-                                        .addPostFrameCallback((_) => Future.delayed(const Duration(milliseconds: 0), () {
-                                      if (profileSet == false) {
-                                        if (data['defaultProfile'] == false) {
-                                          firebase_storage
-                                              .Reference ref = firebase_storage
-                                              .FirebaseStorage.instance.ref(
-                                              'profiles/${FirebaseAuth.instance
-                                                  .currentUser!
-                                                  .uid}/profile.${data['profileType'].split('/')[1]}');
-                                          ref.getDownloadURL().then((value) =>
-                                          {
+                                      WidgetsBinding.instance!
+                                          .addPostFrameCallback((_) => Future.delayed(const Duration(milliseconds: 0), () {
+                                        if (profileSet == false) {
+                                          if (data['defaultProfile'] == false) {
+                                            firebase_storage
+                                                .Reference ref = firebase_storage
+                                                .FirebaseStorage.instance.ref(
+                                                'profiles/${FirebaseAuth.instance
+                                                    .currentUser!
+                                                    .uid}/profile.${data['profileType'].split('/')[1]}');
+                                            ref.getDownloadURL().then((value) =>
+                                            {
+                                              setState(() {
+                                                profile = ClipOval(
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: value,
+                                                    fit: BoxFit.fill,
+                                                    width: 50,
+                                                    height: 50,
+                                                    placeholder: (context, url) =>
+                                                    const SizedBox(
+                                                        height: 50,
+                                                        width: 50,
+                                                        child: CircularProgressIndicator()),
+                                                    errorWidget: (context, url, error) =>
+                                                    const SizedBox(
+                                                        height: 50,
+                                                        width: 50,
+                                                        child: Icon(Icons.error)),
+                                                  ),
+                                                );
+                                                profileSet = true;
+                                              })
+                                            });
+                                          } else {
                                             setState(() {
                                               profile = ClipOval(
-                                                child: CachedNetworkImage(
-                                                  imageUrl: value,
-                                                  fit: BoxFit.fill,
-                                                  width: 50,
-                                                  height: 50,
-                                                  placeholder: (context, url) =>
-                                                  const SizedBox(
-                                                      height: 50,
-                                                      width: 50,
-                                                      child: CircularProgressIndicator()),
-                                                  errorWidget: (context, url, error) =>
-                                                  const SizedBox(
-                                                      height: 50,
-                                                      width: 50,
-                                                      child: Icon(Icons.error)),
-                                                ),
-                                              );
+                                                  child: SvgPicture.network(
+                                                    'https://avatars.dicebear.com/api/avataaars/${FirebaseAuth
+                                                        .instance.currentUser!
+                                                        .email!.split("@")[0]}.svg',
+                                                    width: 50,
+                                                    height: 50,
+                                                    semanticsLabel: 'profile picture',
+                                                    placeholderBuilder: (
+                                                        BuildContext context) =>
+                                                    const SizedBox(
+                                                        height: 50,
+                                                        width: 50,
+                                                        child: CircularProgressIndicator()
+                                                    ),
+                                                  ));
                                               profileSet = true;
-                                            })
-                                          });
-                                        } else {
-                                          setState(() {
-                                            profile = ClipOval(
-                                                child: SvgPicture.network(
-                                                  'https://avatars.dicebear.com/api/avataaars/${FirebaseAuth
-                                                      .instance.currentUser!
-                                                      .email!.split("@")[0]}.svg',
-                                                  width: 50,
-                                                  height: 50,
-                                                  semanticsLabel: 'profile picture',
-                                                  placeholderBuilder: (
-                                                      BuildContext context) =>
-                                                  const SizedBox(
-                                                      height: 50,
-                                                      width: 50,
-                                                      child: CircularProgressIndicator()
-                                                  ),
-                                                ));
-                                            profileSet = true;
-                                          });
+                                            });
+                                          }
                                         }
-                                      }
-                                    }));
+                                      }));
 
-                                    return Text(
-                                        "Balance: ${data['USD'].toStringAsFixed(3)} USD");
-                                  }
+                                      return Text(
+                                          "Balance: ${data['USD'].toStringAsFixed(3)} USD");
+                                    }
 
-                                  return const Text("Balance: Loading...");
-                                },
+                                    return const Text("Balance: Loading...");
+                                  },
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                expandedHeight: 80,
-                collapsedHeight: 80,
+                expandedHeight: 70,
+                collapsedHeight: 70,
                 bottom: TabBar(
                   indicator: MaterialIndicator(
                     color: Theme.of(context).colorScheme.secondary,
