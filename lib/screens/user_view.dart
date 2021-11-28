@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:nova/util/const.dart';
@@ -190,8 +191,24 @@ class _UserWalletsState extends State<UserWallets> {
                         child: Transform.scale(
                           scale: 3,
                           child: Hero(
-                              tag: widget.userData['email'].split('@')[0],
-                              child: widget.profile
+                            tag: widget.userData['email'].split('@')[0],
+                            child: Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).backgroundColor,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 1), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: widget.profile
+                            ),
                           ),
                         ),
                       ),
@@ -297,11 +314,27 @@ class _UserWalletsState extends State<UserWallets> {
                               offset: const Offset(0, 30),
                               child: Transform.scale(
                                 scale: 3,
-                                child: Hero(
-                                  tag: widget.userData['email'].split('@')[0],
-                                    child: widget.profile
+                                  child: Hero(
+                                    tag: widget.userData['email'].split('@')[0],
+                                    child: Container(
+                                      height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.3),
+                                              spreadRadius: 2,
+                                              blurRadius: 6,
+                                              offset: const Offset(0, 1), // changes position of shadow
+                                            ),
+                                          ],
+                                        ),
+                                        child: widget.profile
+                                    ),
+                                  ),
                                 ),
-                              ),
                             ),
                           ),
                           title: Padding(
