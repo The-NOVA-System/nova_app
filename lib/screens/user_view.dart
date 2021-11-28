@@ -201,7 +201,7 @@ class _UserWalletsState extends State<UserWallets> {
                                   height: 50,
                                   width: 50,
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).backgroundColor,
+                                    color: Colors.transparent,
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
