@@ -45,6 +45,7 @@ dependencies:
   mime: ^1.0.1
   file_selector: ^0.8.2+1
   file_selector_macos: ^0.0.4+1
+  adaptive_dialog: ^1.2.0
 
 dev_dependencies:
   flutter_test:

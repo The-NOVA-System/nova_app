@@ -5,7 +5,6 @@ import 'package:nova/util/const.dart';
 import 'package:nova/widgets/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:nova/screens/home.dart';
-import 'package:nova/screens/leaderboard.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -242,7 +241,7 @@ class _UserWalletsState extends State<UserWallets> {
                                   child: Material(
                                       color: Colors.transparent,
                                       child: Text(
-                                          widget.userData['email'].split('@')[0],
+                                          widget.userData['username'],
                                           style: const TextStyle(
                                             fontSize: 20.0,
                                           ),
@@ -526,7 +525,6 @@ class _UserWalletsState extends State<UserWallets> {
                                           index: index,
                                         );
                                       } else if (snapshot.hasError) {
-                                        print(snapshot.error?.toString());
                                         return SizedBox(
                                           width: 20.0,
                                           height: 240.0,
@@ -620,7 +618,6 @@ class _UserWalletsState extends State<UserWallets> {
                                           index: index,
                                         );
                                       } else if (snapshot.hasError) {
-                                        print(snapshot.error?.toString());
                                         return SizedBox(
                                           width: 20.0,
                                           height: 240.0,

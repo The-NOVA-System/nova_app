@@ -41,13 +41,9 @@ class _RegisterPageState extends State<RegisterPage> {
   // Create a new user account
   Future<String?> _createAccount() async {
     try {
-      if (_registerEmail.split("@")[1] == "caulfieldgs.vic.edu.au") {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: _registerEmail, password: _registerPassword);
-        return null;
-      } else {
-        return 'The app is currently only open for beta testers from a verified domain';
-      }
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _registerEmail, password: _registerPassword);
+      return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         return 'The password provided is too weak.';
@@ -86,7 +82,8 @@ class _RegisterPageState extends State<RegisterPage> {
         'assets': [],
         'badges': [],
         'defaultProfile': true,
-        'profileType': ''
+        'profileType': '',
+        'username': _registerUsername
       })
           .then((value) => print("User Added"))
           .catchError((error) => print("Failed to add user: $error"));
@@ -100,19 +97,23 @@ class _RegisterPageState extends State<RegisterPage> {
   // Form Input Field Values
   String _registerEmail = "";
   String _registerPassword = "";
+  String _registerUsername = "";
 
   // Focus Node for input fields
   late FocusNode _passwordFocusNode;
+  late FocusNode _emailFocusNode;
 
   @override
   void initState() {
     _passwordFocusNode = FocusNode();
+    _emailFocusNode = FocusNode();
     super.initState();
   }
 
   @override
   void dispose() {
     _passwordFocusNode.dispose();
+    _emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -146,8 +147,19 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Column(
                     children: [
                       CustomInput(
+                        hintText: "Username...",
+                        onChanged: (value) {
+                          _registerUsername = value;
+                        },
+                        isPasswordField: false,
+                        onSubmitted: (value) {
+                          _emailFocusNode.requestFocus();
+                        },
+                      ),
+                      CustomInput(
                         hintText: "Email...",
                         autoFillController: username,
+                        focusNode: _emailFocusNode,
                         onChanged: (value) {
                           _registerEmail = value;
                         },

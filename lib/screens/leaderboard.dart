@@ -125,7 +125,7 @@ class _leaderboardState extends State<leaderboard> {
                 }
               }
             }
-            leaderList.add([money + value['USD'], value['email'].split("@")[0], value['badges']]);
+            leaderList.add([money + value['USD'], value['email'].split("@")[0], value['badges'], value['username']]);
             if (value['defaultProfile'] == true) {
               profileList[value['email'].split("@")[0]] = ClipOval(
                   child: AspectRatio(
@@ -277,7 +277,7 @@ class _leaderboardState extends State<leaderboard> {
                         tag: leaderList[index][1] + " name",
                         child: Material(
                           color: Colors.transparent,
-                            child: Text(leaderList[index][1],
+                            child: Text(leaderList[index][3],
                               style: const TextStyle(
                                 fontSize: 18.0,
                               ),)

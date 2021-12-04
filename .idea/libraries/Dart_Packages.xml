@@ -9,10 +9,24 @@
             </list>
           </value>
         </entry>
+        <entry key="adaptive_dialog">
+          <value>
+            <list>
+              <option value="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/adaptive_dialog-1.2.0/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="analyzer">
           <value>
             <list>
               <option value="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-2.7.0/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="animations">
+          <value>
+            <list>
+              <option value="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/animations-2.0.2/lib" />
             </list>
           </value>
         </entry>
@@ -974,7 +988,9 @@
       <root url="file://$USER_HOME$/development/flutter/.pub-cache/git/charts-30477090290b348ed3101bc13017aae465f59017/charts_flutter/lib" />
       <root url="file://$USER_HOME$/development/flutter/.pub-cache/git/flutter_launcher_icons-fbbdadc7469864935033f1a67ff5e6f46f1598aa/lib" />
       <root url="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-30.0.0/lib" />
+      <root url="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/adaptive_dialog-1.2.0/lib" />
       <root url="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-2.7.0/lib" />
+      <root url="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/animations-2.0.2/lib" />
       <root url="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/ansicolor-2.0.1/lib" />
       <root url="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/archive-3.1.6/lib" />
       <root url="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/args-2.3.0/lib" />
