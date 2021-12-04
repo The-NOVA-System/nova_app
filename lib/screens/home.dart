@@ -751,6 +751,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                             return GestureDetector(
                               onTap: () async {
                                 final username = await showTextInputDialog(
+                                  style: AdaptiveStyle.material,
                                   context: context,
                                   textFields: [
                                     DialogTextField(
