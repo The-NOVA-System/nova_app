@@ -41,9 +41,13 @@ class _RegisterPageState extends State<RegisterPage> {
   // Create a new user account
   Future<String?> _createAccount() async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _registerEmail, password: _registerPassword);
-      return null;
+      if (_registerUsername == "") {
+        return 'The username must not be empty';
+      } else {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: _registerEmail, password: _registerPassword);
+        return null;
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         return 'The password provided is too weak.';
