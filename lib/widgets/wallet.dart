@@ -1096,7 +1096,7 @@ class _WalletState extends State<Wallet> {
                                 },
                                 child: Container(
                                   height: 23.0,
-                                  width: 75.0,
+                                  width: 100.0,
                                   decoration: BoxDecoration(
                                     color: Colors.transparent,
                                     border: Border.all(
@@ -1114,7 +1114,7 @@ class _WalletState extends State<Wallet> {
                                   child: Stack(
                                     children: [
                                       Center(
-                                        child: Text('Buy All',
+                                        child: Text('Spend All',
                                             style: TextStyle(
                                                 color: HexColor.fromHex(
                                                     color[1]))),
@@ -2609,7 +2609,7 @@ class _WalletState extends State<Wallet> {
                                 },
                                 child: Container(
                                   height: 23.0,
-                                  width: 75.0,
+                                  width: 100.0,
                                   decoration: BoxDecoration(
                                     color: Colors.transparent,
                                     border: Border.all(
