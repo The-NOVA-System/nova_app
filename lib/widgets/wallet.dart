@@ -12,7 +12,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 late Map<String, dynamic> userData;
 var fireStoreUserRef = FirebaseFirestore.instance
@@ -110,11 +109,11 @@ class Wallet extends StatefulWidget {
       {Key? key,
       this.name,
       this.icon,
-        required this.buttonActive,
-        this.index,
+      required this.buttonActive,
+      this.index,
       this.rate,
       this.color,
-        this.altRate,
+      this.altRate,
       this.alt,
       this.colorHex,
       this.day,
@@ -124,7 +123,7 @@ class Wallet extends StatefulWidget {
       this.ytd,
       this.buy,
       this.data,
-        required this.notifyParent})
+      required this.notifyParent})
       : super(key: key);
 
   @override
@@ -146,56 +145,58 @@ class _WalletState extends State<Wallet> {
   void initState() {
     super.initState();
     inputController = TextEditingController();
-    Future.delayed(Duration.zero, () => setState(() {
-          chartDataList = widget.data!;
-          _chartDataSeries.clear();
-          bool setIconColour = false;
-          bool setGraphColour = false;
+    Future.delayed(
+        Duration.zero,
+        () => setState(() {
+              chartDataList = widget.data!;
+              _chartDataSeries.clear();
+              bool setIconColour = false;
+              bool setGraphColour = false;
 
-          if (Config.getMode() == mode.uniform) {
-            setIconColour = true;
-            setGraphColour = true;
-          } else if (Config.getMode() == mode.graphUniform) {
-            setGraphColour = true;
-            color[1] = "";
-          }
+              if (Config.getMode() == mode.uniform) {
+                setIconColour = true;
+                setGraphColour = true;
+              } else if (Config.getMode() == mode.graphUniform) {
+                setGraphColour = true;
+                color[1] = "";
+              }
 
-          if (setGraphColour == true) {
-            color[0] =
-                charts.ColorUtil.fromDartColor(HexColor.fromHex(uniformColour));
-          }
+              if (setGraphColour == true) {
+                color[0] = charts.ColorUtil.fromDartColor(
+                    HexColor.fromHex(uniformColour));
+              }
 
-          if (setIconColour == true) {
-            color[1] = uniformColour;
-          }
+              if (setIconColour == true) {
+                color[1] = uniformColour;
+              }
 
-          // construct you're chart data series
-          _chartDataSeries.add(
-            charts.Series<PointModel, num>(
-              colorFn: (_, __) => color[0]!,
-              id: '${widget.name}',
-              data: chartDataList,
-              domainFn: (PointModel pointModel, _) => pointModel.pointX,
-              measureFn: (PointModel pointModel, _) => pointModel.pointY,
-            ),
-          );
+              // construct you're chart data series
+              _chartDataSeries.add(
+                charts.Series<PointModel, num>(
+                  colorFn: (_, __) => color[0]!,
+                  id: '${widget.name}',
+                  data: chartDataList,
+                  domainFn: (PointModel pointModel, _) => pointModel.pointX,
+                  measureFn: (PointModel pointModel, _) => pointModel.pointY,
+                ),
+              );
 
-          // now change the 'Loading...' widget with the real chart widget
-          lineChart = charts.LineChart(
-            _chartDataSeries,
-            defaultRenderer:
-                charts.LineRendererConfig(includeArea: true, stacked: true),
-            animate: true,
-            animationDuration: const Duration(milliseconds: 500),
-            primaryMeasureAxis: const charts.NumericAxisSpec(
-              renderSpec: charts.NoneRenderSpec(),
-            ),
-            domainAxis: const charts.NumericAxisSpec(
+              // now change the 'Loading...' widget with the real chart widget
+              lineChart = charts.LineChart(
+                _chartDataSeries,
+                defaultRenderer:
+                    charts.LineRendererConfig(includeArea: true, stacked: true),
+                animate: true,
+                animationDuration: const Duration(milliseconds: 500),
+                primaryMeasureAxis: const charts.NumericAxisSpec(
+                  renderSpec: charts.NoneRenderSpec(),
+                ),
+                domainAxis: const charts.NumericAxisSpec(
 //                showAxisLine: true,
-              renderSpec: charts.NoneRenderSpec(),
-            ),
-          );
-        }));
+                  renderSpec: charts.NoneRenderSpec(),
+                ),
+              );
+            }));
   }
 
   @override
@@ -239,63 +240,474 @@ class _WalletState extends State<Wallet> {
           buySellButton: (() {
             if (widget.buttonActive == true) {
               if (widget.buy == true) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (graphState == false) {
-                      lineChart = Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            FutureBuilder<DocumentSnapshot>(
-                              future: users
-                                  .doc(
-                                  FirebaseAuth.instance.currentUser!.uid)
-                                  .get(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<
-                                      DocumentSnapshot> snapshot) {
-                                if (snapshot.hasError) {
-                                  return const Text("Something went wrong");
-                                }
-
-                                if (snapshot.hasData &&
-                                    !snapshot.data!.exists) {
-                                  return const Text(
-                                      "Document does not exist");
-                                }
-
-                                if (snapshot.connectionState ==
-                                    ConnectionState.done) {
-                                  Map<String, dynamic> data = snapshot.data!
-                                      .data() as Map<String, dynamic>;
-
-                                  userData = data;
-
-                                  return Text(
-                                      "You have ${data['USD']} USD available",
-                                    textAlign: TextAlign.center,
-                                  );
-                                }
-
-                                return const CircularProgressIndicator();
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              height: 50,
-                              width: 250,
-                              child: TextField(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'How much to spend?',
-                                ),
-                                controller: inputController,
-                                onSubmitted: (String value) async {
-                                  if (value == "all") {
-                                    value = userData['USD'].toString();
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (graphState == false) {
+                        lineChart = Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              FutureBuilder<DocumentSnapshot>(
+                                future: users
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .get(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                  if (snapshot.hasError) {
+                                    return const Text("Something went wrong");
                                   }
+
+                                  if (snapshot.hasData &&
+                                      !snapshot.data!.exists) {
+                                    return const Text(
+                                        "Document does not exist");
+                                  }
+
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    Map<String, dynamic> data = snapshot.data!
+                                        .data() as Map<String, dynamic>;
+
+                                    userData = data;
+
+                                    return Text(
+                                      "You have ${data['USD']} USD available",
+                                      textAlign: TextAlign.center,
+                                    );
+                                  }
+
+                                  return const Text('');
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              SizedBox(
+                                height: 50,
+                                width: 250,
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'How much to spend?',
+                                  ),
+                                  controller: inputController,
+                                  onSubmitted: (String value) async {
+                                    if (value == "all") {
+                                      value = userData['USD'].toString();
+                                    }
+
+                                    if (wallets.locked == true) {
+                                      await showDialog<void>(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Slow Down!'),
+                                            content: const Text(
+                                                "aye slow down a bit, the last transaction hasn't finished processing yet"),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  setState(() {
+                                                    chartDataList =
+                                                        widget.data!;
+                                                    _chartDataSeries.clear();
+                                                    bool setIconColour = false;
+                                                    bool setGraphColour = false;
+
+                                                    if (Config.getMode() ==
+                                                        mode.uniform) {
+                                                      setIconColour = true;
+                                                      setGraphColour = true;
+                                                    } else if (Config
+                                                            .getMode() ==
+                                                        mode.graphUniform) {
+                                                      setGraphColour = true;
+                                                      color[1] = "";
+                                                    }
+
+                                                    if (setGraphColour ==
+                                                        true) {
+                                                      color[0] = charts
+                                                              .ColorUtil
+                                                          .fromDartColor(
+                                                              HexColor.fromHex(
+                                                                  uniformColour));
+                                                    }
+
+                                                    if (setIconColour == true) {
+                                                      color[1] = uniformColour;
+                                                    }
+
+                                                    // construct you're chart data series
+                                                    _chartDataSeries.add(
+                                                      charts.Series<PointModel,
+                                                          num>(
+                                                        colorFn: (_, __) =>
+                                                            color[0]!,
+                                                        id: '${widget.name}',
+                                                        data: chartDataList,
+                                                        domainFn: (PointModel
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointX,
+                                                        measureFn: (PointModel
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointY,
+                                                      ),
+                                                    );
+
+                                                    // now change the 'Loading...' widget with the real chart widget
+                                                    lineChart =
+                                                        charts.LineChart(
+                                                      _chartDataSeries,
+                                                      defaultRenderer: charts
+                                                          .LineRendererConfig(
+                                                              includeArea: true,
+                                                              stacked: true),
+                                                      animate: true,
+                                                      animationDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  500),
+                                                      primaryMeasureAxis:
+                                                          const charts
+                                                              .NumericAxisSpec(
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                      domainAxis: const charts
+                                                          .NumericAxisSpec(
+//                showAxisLine: true,
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                    );
+                                                  });
+                                                },
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    } else if (value != "" &&
+                                        value != "0" &&
+                                        value != "-0" &&
+                                        double.parse(value) > 0) {
+                                      if (userData['USD'] -
+                                              double.parse(value) >=
+                                          0) {
+                                        wallets.locked = true;
+
+                                        userData['assets'].add(widget.alt);
+
+                                        await fireStoreUserRef.update({
+                                          'assets': userData['assets']
+                                              .toSet()
+                                              .toList()
+                                        });
+
+                                        if (userData['${widget.alt}'] == null) {
+                                          await fireStoreUserRef.update({
+                                            '${widget.alt}':
+                                                double.parse(value) /
+                                                    double.parse(widget.rate!)
+                                          });
+                                        } else {
+                                          await fireStoreUserRef.update({
+                                            '${widget.alt}': userData[
+                                                    '${widget.alt}'] +
+                                                double.parse(value) /
+                                                    double.parse(widget.rate!)
+                                          });
+                                        }
+
+                                        await fireStoreUserRef.update({
+                                          'USD': userData['USD'] -
+                                              double.parse(value)
+                                        });
+
+                                        widget.notifyParent();
+
+                                        wallets.locked = false;
+
+                                        await showDialog<void>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Thanks!'),
+                                              content: Text(
+                                                  'You spent $value on ${widget.name}!'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    setState(() {
+                                                      chartDataList =
+                                                          widget.data!;
+                                                      _chartDataSeries.clear();
+                                                      bool setIconColour =
+                                                          false;
+                                                      bool setGraphColour =
+                                                          false;
+
+                                                      if (Config.getMode() ==
+                                                          mode.uniform) {
+                                                        setIconColour = true;
+                                                        setGraphColour = true;
+                                                      } else if (Config
+                                                              .getMode() ==
+                                                          mode.graphUniform) {
+                                                        setGraphColour = true;
+                                                        color[1] = "";
+                                                      }
+
+                                                      if (setGraphColour ==
+                                                          true) {
+                                                        color[0] = charts
+                                                                .ColorUtil
+                                                            .fromDartColor(
+                                                                HexColor.fromHex(
+                                                                    uniformColour));
+                                                      }
+
+                                                      if (setIconColour ==
+                                                          true) {
+                                                        color[1] =
+                                                            uniformColour;
+                                                      }
+
+                                                      // construct you're chart data series
+                                                      _chartDataSeries.add(
+                                                        charts.Series<
+                                                            PointModel, num>(
+                                                          colorFn: (_, __) =>
+                                                              color[0]!,
+                                                          id: '${widget.name}',
+                                                          data: chartDataList,
+                                                          domainFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointX,
+                                                          measureFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointY,
+                                                        ),
+                                                      );
+
+                                                      // now change the 'Loading...' widget with the real chart widget
+                                                      lineChart =
+                                                          charts.LineChart(
+                                                        _chartDataSeries,
+                                                        defaultRenderer: charts
+                                                            .LineRendererConfig(
+                                                                includeArea:
+                                                                    true,
+                                                                stacked: true),
+                                                        animate: true,
+                                                        animationDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                        primaryMeasureAxis:
+                                                            const charts
+                                                                .NumericAxisSpec(
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                        domainAxis: const charts
+                                                            .NumericAxisSpec(
+//                showAxisLine: true,
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                      );
+                                                    });
+                                                  },
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        await showDialog<void>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Sorry!'),
+                                              content: const Text(
+                                                  "You don't have enough money for this transaction :("),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    setState(() {
+                                                      chartDataList =
+                                                          widget.data!;
+                                                      _chartDataSeries.clear();
+                                                      bool setIconColour =
+                                                          false;
+                                                      bool setGraphColour =
+                                                          false;
+
+                                                      if (Config.getMode() ==
+                                                          mode.uniform) {
+                                                        setIconColour = true;
+                                                        setGraphColour = true;
+                                                      } else if (Config
+                                                              .getMode() ==
+                                                          mode.graphUniform) {
+                                                        setGraphColour = true;
+                                                        color[1] = "";
+                                                      }
+
+                                                      if (setGraphColour ==
+                                                          true) {
+                                                        color[0] = charts
+                                                                .ColorUtil
+                                                            .fromDartColor(
+                                                                HexColor.fromHex(
+                                                                    uniformColour));
+                                                      }
+
+                                                      if (setIconColour ==
+                                                          true) {
+                                                        color[1] =
+                                                            uniformColour;
+                                                      }
+
+                                                      // construct you're chart data series
+                                                      _chartDataSeries.add(
+                                                        charts.Series<
+                                                            PointModel, num>(
+                                                          colorFn: (_, __) =>
+                                                              color[0]!,
+                                                          id: '${widget.name}',
+                                                          data: chartDataList,
+                                                          domainFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointX,
+                                                          measureFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointY,
+                                                        ),
+                                                      );
+
+                                                      // now change the 'Loading...' widget with the real chart widget
+                                                      lineChart =
+                                                          charts.LineChart(
+                                                        _chartDataSeries,
+                                                        defaultRenderer: charts
+                                                            .LineRendererConfig(
+                                                                includeArea:
+                                                                    true,
+                                                                stacked: true),
+                                                        animate: true,
+                                                        animationDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                        primaryMeasureAxis:
+                                                            const charts
+                                                                .NumericAxisSpec(
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                        domainAxis: const charts
+                                                            .NumericAxisSpec(
+//                showAxisLine: true,
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                      );
+                                                    });
+                                                  },
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    } else {
+                                      setState(() {
+                                        chartDataList = widget.data!;
+                                        _chartDataSeries.clear();
+                                        bool setIconColour = false;
+                                        bool setGraphColour = false;
+
+                                        if (Config.getMode() == mode.uniform) {
+                                          setIconColour = true;
+                                          setGraphColour = true;
+                                        } else if (Config.getMode() ==
+                                            mode.graphUniform) {
+                                          setGraphColour = true;
+                                          color[1] = "";
+                                        }
+
+                                        if (setGraphColour == true) {
+                                          color[0] =
+                                              charts.ColorUtil.fromDartColor(
+                                                  HexColor.fromHex(
+                                                      uniformColour));
+                                        }
+
+                                        if (setIconColour == true) {
+                                          color[1] = uniformColour;
+                                        }
+
+                                        // construct you're chart data series
+                                        _chartDataSeries.add(
+                                          charts.Series<PointModel, num>(
+                                            colorFn: (_, __) => color[0]!,
+                                            id: '${widget.name}',
+                                            data: chartDataList,
+                                            domainFn:
+                                                (PointModel pointModel, _) =>
+                                                    pointModel.pointX,
+                                            measureFn:
+                                                (PointModel pointModel, _) =>
+                                                    pointModel.pointY,
+                                          ),
+                                        );
+
+                                        // now change the 'Loading...' widget with the real chart widget
+                                        lineChart = charts.LineChart(
+                                          _chartDataSeries,
+                                          defaultRenderer:
+                                              charts.LineRendererConfig(
+                                                  includeArea: true,
+                                                  stacked: true),
+                                          animate: true,
+                                          animationDuration:
+                                              const Duration(milliseconds: 500),
+                                          primaryMeasureAxis:
+                                              const charts.NumericAxisSpec(
+                                            renderSpec: charts.NoneRenderSpec(),
+                                          ),
+                                          domainAxis:
+                                              const charts.NumericAxisSpec(
+//                showAxisLine: true,
+                                            renderSpec: charts.NoneRenderSpec(),
+                                          ),
+                                        );
+                                      });
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text('or'),
+                              //const SizedBox(height: 5),
+                              GestureDetector(
+                                onTap: () async {
+                                  var value = userData['USD'].toString();
 
                                   if (wallets.locked == true) {
                                     await showDialog<void>(
@@ -310,89 +722,75 @@ class _WalletState extends State<Wallet> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 setState(() {
-                                                  chartDataList =
-                                                  widget.data!;
-                                                  _chartDataSeries
-                                                      .clear();
-                                                  bool setIconColour =
-                                                  false;
-                                                  bool setGraphColour =
-                                                  false;
+                                                  chartDataList = widget.data!;
+                                                  _chartDataSeries.clear();
+                                                  bool setIconColour = false;
+                                                  bool setGraphColour = false;
 
                                                   if (Config.getMode() ==
                                                       mode.uniform) {
                                                     setIconColour = true;
                                                     setGraphColour = true;
-                                                  } else if (Config
-                                                      .getMode() ==
+                                                  } else if (Config.getMode() ==
                                                       mode.graphUniform) {
                                                     setGraphColour = true;
                                                     color[1] = "";
                                                   }
 
-                                                  if (setGraphColour ==
-                                                      true) {
-                                                    color[0] = charts
-                                                        .ColorUtil
+                                                  if (setGraphColour == true) {
+                                                    color[0] = charts.ColorUtil
                                                         .fromDartColor(
-                                                        HexColor.fromHex(
-                                                            uniformColour));
+                                                            HexColor.fromHex(
+                                                                uniformColour));
                                                   }
 
-                                                  if (setIconColour ==
-                                                      true) {
-                                                    color[1] =
-                                                        uniformColour;
+                                                  if (setIconColour == true) {
+                                                    color[1] = uniformColour;
                                                   }
 
                                                   // construct you're chart data series
                                                   _chartDataSeries.add(
-                                                    charts.Series<
-                                                        PointModel,
+                                                    charts.Series<PointModel,
                                                         num>(
                                                       colorFn: (_, __) =>
-                                                      color[0]!,
-                                                      id: '${widget
-                                                          .name}',
+                                                          color[0]!,
+                                                      id: '${widget.name}',
                                                       data: chartDataList,
                                                       domainFn: (PointModel
-                                                      pointModel,
-                                                          _) =>
-                                                      pointModel.pointX,
+                                                                  pointModel,
+                                                              _) =>
+                                                          pointModel.pointX,
                                                       measureFn: (PointModel
-                                                      pointModel,
-                                                          _) =>
-                                                      pointModel.pointY,
+                                                                  pointModel,
+                                                              _) =>
+                                                          pointModel.pointY,
                                                     ),
                                                   );
 
                                                   // now change the 'Loading...' widget with the real chart widget
-                                                  lineChart =
-                                                      charts.LineChart(
-                                                        _chartDataSeries,
-                                                        defaultRenderer: charts
-                                                            .LineRendererConfig(
-                                                            includeArea:
-                                                            true,
+                                                  lineChart = charts.LineChart(
+                                                    _chartDataSeries,
+                                                    defaultRenderer: charts
+                                                        .LineRendererConfig(
+                                                            includeArea: true,
                                                             stacked: true),
-                                                        animate: true,
-                                                        animationDuration:
+                                                    animate: true,
+                                                    animationDuration:
                                                         const Duration(
-                                                            milliseconds:
-                                                            500),
-                                                        primaryMeasureAxis:
+                                                            milliseconds: 500),
+                                                    primaryMeasureAxis:
                                                         const charts
                                                             .NumericAxisSpec(
-                                                          renderSpec: charts
-                                                              .NoneRenderSpec(),
-                                                        ),
-                                                        domainAxis: const charts
-                                                            .NumericAxisSpec(
+                                                      renderSpec: charts
+                                                          .NoneRenderSpec(),
+                                                    ),
+                                                    domainAxis: const charts
+                                                        .NumericAxisSpec(
 //                showAxisLine: true,
-                                                          renderSpec: charts
-                                                              .NoneRenderSpec(),
-                                                        ),
-                                                      );
+                                                      renderSpec: charts
+                                                          .NoneRenderSpec(),
+                                                    ),
+                                                  );
                                                 });
                                               },
                                               child: const Text('OK'),
@@ -401,34 +799,32 @@ class _WalletState extends State<Wallet> {
                                         );
                                       },
                                     );
-                                  } else if (value != "" && value != "0" && value != "-0" && double.parse(value) > 0) {
-                                    if (userData['USD'] -
-                                        double.parse(value) >=
+                                  } else if (value != "" &&
+                                      value != "0" &&
+                                      value != "-0" &&
+                                      double.parse(value) > 0) {
+                                    if (userData['USD'] - double.parse(value) >=
                                         0) {
-
                                       wallets.locked = true;
 
                                       userData['assets'].add(widget.alt);
 
                                       await fireStoreUserRef.update({
-                                        'assets': userData['assets']
-                                            .toSet()
-                                            .toList()
+                                        'assets':
+                                            userData['assets'].toSet().toList()
                                       });
 
-                                      if (userData['${widget.alt}'] ==
-                                          null) {
+                                      if (userData['${widget.alt}'] == null) {
                                         await fireStoreUserRef.update({
-                                          '${widget.alt}':
-                                          double.parse(value) /
+                                          '${widget.alt}': double.parse(value) /
                                               double.parse(widget.rate!)
                                         });
                                       } else {
                                         await fireStoreUserRef.update({
-                                          '${widget.alt}': userData[
-                                          '${widget.alt}'] +
-                                              double.parse(value) /
-                                                  double.parse(widget.rate!)
+                                          '${widget.alt}':
+                                              userData['${widget.alt}'] +
+                                                  double.parse(value) /
+                                                      double.parse(widget.rate!)
                                         });
                                       }
 
@@ -447,28 +843,24 @@ class _WalletState extends State<Wallet> {
                                           return AlertDialog(
                                             title: const Text('Thanks!'),
                                             content: Text(
-                                                'You spent $value on ${widget
-                                                    .name}!'),
+                                                'You spent $value on ${widget.name}!'),
                                             actions: <Widget>[
                                               TextButton(
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                   setState(() {
                                                     chartDataList =
-                                                    widget.data!;
-                                                    _chartDataSeries
-                                                        .clear();
-                                                    bool setIconColour =
-                                                    false;
-                                                    bool setGraphColour =
-                                                    false;
+                                                        widget.data!;
+                                                    _chartDataSeries.clear();
+                                                    bool setIconColour = false;
+                                                    bool setGraphColour = false;
 
                                                     if (Config.getMode() ==
                                                         mode.uniform) {
                                                       setIconColour = true;
                                                       setGraphColour = true;
                                                     } else if (Config
-                                                        .getMode() ==
+                                                            .getMode() ==
                                                         mode.graphUniform) {
                                                       setGraphColour = true;
                                                       color[1] = "";
@@ -477,66 +869,61 @@ class _WalletState extends State<Wallet> {
                                                     if (setGraphColour ==
                                                         true) {
                                                       color[0] = charts
-                                                          .ColorUtil
+                                                              .ColorUtil
                                                           .fromDartColor(
-                                                          HexColor.fromHex(
-                                                              uniformColour));
+                                                              HexColor.fromHex(
+                                                                  uniformColour));
                                                     }
 
-                                                    if (setIconColour ==
-                                                        true) {
-                                                      color[1] =
-                                                          uniformColour;
+                                                    if (setIconColour == true) {
+                                                      color[1] = uniformColour;
                                                     }
 
                                                     // construct you're chart data series
                                                     _chartDataSeries.add(
-                                                      charts.Series<
-                                                          PointModel,
+                                                      charts.Series<PointModel,
                                                           num>(
                                                         colorFn: (_, __) =>
-                                                        color[0]!,
-                                                        id: '${widget
-                                                            .name}',
+                                                            color[0]!,
+                                                        id: '${widget.name}',
                                                         data: chartDataList,
                                                         domainFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointX,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointX,
                                                         measureFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointY,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointY,
                                                       ),
                                                     );
 
                                                     // now change the 'Loading...' widget with the real chart widget
                                                     lineChart =
                                                         charts.LineChart(
-                                                          _chartDataSeries,
-                                                          defaultRenderer: charts
-                                                              .LineRendererConfig(
-                                                              includeArea:
-                                                              true,
+                                                      _chartDataSeries,
+                                                      defaultRenderer: charts
+                                                          .LineRendererConfig(
+                                                              includeArea: true,
                                                               stacked: true),
-                                                          animate: true,
-                                                          animationDuration:
+                                                      animate: true,
+                                                      animationDuration:
                                                           const Duration(
                                                               milliseconds:
-                                                              500),
-                                                          primaryMeasureAxis:
+                                                                  500),
+                                                      primaryMeasureAxis:
                                                           const charts
                                                               .NumericAxisSpec(
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                          domainAxis: const charts
-                                                              .NumericAxisSpec(
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                      domainAxis: const charts
+                                                          .NumericAxisSpec(
 //                showAxisLine: true,
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                        );
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                    );
                                                   });
                                                 },
                                                 child: const Text('OK'),
@@ -559,20 +946,17 @@ class _WalletState extends State<Wallet> {
                                                   Navigator.pop(context);
                                                   setState(() {
                                                     chartDataList =
-                                                    widget.data!;
-                                                    _chartDataSeries
-                                                        .clear();
-                                                    bool setIconColour =
-                                                    false;
-                                                    bool setGraphColour =
-                                                    false;
+                                                        widget.data!;
+                                                    _chartDataSeries.clear();
+                                                    bool setIconColour = false;
+                                                    bool setGraphColour = false;
 
                                                     if (Config.getMode() ==
                                                         mode.uniform) {
                                                       setIconColour = true;
                                                       setGraphColour = true;
                                                     } else if (Config
-                                                        .getMode() ==
+                                                            .getMode() ==
                                                         mode.graphUniform) {
                                                       setGraphColour = true;
                                                       color[1] = "";
@@ -581,66 +965,61 @@ class _WalletState extends State<Wallet> {
                                                     if (setGraphColour ==
                                                         true) {
                                                       color[0] = charts
-                                                          .ColorUtil
+                                                              .ColorUtil
                                                           .fromDartColor(
-                                                          HexColor.fromHex(
-                                                              uniformColour));
+                                                              HexColor.fromHex(
+                                                                  uniformColour));
                                                     }
 
-                                                    if (setIconColour ==
-                                                        true) {
-                                                      color[1] =
-                                                          uniformColour;
+                                                    if (setIconColour == true) {
+                                                      color[1] = uniformColour;
                                                     }
 
                                                     // construct you're chart data series
                                                     _chartDataSeries.add(
-                                                      charts.Series<
-                                                          PointModel,
+                                                      charts.Series<PointModel,
                                                           num>(
                                                         colorFn: (_, __) =>
-                                                        color[0]!,
-                                                        id: '${widget
-                                                            .name}',
+                                                            color[0]!,
+                                                        id: '${widget.name}',
                                                         data: chartDataList,
                                                         domainFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointX,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointX,
                                                         measureFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointY,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointY,
                                                       ),
                                                     );
 
                                                     // now change the 'Loading...' widget with the real chart widget
                                                     lineChart =
                                                         charts.LineChart(
-                                                          _chartDataSeries,
-                                                          defaultRenderer: charts
-                                                              .LineRendererConfig(
-                                                              includeArea:
-                                                              true,
+                                                      _chartDataSeries,
+                                                      defaultRenderer: charts
+                                                          .LineRendererConfig(
+                                                              includeArea: true,
                                                               stacked: true),
-                                                          animate: true,
-                                                          animationDuration:
+                                                      animate: true,
+                                                      animationDuration:
                                                           const Duration(
                                                               milliseconds:
-                                                              500),
-                                                          primaryMeasureAxis:
+                                                                  500),
+                                                      primaryMeasureAxis:
                                                           const charts
                                                               .NumericAxisSpec(
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                          domainAxis: const charts
-                                                              .NumericAxisSpec(
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                      domainAxis: const charts
+                                                          .NumericAxisSpec(
 //                showAxisLine: true,
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                        );
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                    );
                                                   });
                                                 },
                                                 child: const Text('OK'),
@@ -657,8 +1036,7 @@ class _WalletState extends State<Wallet> {
                                       bool setIconColour = false;
                                       bool setGraphColour = false;
 
-                                      if (Config.getMode() ==
-                                          mode.uniform) {
+                                      if (Config.getMode() == mode.uniform) {
                                         setIconColour = true;
                                         setGraphColour = true;
                                       } else if (Config.getMode() ==
@@ -686,10 +1064,10 @@ class _WalletState extends State<Wallet> {
                                           data: chartDataList,
                                           domainFn:
                                               (PointModel pointModel, _) =>
-                                          pointModel.pointX,
+                                                  pointModel.pointX,
                                           measureFn:
                                               (PointModel pointModel, _) =>
-                                          pointModel.pointY,
+                                                  pointModel.pointY,
                                         ),
                                       );
 
@@ -697,551 +1075,1025 @@ class _WalletState extends State<Wallet> {
                                       lineChart = charts.LineChart(
                                         _chartDataSeries,
                                         defaultRenderer:
-                                        charts.LineRendererConfig(
-                                            includeArea: true,
-                                            stacked: true),
+                                            charts.LineRendererConfig(
+                                                includeArea: true,
+                                                stacked: true),
                                         animate: true,
                                         animationDuration:
-                                        const Duration(milliseconds: 500),
+                                            const Duration(milliseconds: 500),
                                         primaryMeasureAxis:
-                                        const charts.NumericAxisSpec(
-                                          renderSpec: charts
-                                              .NoneRenderSpec(),
+                                            const charts.NumericAxisSpec(
+                                          renderSpec: charts.NoneRenderSpec(),
                                         ),
                                         domainAxis:
-                                        const charts.NumericAxisSpec(
+                                            const charts.NumericAxisSpec(
 //                showAxisLine: true,
-                                          renderSpec: charts
-                                              .NoneRenderSpec(),
+                                          renderSpec: charts.NoneRenderSpec(),
                                         ),
                                       );
                                     });
                                   }
                                 },
+                                child: Container(
+                                  height: 23.0,
+                                  width: 75.0,
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    border: Border.all(
+                                      color: HexColor.fromHex(color[1]),
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      12.0,
+                                    ),
+                                  ),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 24.0,
+                                    vertical: 8.0,
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Text('Buy All',
+                                            style: TextStyle(
+                                                color: HexColor.fromHex(
+                                                    color[1]))),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                      graphState = true;
-                    } else {
-                      void submitValue(String value) async {
-                        if (value == "all") {
-                          value = userData['USD'].toString();
+                            ],
+                          ),
+                        );
+                        graphState = true;
+                      } else {
+                        void submitValue(String value) async {
+                          if (value == "all") {
+                            value = userData['USD'].toString();
+                          }
+
+                          if (wallets.locked == true) {
+                            await showDialog<void>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Slow Down!'),
+                                  content: const Text(
+                                      "aye slow down a bit, the last transaction hasn't finished processing yet"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          chartDataList = widget.data!;
+                                          _chartDataSeries.clear();
+                                          bool setIconColour = false;
+                                          bool setGraphColour = false;
+
+                                          if (Config.getMode() ==
+                                              mode.uniform) {
+                                            setIconColour = true;
+                                            setGraphColour = true;
+                                          } else if (Config.getMode() ==
+                                              mode.graphUniform) {
+                                            setGraphColour = true;
+                                            color[1] = "";
+                                          }
+
+                                          if (setGraphColour == true) {
+                                            color[0] =
+                                                charts.ColorUtil.fromDartColor(
+                                                    HexColor.fromHex(
+                                                        uniformColour));
+                                          }
+
+                                          if (setIconColour == true) {
+                                            color[1] = uniformColour;
+                                          }
+
+                                          // construct you're chart data series
+                                          _chartDataSeries.add(
+                                            charts.Series<PointModel, num>(
+                                              colorFn: (_, __) => color[0]!,
+                                              id: '${widget.name}',
+                                              data: chartDataList,
+                                              domainFn:
+                                                  (PointModel pointModel, _) =>
+                                                      pointModel.pointX,
+                                              measureFn:
+                                                  (PointModel pointModel, _) =>
+                                                      pointModel.pointY,
+                                            ),
+                                          );
+
+                                          // now change the 'Loading...' widget with the real chart widget
+                                          lineChart = charts.LineChart(
+                                            _chartDataSeries,
+                                            defaultRenderer:
+                                                charts.LineRendererConfig(
+                                                    includeArea: true,
+                                                    stacked: true),
+                                            animate: true,
+                                            animationDuration: const Duration(
+                                                milliseconds: 500),
+                                            primaryMeasureAxis:
+                                                const charts.NumericAxisSpec(
+                                              renderSpec:
+                                                  charts.NoneRenderSpec(),
+                                            ),
+                                            domainAxis:
+                                                const charts.NumericAxisSpec(
+//                showAxisLine: true,
+                                              renderSpec:
+                                                  charts.NoneRenderSpec(),
+                                            ),
+                                          );
+                                        });
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else if (value != "" &&
+                              value != "0" &&
+                              value != "-0" &&
+                              double.parse(value) > 0) {
+                            if (userData['USD'] - double.parse(value) >= 0) {
+                              wallets.locked = true;
+
+                              userData['assets'].add(widget.alt);
+                              await fireStoreUserRef.update({
+                                'assets': userData['assets'].toSet().toList()
+                              });
+
+                              if (userData['${widget.alt}'] == null) {
+                                await fireStoreUserRef.update({
+                                  '${widget.alt}': double.parse(value) /
+                                      double.parse(widget.rate!)
+                                });
+                              } else {
+                                await fireStoreUserRef.update({
+                                  '${widget.alt}': userData['${widget.alt}'] +
+                                      double.parse(value) /
+                                          double.parse(widget.rate!)
+                                });
+                              }
+
+                              await fireStoreUserRef.update({
+                                'USD': userData['USD'] - double.parse(value)
+                              });
+
+                              widget.notifyParent();
+
+                              wallets.locked = false;
+
+                              await showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Thanks!'),
+                                    content: Text(
+                                        'You spent $value on ${widget.name}!'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            chartDataList = widget.data!;
+                                            _chartDataSeries.clear();
+                                            bool setIconColour = false;
+                                            bool setGraphColour = false;
+
+                                            if (Config.getMode() ==
+                                                mode.uniform) {
+                                              setIconColour = true;
+                                              setGraphColour = true;
+                                            } else if (Config.getMode() ==
+                                                mode.graphUniform) {
+                                              setGraphColour = true;
+                                              color[1] = "";
+                                            }
+
+                                            if (setGraphColour == true) {
+                                              color[0] = charts.ColorUtil
+                                                  .fromDartColor(
+                                                      HexColor.fromHex(
+                                                          uniformColour));
+                                            }
+
+                                            if (setIconColour == true) {
+                                              color[1] = uniformColour;
+                                            }
+
+                                            // construct you're chart data series
+                                            _chartDataSeries.add(
+                                              charts.Series<PointModel, num>(
+                                                colorFn: (_, __) => color[0]!,
+                                                id: '${widget.name}',
+                                                data: chartDataList,
+                                                domainFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointX,
+                                                measureFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointY,
+                                              ),
+                                            );
+
+                                            // now change the 'Loading...' widget with the real chart widget
+                                            lineChart = charts.LineChart(
+                                              _chartDataSeries,
+                                              defaultRenderer:
+                                                  charts.LineRendererConfig(
+                                                      includeArea: true,
+                                                      stacked: true),
+                                              animate: true,
+                                              animationDuration: const Duration(
+                                                  milliseconds: 500),
+                                              primaryMeasureAxis:
+                                                  const charts.NumericAxisSpec(
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                              domainAxis:
+                                                  const charts.NumericAxisSpec(
+//                showAxisLine: true,
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                            );
+                                          });
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              await showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Sorry!'),
+                                    content: const Text(
+                                        "You don't have enough money for this transaction :("),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            chartDataList = widget.data!;
+                                            _chartDataSeries.clear();
+                                            bool setIconColour = false;
+                                            bool setGraphColour = false;
+
+                                            if (Config.getMode() ==
+                                                mode.uniform) {
+                                              setIconColour = true;
+                                              setGraphColour = true;
+                                            } else if (Config.getMode() ==
+                                                mode.graphUniform) {
+                                              setGraphColour = true;
+                                              color[1] = "";
+                                            }
+
+                                            if (setGraphColour == true) {
+                                              color[0] = charts.ColorUtil
+                                                  .fromDartColor(
+                                                      HexColor.fromHex(
+                                                          uniformColour));
+                                            }
+
+                                            if (setIconColour == true) {
+                                              color[1] = uniformColour;
+                                            }
+
+                                            // construct you're chart data series
+                                            _chartDataSeries.add(
+                                              charts.Series<PointModel, num>(
+                                                colorFn: (_, __) => color[0]!,
+                                                id: '${widget.name}',
+                                                data: chartDataList,
+                                                domainFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointX,
+                                                measureFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointY,
+                                              ),
+                                            );
+
+                                            // now change the 'Loading...' widget with the real chart widget
+                                            lineChart = charts.LineChart(
+                                              _chartDataSeries,
+                                              defaultRenderer:
+                                                  charts.LineRendererConfig(
+                                                      includeArea: true,
+                                                      stacked: true),
+                                              animate: true,
+                                              animationDuration: const Duration(
+                                                  milliseconds: 500),
+                                              primaryMeasureAxis:
+                                                  const charts.NumericAxisSpec(
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                              domainAxis:
+                                                  const charts.NumericAxisSpec(
+//                showAxisLine: true,
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                            );
+                                          });
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          } else {
+                            setState(() {
+                              chartDataList = widget.data!;
+                              _chartDataSeries.clear();
+                              bool setIconColour = false;
+                              bool setGraphColour = false;
+
+                              if (Config.getMode() == mode.uniform) {
+                                setIconColour = true;
+                                setGraphColour = true;
+                              } else if (Config.getMode() ==
+                                  mode.graphUniform) {
+                                setGraphColour = true;
+                                color[1] = "";
+                              }
+
+                              if (setGraphColour == true) {
+                                color[0] = charts.ColorUtil.fromDartColor(
+                                    HexColor.fromHex(uniformColour));
+                              }
+
+                              if (setIconColour == true) {
+                                color[1] = uniformColour;
+                              }
+
+                              // construct you're chart data series
+                              _chartDataSeries.add(
+                                charts.Series<PointModel, num>(
+                                  colorFn: (_, __) => color[0]!,
+                                  id: '${widget.name}',
+                                  data: chartDataList,
+                                  domainFn: (PointModel pointModel, _) =>
+                                      pointModel.pointX,
+                                  measureFn: (PointModel pointModel, _) =>
+                                      pointModel.pointY,
+                                ),
+                              );
+
+                              // now change the 'Loading...' widget with the real chart widget
+                              lineChart = charts.LineChart(
+                                _chartDataSeries,
+                                defaultRenderer: charts.LineRendererConfig(
+                                    includeArea: true, stacked: true),
+                                animate: true,
+                                animationDuration:
+                                    const Duration(milliseconds: 500),
+                                primaryMeasureAxis:
+                                    const charts.NumericAxisSpec(
+                                  renderSpec: charts.NoneRenderSpec(),
+                                ),
+                                domainAxis: const charts.NumericAxisSpec(
+//                showAxisLine: true,
+                                  renderSpec: charts.NoneRenderSpec(),
+                                ),
+                              );
+                            });
+                          }
                         }
 
-                        if (wallets.locked == true) {
-                          await showDialog<void>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Slow Down!'),
-                                content: const Text(
-                                    "aye slow down a bit, the last transaction hasn't finished processing yet"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      setState(() {
-                                        chartDataList =
-                                        widget.data!;
-                                        _chartDataSeries
-                                            .clear();
-                                        bool setIconColour =
-                                        false;
-                                        bool setGraphColour =
-                                        false;
+                        submitValue(inputController.text.toString());
+                        graphState = false;
+                      }
+                    });
+                  },
+                  child: Container(
+                    height: 30.0,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(
+                        12.0,
+                      ),
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8.0,
+                    ),
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Text('Buy',
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary)),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (graphState == false) {
+                        lineChart = Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              FutureBuilder<DocumentSnapshot>(
+                                future: users
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .get(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                  if (snapshot.hasError) {
+                                    return const Text("Something went wrong");
+                                  }
 
-                                        if (Config.getMode() ==
-                                            mode.uniform) {
+                                  if (snapshot.hasData &&
+                                      !snapshot.data!.exists) {
+                                    return const Text(
+                                        "Document does not exist");
+                                  }
+
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    Map<String, dynamic> data = snapshot.data!
+                                        .data() as Map<String, dynamic>;
+
+                                    userData = data;
+
+                                    return Text(
+                                      "You have ${data[widget.alt]} ${widget.name} available",
+                                      textAlign: TextAlign.center,
+                                    );
+                                  }
+
+                                  return const Text('');
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              SizedBox(
+                                height: 50,
+                                width: 250,
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'How much to sell?',
+                                  ),
+                                  controller: inputController,
+                                  onSubmitted: (String value) async {
+                                    var all = false;
+                                    if (value == "all") {
+                                      value = userData[widget.alt].toString();
+                                      all = true;
+                                    } //blip
+
+                                    if (wallets.locked == true) {
+                                      await showDialog<void>(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Slow Down!'),
+                                            content: const Text(
+                                                "aye slow down a bit, the last transaction hasn't finished processing yet"),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  setState(() {
+                                                    chartDataList =
+                                                        widget.data!;
+                                                    _chartDataSeries.clear();
+                                                    bool setIconColour = false;
+                                                    bool setGraphColour = false;
+
+                                                    if (Config.getMode() ==
+                                                        mode.uniform) {
+                                                      setIconColour = true;
+                                                      setGraphColour = true;
+                                                    } else if (Config
+                                                            .getMode() ==
+                                                        mode.graphUniform) {
+                                                      setGraphColour = true;
+                                                      color[1] = "";
+                                                    }
+
+                                                    if (setGraphColour ==
+                                                        true) {
+                                                      color[0] = charts
+                                                              .ColorUtil
+                                                          .fromDartColor(
+                                                              HexColor.fromHex(
+                                                                  uniformColour));
+                                                    }
+
+                                                    if (setIconColour == true) {
+                                                      color[1] = uniformColour;
+                                                    }
+
+                                                    // construct you're chart data series
+                                                    _chartDataSeries.add(
+                                                      charts.Series<PointModel,
+                                                          num>(
+                                                        colorFn: (_, __) =>
+                                                            color[0]!,
+                                                        id: '${widget.name}',
+                                                        data: chartDataList,
+                                                        domainFn: (PointModel
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointX,
+                                                        measureFn: (PointModel
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointY,
+                                                      ),
+                                                    );
+
+                                                    // now change the 'Loading...' widget with the real chart widget
+                                                    lineChart =
+                                                        charts.LineChart(
+                                                      _chartDataSeries,
+                                                      defaultRenderer: charts
+                                                          .LineRendererConfig(
+                                                              includeArea: true,
+                                                              stacked: true),
+                                                      animate: true,
+                                                      animationDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  500),
+                                                      primaryMeasureAxis:
+                                                          const charts
+                                                              .NumericAxisSpec(
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                      domainAxis: const charts
+                                                          .NumericAxisSpec(
+//                showAxisLine: true,
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                    );
+                                                  });
+                                                },
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    } else if (value != "" &&
+                                        value != "0" &&
+                                        value != "-0") {
+                                      if (userData[widget.alt] -
+                                                  double.parse(value) >
+                                              0 &&
+                                          double.parse(value) >= 0) {
+                                        wallets.locked = true;
+
+                                        await fireStoreUserRef.update({
+                                          'USD': userData['USD'] +
+                                              (double.parse(value) *
+                                                  double.parse(widget.altRate!))
+                                        });
+
+                                        await fireStoreUserRef.update({
+                                          '${widget.alt}':
+                                              userData[widget.alt] -
+                                                  double.parse(value)
+                                        });
+
+                                        widget.notifyParent();
+
+                                        wallets.locked = false;
+
+                                        await showDialog<void>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Thanks!'),
+                                              content: Text(
+                                                  'You withdrew $value from ${widget.name}, and got ${double.parse(value) * double.parse(widget.altRate!)} USD! LL'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    setState(() {
+                                                      chartDataList =
+                                                          widget.data!;
+                                                      _chartDataSeries.clear();
+                                                      bool setIconColour =
+                                                          false;
+                                                      bool setGraphColour =
+                                                          false;
+
+                                                      if (Config.getMode() ==
+                                                          mode.uniform) {
+                                                        setIconColour = true;
+                                                        setGraphColour = true;
+                                                      } else if (Config
+                                                              .getMode() ==
+                                                          mode.graphUniform) {
+                                                        setGraphColour = true;
+                                                        color[1] = "";
+                                                      }
+
+                                                      if (setGraphColour ==
+                                                          true) {
+                                                        color[0] = charts
+                                                                .ColorUtil
+                                                            .fromDartColor(
+                                                                HexColor.fromHex(
+                                                                    uniformColour));
+                                                      }
+
+                                                      if (setIconColour ==
+                                                          true) {
+                                                        color[1] =
+                                                            uniformColour;
+                                                      }
+
+                                                      // construct you're chart data series
+                                                      _chartDataSeries.add(
+                                                        charts.Series<
+                                                            PointModel, num>(
+                                                          colorFn: (_, __) =>
+                                                              color[0]!,
+                                                          id: '${widget.name}',
+                                                          data: chartDataList,
+                                                          domainFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointX,
+                                                          measureFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointY,
+                                                        ),
+                                                      );
+
+                                                      // now change the 'Loading...' widget with the real chart widget
+                                                      lineChart =
+                                                          charts.LineChart(
+                                                        _chartDataSeries,
+                                                        defaultRenderer: charts
+                                                            .LineRendererConfig(
+                                                                includeArea:
+                                                                    true,
+                                                                stacked: true),
+                                                        animate: true,
+                                                        animationDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                        primaryMeasureAxis:
+                                                            const charts
+                                                                .NumericAxisSpec(
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                        domainAxis: const charts
+                                                            .NumericAxisSpec(
+                                                          //                showAxisLine: true,
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                      );
+                                                    });
+                                                  },
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else if (userData[widget.alt] -
+                                                  double.parse(value) ==
+                                              0 ||
+                                          all) {
+                                        wallets.locked = true;
+
+                                        await fireStoreUserRef.update({
+                                          'USD': userData['USD'] +
+                                              (userData[widget.alt] *
+                                                  double.parse(widget.altRate!))
+                                        });
+
+                                        await fireStoreUserRef
+                                            .update({'${widget.alt}': 0});
+
+                                        userData['assets'].remove(widget.alt);
+
+                                        await fireStoreUserRef.update(
+                                            {'assets': userData['assets']});
+
+                                        widget.notifyParent();
+
+                                        wallets.locked = false;
+
+                                        await showDialog<void>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Thanks!'),
+                                              content: Text(
+                                                  'You withdrew $value from ${widget.name}, and got ${double.parse(value) * double.parse(widget.altRate!)} USD!'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    setState(() {
+                                                      chartDataList =
+                                                          widget.data!;
+                                                      _chartDataSeries.clear();
+                                                      bool setIconColour =
+                                                          false;
+                                                      bool setGraphColour =
+                                                          false;
+
+                                                      if (Config.getMode() ==
+                                                          mode.uniform) {
+                                                        setIconColour = true;
+                                                        setGraphColour = true;
+                                                      } else if (Config
+                                                              .getMode() ==
+                                                          mode.graphUniform) {
+                                                        setGraphColour = true;
+                                                        color[1] = "";
+                                                      }
+
+                                                      if (setGraphColour ==
+                                                          true) {
+                                                        color[0] = charts
+                                                                .ColorUtil
+                                                            .fromDartColor(
+                                                                HexColor.fromHex(
+                                                                    uniformColour));
+                                                      }
+
+                                                      if (setIconColour ==
+                                                          true) {
+                                                        color[1] =
+                                                            uniformColour;
+                                                      }
+
+                                                      // construct you're chart data series
+                                                      _chartDataSeries.add(
+                                                        charts.Series<
+                                                            PointModel, num>(
+                                                          colorFn: (_, __) =>
+                                                              color[0]!,
+                                                          id: '${widget.name}',
+                                                          data: chartDataList,
+                                                          domainFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointX,
+                                                          measureFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointY,
+                                                        ),
+                                                      );
+
+                                                      // now change the 'Loading...' widget with the real chart widget
+                                                      lineChart =
+                                                          charts.LineChart(
+                                                        _chartDataSeries,
+                                                        defaultRenderer: charts
+                                                            .LineRendererConfig(
+                                                                includeArea:
+                                                                    true,
+                                                                stacked: true),
+                                                        animate: true,
+                                                        animationDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                        primaryMeasureAxis:
+                                                            const charts
+                                                                .NumericAxisSpec(
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                        domainAxis: const charts
+                                                            .NumericAxisSpec(
+                                                          //                showAxisLine: true,
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                      );
+                                                    });
+                                                  },
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        await showDialog<void>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Sorry!'),
+                                              content: const Text(
+                                                  "You don't have enough money for this transaction :("),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    setState(() {
+                                                      chartDataList =
+                                                          widget.data!;
+                                                      _chartDataSeries.clear();
+                                                      bool setIconColour =
+                                                          false;
+                                                      bool setGraphColour =
+                                                          false;
+
+                                                      if (Config.getMode() ==
+                                                          mode.uniform) {
+                                                        setIconColour = true;
+                                                        setGraphColour = true;
+                                                      } else if (Config
+                                                              .getMode() ==
+                                                          mode.graphUniform) {
+                                                        setGraphColour = true;
+                                                        color[1] = "";
+                                                      }
+
+                                                      if (setGraphColour ==
+                                                          true) {
+                                                        color[0] = charts
+                                                                .ColorUtil
+                                                            .fromDartColor(
+                                                                HexColor.fromHex(
+                                                                    uniformColour));
+                                                      }
+
+                                                      if (setIconColour ==
+                                                          true) {
+                                                        color[1] =
+                                                            uniformColour;
+                                                      }
+
+                                                      // construct you're chart data series
+                                                      _chartDataSeries.add(
+                                                        charts.Series<
+                                                            PointModel, num>(
+                                                          colorFn: (_, __) =>
+                                                              color[0]!,
+                                                          id: '${widget.name}',
+                                                          data: chartDataList,
+                                                          domainFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointX,
+                                                          measureFn: (PointModel
+                                                                      pointModel,
+                                                                  _) =>
+                                                              pointModel.pointY,
+                                                        ),
+                                                      );
+
+                                                      // now change the 'Loading...' widget with the real chart widget
+                                                      lineChart =
+                                                          charts.LineChart(
+                                                        _chartDataSeries,
+                                                        defaultRenderer: charts
+                                                            .LineRendererConfig(
+                                                                includeArea:
+                                                                    true,
+                                                                stacked: true),
+                                                        animate: true,
+                                                        animationDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                        primaryMeasureAxis:
+                                                            const charts
+                                                                .NumericAxisSpec(
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                        domainAxis: const charts
+                                                            .NumericAxisSpec(
+                                                          //                showAxisLine: true,
+                                                          renderSpec: charts
+                                                              .NoneRenderSpec(),
+                                                        ),
+                                                      );
+                                                    });
+                                                  },
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    } else {
+                                      setState(() {
+                                        chartDataList = widget.data!;
+                                        _chartDataSeries.clear();
+                                        bool setIconColour = false;
+                                        bool setGraphColour = false;
+
+                                        if (Config.getMode() == mode.uniform) {
                                           setIconColour = true;
                                           setGraphColour = true;
-                                        } else if (Config
-                                            .getMode() ==
+                                        } else if (Config.getMode() ==
                                             mode.graphUniform) {
                                           setGraphColour = true;
                                           color[1] = "";
                                         }
 
-                                        if (setGraphColour ==
-                                            true) {
-                                          color[0] = charts
-                                              .ColorUtil
-                                              .fromDartColor(
-                                              HexColor.fromHex(
-                                                  uniformColour));
+                                        if (setGraphColour == true) {
+                                          color[0] =
+                                              charts.ColorUtil.fromDartColor(
+                                                  HexColor.fromHex(
+                                                      uniformColour));
                                         }
 
-                                        if (setIconColour ==
-                                            true) {
-                                          color[1] =
-                                              uniformColour;
+                                        if (setIconColour == true) {
+                                          color[1] = uniformColour;
                                         }
 
                                         // construct you're chart data series
                                         _chartDataSeries.add(
-                                          charts.Series<
-                                              PointModel,
-                                              num>(
-                                            colorFn: (_, __) =>
-                                            color[0]!,
-                                            id: '${widget
-                                                .name}',
+                                          charts.Series<PointModel, num>(
+                                            colorFn: (_, __) => color[0]!,
+                                            id: '${widget.name}',
                                             data: chartDataList,
-                                            domainFn: (PointModel
-                                            pointModel,
-                                                _) =>
-                                            pointModel.pointX,
-                                            measureFn: (PointModel
-                                            pointModel,
-                                                _) =>
-                                            pointModel.pointY,
+                                            domainFn:
+                                                (PointModel pointModel, _) =>
+                                                    pointModel.pointX,
+                                            measureFn:
+                                                (PointModel pointModel, _) =>
+                                                    pointModel.pointY,
                                           ),
                                         );
 
                                         // now change the 'Loading...' widget with the real chart widget
-                                        lineChart =
-                                            charts.LineChart(
-                                              _chartDataSeries,
-                                              defaultRenderer: charts
-                                                  .LineRendererConfig(
-                                                  includeArea:
-                                                  true,
+                                        lineChart = charts.LineChart(
+                                          _chartDataSeries,
+                                          defaultRenderer:
+                                              charts.LineRendererConfig(
+                                                  includeArea: true,
                                                   stacked: true),
-                                              animate: true,
-                                              animationDuration:
-                                              const Duration(
-                                                  milliseconds:
-                                                  500),
-                                              primaryMeasureAxis:
-                                              const charts
-                                                  .NumericAxisSpec(
-                                                renderSpec: charts
-                                                    .NoneRenderSpec(),
-                                              ),
-                                              domainAxis: const charts
-                                                  .NumericAxisSpec(
-//                showAxisLine: true,
-                                                renderSpec: charts
-                                                    .NoneRenderSpec(),
-                                              ),
-                                            );
+                                          animate: true,
+                                          animationDuration:
+                                              const Duration(milliseconds: 500),
+                                          primaryMeasureAxis:
+                                              const charts.NumericAxisSpec(
+                                            renderSpec: charts.NoneRenderSpec(),
+                                          ),
+                                          domainAxis:
+                                              const charts.NumericAxisSpec(
+                                            //                showAxisLine: true,
+                                            renderSpec: charts.NoneRenderSpec(),
+                                          ),
+                                        );
                                       });
-                                    },
-                                    child: const Text('OK'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        } else if (value != "" && value != "0" && value != "-0" && double.parse(value) > 0) {
-                          if (userData['USD'] -
-                              double.parse(value) >=
-                              0) {
-
-                            wallets.locked = true;
-
-                            userData['assets'].add(widget.alt);
-                            await fireStoreUserRef.update({
-                              'assets': userData['assets']
-                                  .toSet()
-                                  .toList()
-                            });
-
-                            if (userData['${widget.alt}'] ==
-                                null) {
-                              await fireStoreUserRef.update({
-                                '${widget.alt}':
-                                double.parse(value) /
-                                    double.parse(widget.rate!)
-                              });
-                            } else {
-                              await fireStoreUserRef.update({
-                                '${widget.alt}': userData[
-                                '${widget.alt}'] +
-                                    double.parse(value) /
-                                        double.parse(widget.rate!)
-                              });
-                            }
-
-                            await fireStoreUserRef.update({
-                              'USD': userData['USD'] -
-                                  double.parse(value)
-                            });
-
-                            widget.notifyParent();
-
-                            wallets.locked = false;
-
-                            await showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Thanks!'),
-                                  content: Text(
-                                      'You spent $value on ${widget
-                                          .name}!'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        setState(() {
-                                          chartDataList =
-                                          widget.data!;
-                                          _chartDataSeries
-                                              .clear();
-                                          bool setIconColour =
-                                          false;
-                                          bool setGraphColour =
-                                          false;
-
-                                          if (Config.getMode() ==
-                                              mode.uniform) {
-                                            setIconColour = true;
-                                            setGraphColour = true;
-                                          } else if (Config
-                                              .getMode() ==
-                                              mode.graphUniform) {
-                                            setGraphColour = true;
-                                            color[1] = "";
-                                          }
-
-                                          if (setGraphColour ==
-                                              true) {
-                                            color[0] = charts
-                                                .ColorUtil
-                                                .fromDartColor(
-                                                HexColor.fromHex(
-                                                    uniformColour));
-                                          }
-
-                                          if (setIconColour ==
-                                              true) {
-                                            color[1] =
-                                                uniformColour;
-                                          }
-
-                                          // construct you're chart data series
-                                          _chartDataSeries.add(
-                                            charts.Series<
-                                                PointModel,
-                                                num>(
-                                              colorFn: (_, __) =>
-                                              color[0]!,
-                                              id: '${widget
-                                                  .name}',
-                                              data: chartDataList,
-                                              domainFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointX,
-                                              measureFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointY,
-                                            ),
-                                          );
-
-                                          // now change the 'Loading...' widget with the real chart widget
-                                          lineChart =
-                                              charts.LineChart(
-                                                _chartDataSeries,
-                                                defaultRenderer: charts
-                                                    .LineRendererConfig(
-                                                    includeArea:
-                                                    true,
-                                                    stacked: true),
-                                                animate: true,
-                                                animationDuration:
-                                                const Duration(
-                                                    milliseconds:
-                                                    500),
-                                                primaryMeasureAxis:
-                                                const charts
-                                                    .NumericAxisSpec(
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                                domainAxis: const charts
-                                                    .NumericAxisSpec(
-//                showAxisLine: true,
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                              );
-                                        });
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else {
-                            await showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Sorry!'),
-                                  content: const Text(
-                                      "You don't have enough money for this transaction :("),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        setState(() {
-                                          chartDataList =
-                                          widget.data!;
-                                          _chartDataSeries
-                                              .clear();
-                                          bool setIconColour =
-                                          false;
-                                          bool setGraphColour =
-                                          false;
-
-                                          if (Config.getMode() ==
-                                              mode.uniform) {
-                                            setIconColour = true;
-                                            setGraphColour = true;
-                                          } else if (Config
-                                              .getMode() ==
-                                              mode.graphUniform) {
-                                            setGraphColour = true;
-                                            color[1] = "";
-                                          }
-
-                                          if (setGraphColour ==
-                                              true) {
-                                            color[0] = charts
-                                                .ColorUtil
-                                                .fromDartColor(
-                                                HexColor.fromHex(
-                                                    uniformColour));
-                                          }
-
-                                          if (setIconColour ==
-                                              true) {
-                                            color[1] =
-                                                uniformColour;
-                                          }
-
-                                          // construct you're chart data series
-                                          _chartDataSeries.add(
-                                            charts.Series<
-                                                PointModel,
-                                                num>(
-                                              colorFn: (_, __) =>
-                                              color[0]!,
-                                              id: '${widget
-                                                  .name}',
-                                              data: chartDataList,
-                                              domainFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointX,
-                                              measureFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointY,
-                                            ),
-                                          );
-
-                                          // now change the 'Loading...' widget with the real chart widget
-                                          lineChart =
-                                              charts.LineChart(
-                                                _chartDataSeries,
-                                                defaultRenderer: charts
-                                                    .LineRendererConfig(
-                                                    includeArea:
-                                                    true,
-                                                    stacked: true),
-                                                animate: true,
-                                                animationDuration:
-                                                const Duration(
-                                                    milliseconds:
-                                                    500),
-                                                primaryMeasureAxis:
-                                                const charts
-                                                    .NumericAxisSpec(
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                                domainAxis: const charts
-                                                    .NumericAxisSpec(
-//                showAxisLine: true,
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                              );
-                                        });
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        } else {
-                          setState(() {
-                            chartDataList = widget.data!;
-                            _chartDataSeries.clear();
-                            bool setIconColour = false;
-                            bool setGraphColour = false;
-
-                            if (Config.getMode() ==
-                                mode.uniform) {
-                              setIconColour = true;
-                              setGraphColour = true;
-                            } else if (Config.getMode() ==
-                                mode.graphUniform) {
-                              setGraphColour = true;
-                              color[1] = "";
-                            }
-
-                            if (setGraphColour == true) {
-                              color[0] =
-                                  charts.ColorUtil.fromDartColor(
-                                      HexColor.fromHex(
-                                          uniformColour));
-                            }
-
-                            if (setIconColour == true) {
-                              color[1] = uniformColour;
-                            }
-
-                            // construct you're chart data series
-                            _chartDataSeries.add(
-                              charts.Series<PointModel, num>(
-                                colorFn: (_, __) => color[0]!,
-                                id: '${widget.name}',
-                                data: chartDataList,
-                                domainFn:
-                                    (PointModel pointModel, _) =>
-                                pointModel.pointX,
-                                measureFn:
-                                    (PointModel pointModel, _) =>
-                                pointModel.pointY,
-                              ),
-                            );
-
-                            // now change the 'Loading...' widget with the real chart widget
-                            lineChart = charts.LineChart(
-                              _chartDataSeries,
-                              defaultRenderer:
-                              charts.LineRendererConfig(
-                                  includeArea: true,
-                                  stacked: true),
-                              animate: true,
-                              animationDuration:
-                              const Duration(milliseconds: 500),
-                              primaryMeasureAxis:
-                              const charts.NumericAxisSpec(
-                                renderSpec: charts
-                                    .NoneRenderSpec(),
-                              ),
-                              domainAxis:
-                              const charts.NumericAxisSpec(
-//                showAxisLine: true,
-                                renderSpec: charts
-                                    .NoneRenderSpec(),
-                              ),
-                            );
-                          });
-                        }
-                      }
-                      submitValue(inputController.text.toString());
-                      graphState = false;
-                    }
-                  });
-                },
-                child: Container(
-                  height: 30.0,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.secondary,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      12.0,
-                    ),
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 8.0,
-                  ),
-                  child: Stack(
-                    children: [
-                      Center(
-                          child: Text('Buy',
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.secondary)),
-                        ),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (graphState == false) {
-                      lineChart = Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            FutureBuilder<DocumentSnapshot>(
-                              future: users
-                                  .doc(
-                                  FirebaseAuth.instance.currentUser!.uid)
-                                  .get(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<
-                                      DocumentSnapshot> snapshot) {
-                                if (snapshot.hasError) {
-                                  return const Text("Something went wrong");
-                                }
-
-                                if (snapshot.hasData &&
-                                    !snapshot.data!.exists) {
-                                  return const Text(
-                                      "Document does not exist");
-                                }
-
-                                if (snapshot.connectionState ==
-                                    ConnectionState.done) {
-                                  Map<String, dynamic> data = snapshot.data!
-                                      .data() as Map<String, dynamic>;
-
-                                  userData = data;
-
-                                  return Text(
-                                      "You have ${data[widget.alt]} ${widget.name} available",
-                                    textAlign: TextAlign.center,
-                                  );
-                                }
-
-                                return const CircularProgressIndicator();
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              height: 50,
-                              width: 250,
-                              child: TextField(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'How much to sell?',
+                                    }
+                                  },
                                 ),
-                                controller: inputController,
-                                onSubmitted: (String value) async {
-                                  var all = false;
-                                  if (value == "all") {
-                                    value = userData[widget.alt].toString();
-                                    all = true;
-                                  } //blip
+                              ),
+                              const SizedBox(height: 5),
+                              Text('or'),
+                              //const SizedBox(height: 5),
+                              GestureDetector(
+                                onTap: () async {
+                                  var value = userData[widget.alt].toString();
+                                  var all = true;
 
                                   if (wallets.locked == true) {
                                     await showDialog<void>(
@@ -1258,12 +2110,9 @@ class _WalletState extends State<Wallet> {
                                                 setState(() {
                                                   chartDataList =
                                                   widget.data!;
-                                                  _chartDataSeries
-                                                      .clear();
-                                                  bool setIconColour =
-                                                  false;
-                                                  bool setGraphColour =
-                                                  false;
+                                                  _chartDataSeries.clear();
+                                                  bool setIconColour = false;
+                                                  bool setGraphColour = false;
 
                                                   if (Config.getMode() ==
                                                       mode.uniform) {
@@ -1285,21 +2134,17 @@ class _WalletState extends State<Wallet> {
                                                             uniformColour));
                                                   }
 
-                                                  if (setIconColour ==
-                                                      true) {
-                                                    color[1] =
-                                                        uniformColour;
+                                                  if (setIconColour == true) {
+                                                    color[1] = uniformColour;
                                                   }
 
                                                   // construct you're chart data series
                                                   _chartDataSeries.add(
-                                                    charts.Series<
-                                                        PointModel,
+                                                    charts.Series<PointModel,
                                                         num>(
                                                       colorFn: (_, __) =>
                                                       color[0]!,
-                                                      id: '${widget
-                                                          .name}',
+                                                      id: '${widget.name}',
                                                       data: chartDataList,
                                                       domainFn: (PointModel
                                                       pointModel,
@@ -1318,8 +2163,7 @@ class _WalletState extends State<Wallet> {
                                                         _chartDataSeries,
                                                         defaultRenderer: charts
                                                             .LineRendererConfig(
-                                                            includeArea:
-                                                            true,
+                                                            includeArea: true,
                                                             stacked: true),
                                                         animate: true,
                                                         animationDuration:
@@ -1347,20 +2191,24 @@ class _WalletState extends State<Wallet> {
                                         );
                                       },
                                     );
-                                  } else if (value != "" && value != "0" && value != "-0") {
+                                  } else if (value != "" &&
+                                      value != "0" &&
+                                      value != "-0") {
                                     if (userData[widget.alt] -
                                         double.parse(value) >
-                                        0 && double.parse(value) >= 0) {
-
+                                        0 &&
+                                        double.parse(value) >= 0) {
                                       wallets.locked = true;
 
                                       await fireStoreUserRef.update({
-                                        'USD': userData['USD'] + (double.parse(value) *
-                                            double.parse(widget.altRate!))
+                                        'USD': userData['USD'] +
+                                            (double.parse(value) *
+                                                double.parse(widget.altRate!))
                                       });
 
                                       await fireStoreUserRef.update({
-                                        '${widget.alt}': userData[widget.alt] -
+                                        '${widget.alt}':
+                                        userData[widget.alt] -
                                             double.parse(value)
                                       });
 
@@ -1374,9 +2222,7 @@ class _WalletState extends State<Wallet> {
                                           return AlertDialog(
                                             title: const Text('Thanks!'),
                                             content: Text(
-                                                'You withdrew $value from ${widget
-                                                    .name}, and got ${double.parse(value) *
-                                                    double.parse(widget.altRate!)} USD! LL'),
+                                                'You withdrew $value from ${widget.name}, and got ${double.parse(value) * double.parse(widget.altRate!)} USD! LL'),
                                             actions: <Widget>[
                                               TextButton(
                                                 onPressed: () {
@@ -1384,8 +2230,7 @@ class _WalletState extends State<Wallet> {
                                                   setState(() {
                                                     chartDataList =
                                                     widget.data!;
-                                                    _chartDataSeries
-                                                        .clear();
+                                                    _chartDataSeries.clear();
                                                     bool setIconColour =
                                                     false;
                                                     bool setGraphColour =
@@ -1420,12 +2265,10 @@ class _WalletState extends State<Wallet> {
                                                     // construct you're chart data series
                                                     _chartDataSeries.add(
                                                       charts.Series<
-                                                          PointModel,
-                                                          num>(
+                                                          PointModel, num>(
                                                         colorFn: (_, __) =>
                                                         color[0]!,
-                                                        id: '${widget
-                                                            .name}',
+                                                        id: '${widget.name}',
                                                         data: chartDataList,
                                                         domainFn: (PointModel
                                                         pointModel,
@@ -1460,7 +2303,7 @@ class _WalletState extends State<Wallet> {
                                                           ),
                                                           domainAxis: const charts
                                                               .NumericAxisSpec(
-                //                showAxisLine: true,
+                                                            //                showAxisLine: true,
                                                             renderSpec: charts
                                                                 .NoneRenderSpec(),
                                                           ),
@@ -1475,24 +2318,23 @@ class _WalletState extends State<Wallet> {
                                       );
                                     } else if (userData[widget.alt] -
                                         double.parse(value) ==
-                                        0 || all) {
-
+                                        0 ||
+                                        all) {
                                       wallets.locked = true;
 
                                       await fireStoreUserRef.update({
-                                        'USD': userData['USD'] + (userData[widget.alt] *
-                                            double.parse(widget.altRate!))
+                                        'USD': userData['USD'] +
+                                            (userData[widget.alt] *
+                                                double.parse(widget.altRate!))
                                       });
 
-                                      await fireStoreUserRef.update({
-                                        '${widget.alt}': 0
-                                      });
+                                      await fireStoreUserRef
+                                          .update({'${widget.alt}': 0});
 
                                       userData['assets'].remove(widget.alt);
 
-                                      await fireStoreUserRef.update({
-                                        'assets': userData['assets']
-                                      });
+                                      await fireStoreUserRef.update(
+                                          {'assets': userData['assets']});
 
                                       widget.notifyParent();
 
@@ -1504,9 +2346,7 @@ class _WalletState extends State<Wallet> {
                                           return AlertDialog(
                                             title: const Text('Thanks!'),
                                             content: Text(
-                                                'You withdrew $value from ${widget
-                                                    .name}, and got ${double.parse(value) *
-                                                    double.parse(widget.altRate!)} USD!'),
+                                                'You withdrew $value from ${widget.name}, and got ${double.parse(value) * double.parse(widget.altRate!)} USD!'),
                                             actions: <Widget>[
                                               TextButton(
                                                 onPressed: () {
@@ -1514,8 +2354,7 @@ class _WalletState extends State<Wallet> {
                                                   setState(() {
                                                     chartDataList =
                                                     widget.data!;
-                                                    _chartDataSeries
-                                                        .clear();
+                                                    _chartDataSeries.clear();
                                                     bool setIconColour =
                                                     false;
                                                     bool setGraphColour =
@@ -1550,12 +2389,10 @@ class _WalletState extends State<Wallet> {
                                                     // construct you're chart data series
                                                     _chartDataSeries.add(
                                                       charts.Series<
-                                                          PointModel,
-                                                          num>(
+                                                          PointModel, num>(
                                                         colorFn: (_, __) =>
                                                         color[0]!,
-                                                        id: '${widget
-                                                            .name}',
+                                                        id: '${widget.name}',
                                                         data: chartDataList,
                                                         domainFn: (PointModel
                                                         pointModel,
@@ -1590,7 +2427,7 @@ class _WalletState extends State<Wallet> {
                                                           ),
                                                           domainAxis: const charts
                                                               .NumericAxisSpec(
-                //                showAxisLine: true,
+                                                            //                showAxisLine: true,
                                                             renderSpec: charts
                                                                 .NoneRenderSpec(),
                                                           ),
@@ -1618,8 +2455,7 @@ class _WalletState extends State<Wallet> {
                                                   setState(() {
                                                     chartDataList =
                                                     widget.data!;
-                                                    _chartDataSeries
-                                                        .clear();
+                                                    _chartDataSeries.clear();
                                                     bool setIconColour =
                                                     false;
                                                     bool setGraphColour =
@@ -1654,12 +2490,10 @@ class _WalletState extends State<Wallet> {
                                                     // construct you're chart data series
                                                     _chartDataSeries.add(
                                                       charts.Series<
-                                                          PointModel,
-                                                          num>(
+                                                          PointModel, num>(
                                                         colorFn: (_, __) =>
                                                         color[0]!,
-                                                        id: '${widget
-                                                            .name}',
+                                                        id: '${widget.name}',
                                                         data: chartDataList,
                                                         domainFn: (PointModel
                                                         pointModel,
@@ -1694,7 +2528,7 @@ class _WalletState extends State<Wallet> {
                                                           ),
                                                           domainAxis: const charts
                                                               .NumericAxisSpec(
-                //                showAxisLine: true,
+                                                            //                showAxisLine: true,
                                                             renderSpec: charts
                                                                 .NoneRenderSpec(),
                                                           ),
@@ -1715,8 +2549,7 @@ class _WalletState extends State<Wallet> {
                                       bool setIconColour = false;
                                       bool setGraphColour = false;
 
-                                      if (Config.getMode() ==
-                                          mode.uniform) {
+                                      if (Config.getMode() == mode.uniform) {
                                         setIconColour = true;
                                         setGraphColour = true;
                                       } else if (Config.getMode() ==
@@ -1763,598 +2596,539 @@ class _WalletState extends State<Wallet> {
                                         const Duration(milliseconds: 500),
                                         primaryMeasureAxis:
                                         const charts.NumericAxisSpec(
-                                          renderSpec: charts
-                                              .NoneRenderSpec(),
+                                          renderSpec: charts.NoneRenderSpec(),
                                         ),
                                         domainAxis:
                                         const charts.NumericAxisSpec(
-                //                showAxisLine: true,
-                                          renderSpec: charts
-                                              .NoneRenderSpec(),
+                                          //                showAxisLine: true,
+                                          renderSpec: charts.NoneRenderSpec(),
                                         ),
                                       );
                                     });
                                   }
                                 },
+                                child: Container(
+                                  height: 23.0,
+                                  width: 75.0,
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    border: Border.all(
+                                      color: HexColor.fromHex(color[1]),
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      12.0,
+                                    ),
+                                  ),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 24.0,
+                                    vertical: 8.0,
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Text('Sell All',
+                                            style: TextStyle(
+                                                color: HexColor.fromHex(
+                                                    color[1]))),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                      graphState = true;
-                    } else {
-                      void submitValue(String value) async {
-                        var all = false;
-                        if (value == "all") {
-                          value = userData[widget.alt].toString();
-                          all = true;
-                        }
+                            ],
+                          ),
+                        );
+                        graphState = true;
+                      } else {
+                        void submitValue(String value) async {
+                          var all = false;
+                          if (value == "all") {
+                            value = userData[widget.alt].toString();
+                            all = true;
+                          }
 
-                        if (wallets.locked == true) {
-                          await showDialog<void>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Slow Down!'),
-                                content: const Text(
-                                    "aye slow down a bit, the last transaction hasn't finished processing yet"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      setState(() {
-                                        chartDataList =
-                                        widget.data!;
-                                        _chartDataSeries
-                                            .clear();
-                                        bool setIconColour =
-                                        false;
-                                        bool setGraphColour =
-                                        false;
+                          if (wallets.locked == true) {
+                            await showDialog<void>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Slow Down!'),
+                                  content: const Text(
+                                      "aye slow down a bit, the last transaction hasn't finished processing yet"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          chartDataList = widget.data!;
+                                          _chartDataSeries.clear();
+                                          bool setIconColour = false;
+                                          bool setGraphColour = false;
 
-                                        if (Config.getMode() ==
-                                            mode.uniform) {
-                                          setIconColour = true;
-                                          setGraphColour = true;
-                                        } else if (Config
-                                            .getMode() ==
-                                            mode.graphUniform) {
-                                          setGraphColour = true;
-                                          color[1] = "";
-                                        }
+                                          if (Config.getMode() ==
+                                              mode.uniform) {
+                                            setIconColour = true;
+                                            setGraphColour = true;
+                                          } else if (Config.getMode() ==
+                                              mode.graphUniform) {
+                                            setGraphColour = true;
+                                            color[1] = "";
+                                          }
 
-                                        if (setGraphColour ==
-                                            true) {
-                                          color[0] = charts
-                                              .ColorUtil
-                                              .fromDartColor(
-                                              HexColor.fromHex(
-                                                  uniformColour));
-                                        }
+                                          if (setGraphColour == true) {
+                                            color[0] =
+                                                charts.ColorUtil.fromDartColor(
+                                                    HexColor.fromHex(
+                                                        uniformColour));
+                                          }
 
-                                        if (setIconColour ==
-                                            true) {
-                                          color[1] =
-                                              uniformColour;
-                                        }
+                                          if (setIconColour == true) {
+                                            color[1] = uniformColour;
+                                          }
 
-                                        // construct you're chart data series
-                                        _chartDataSeries.add(
-                                          charts.Series<
-                                              PointModel,
-                                              num>(
-                                            colorFn: (_, __) =>
-                                            color[0]!,
-                                            id: '${widget
-                                                .name}',
-                                            data: chartDataList,
-                                            domainFn: (PointModel
-                                            pointModel,
-                                                _) =>
-                                            pointModel.pointX,
-                                            measureFn: (PointModel
-                                            pointModel,
-                                                _) =>
-                                            pointModel.pointY,
-                                          ),
-                                        );
+                                          // construct you're chart data series
+                                          _chartDataSeries.add(
+                                            charts.Series<PointModel, num>(
+                                              colorFn: (_, __) => color[0]!,
+                                              id: '${widget.name}',
+                                              data: chartDataList,
+                                              domainFn:
+                                                  (PointModel pointModel, _) =>
+                                                      pointModel.pointX,
+                                              measureFn:
+                                                  (PointModel pointModel, _) =>
+                                                      pointModel.pointY,
+                                            ),
+                                          );
 
-                                        // now change the 'Loading...' widget with the real chart widget
-                                        lineChart =
-                                            charts.LineChart(
-                                              _chartDataSeries,
-                                              defaultRenderer: charts
-                                                  .LineRendererConfig(
-                                                  includeArea:
-                                                  true,
-                                                  stacked: true),
-                                              animate: true,
-                                              animationDuration:
-                                              const Duration(
-                                                  milliseconds:
-                                                  500),
-                                              primaryMeasureAxis:
-                                              const charts
-                                                  .NumericAxisSpec(
-                                                renderSpec: charts
-                                                    .NoneRenderSpec(),
-                                              ),
-                                              domainAxis: const charts
-                                                  .NumericAxisSpec(
+                                          // now change the 'Loading...' widget with the real chart widget
+                                          lineChart = charts.LineChart(
+                                            _chartDataSeries,
+                                            defaultRenderer:
+                                                charts.LineRendererConfig(
+                                                    includeArea: true,
+                                                    stacked: true),
+                                            animate: true,
+                                            animationDuration: const Duration(
+                                                milliseconds: 500),
+                                            primaryMeasureAxis:
+                                                const charts.NumericAxisSpec(
+                                              renderSpec:
+                                                  charts.NoneRenderSpec(),
+                                            ),
+                                            domainAxis:
+                                                const charts.NumericAxisSpec(
 //                showAxisLine: true,
-                                                renderSpec: charts
-                                                    .NoneRenderSpec(),
+                                              renderSpec:
+                                                  charts.NoneRenderSpec(),
+                                            ),
+                                          );
+                                        });
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else if (value != "" &&
+                              value != "0" &&
+                              value != "-0" &&
+                              double.parse(value) > 0) {
+                            if (userData[widget.alt] - double.parse(value) >
+                                0) {
+                              wallets.locked = true;
+
+                              await fireStoreUserRef.update({
+                                'USD': userData['USD'] +
+                                    (double.parse(value) *
+                                        double.parse(widget.altRate!))
+                              });
+
+                              await fireStoreUserRef.update({
+                                '${widget.alt}':
+                                    userData[widget.alt] - double.parse(value)
+                              });
+
+                              widget.notifyParent();
+
+                              wallets.locked = false;
+
+                              await showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Thanks!'),
+                                    content: Text(
+                                        'You withdrew $value from ${widget.name}, and got ${double.parse(value) * double.parse(widget.altRate!)} USD!'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            chartDataList = widget.data!;
+                                            _chartDataSeries.clear();
+                                            bool setIconColour = false;
+                                            bool setGraphColour = false;
+
+                                            if (Config.getMode() ==
+                                                mode.uniform) {
+                                              setIconColour = true;
+                                              setGraphColour = true;
+                                            } else if (Config.getMode() ==
+                                                mode.graphUniform) {
+                                              setGraphColour = true;
+                                              color[1] = "";
+                                            }
+
+                                            if (setGraphColour == true) {
+                                              color[0] = charts.ColorUtil
+                                                  .fromDartColor(
+                                                      HexColor.fromHex(
+                                                          uniformColour));
+                                            }
+
+                                            if (setIconColour == true) {
+                                              color[1] = uniformColour;
+                                            }
+
+                                            // construct you're chart data series
+                                            _chartDataSeries.add(
+                                              charts.Series<PointModel, num>(
+                                                colorFn: (_, __) => color[0]!,
+                                                id: '${widget.name}',
+                                                data: chartDataList,
+                                                domainFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointX,
+                                                measureFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointY,
                                               ),
                                             );
-                                      });
-                                    },
-                                    child: const Text('OK'),
-                                  ),
-                                ],
+
+                                            // now change the 'Loading...' widget with the real chart widget
+                                            lineChart = charts.LineChart(
+                                              _chartDataSeries,
+                                              defaultRenderer:
+                                                  charts.LineRendererConfig(
+                                                      includeArea: true,
+                                                      stacked: true),
+                                              animate: true,
+                                              animationDuration: const Duration(
+                                                  milliseconds: 500),
+                                              primaryMeasureAxis:
+                                                  const charts.NumericAxisSpec(
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                              domainAxis:
+                                                  const charts.NumericAxisSpec(
+                                                //                showAxisLine: true,
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                            );
+                                          });
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
-                            },
-                          );
-                        } else if (value != "" && value != "0" && value != "-0" && double.parse(value) > 0) {
-                          if (userData[widget.alt] -
-                              double.parse(value) > 0) {
+                            } else if (userData[widget.alt] -
+                                        double.parse(value) ==
+                                    0 ||
+                                all) {
+                              wallets.locked = true;
 
-                            wallets.locked = true;
+                              await fireStoreUserRef.update({
+                                'USD': userData['USD'] +
+                                    (userData[widget.alt] *
+                                        double.parse(widget.altRate!))
+                              });
 
-                            await fireStoreUserRef.update({
-                              'USD': userData['USD'] + (double.parse(value) *
-                                  double.parse(widget.altRate!))
-                            });
+                              await fireStoreUserRef
+                                  .update({'${widget.alt}': 0});
 
-                            await fireStoreUserRef.update({
-                              '${widget.alt}': userData[widget.alt] -
-                                  double.parse(value)
-                            });
+                              userData['assets'].remove(widget.alt);
 
-                            widget.notifyParent();
+                              await fireStoreUserRef
+                                  .update({'assets': userData['assets']});
 
-                            wallets.locked = false;
+                              widget.notifyParent();
 
-                            await showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Thanks!'),
-                                  content: Text(
-                                      'You withdrew $value from ${widget
-                                          .name}, and got ${double.parse(value) *
-                                          double.parse(widget.altRate!)} USD!'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        setState(() {
-                                          chartDataList =
-                                          widget.data!;
-                                          _chartDataSeries
-                                              .clear();
-                                          bool setIconColour =
-                                          false;
-                                          bool setGraphColour =
-                                          false;
+                              wallets.locked = false;
 
-                                          if (Config.getMode() ==
-                                              mode.uniform) {
-                                            setIconColour = true;
-                                            setGraphColour = true;
-                                          } else if (Config
-                                              .getMode() ==
-                                              mode.graphUniform) {
-                                            setGraphColour = true;
-                                            color[1] = "";
-                                          }
+                              await showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Thanks!'),
+                                    content: Text(
+                                        'You withdrew $value from ${widget.name}, and got ${double.parse(value) * double.parse(widget.altRate!)} USD!'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            chartDataList = widget.data!;
+                                            _chartDataSeries.clear();
+                                            bool setIconColour = false;
+                                            bool setGraphColour = false;
 
-                                          if (setGraphColour ==
-                                              true) {
-                                            color[0] = charts
-                                                .ColorUtil
-                                                .fromDartColor(
-                                                HexColor.fromHex(
-                                                    uniformColour));
-                                          }
+                                            if (Config.getMode() ==
+                                                mode.uniform) {
+                                              setIconColour = true;
+                                              setGraphColour = true;
+                                            } else if (Config.getMode() ==
+                                                mode.graphUniform) {
+                                              setGraphColour = true;
+                                              color[1] = "";
+                                            }
 
-                                          if (setIconColour ==
-                                              true) {
-                                            color[1] =
-                                                uniformColour;
-                                          }
+                                            if (setGraphColour == true) {
+                                              color[0] = charts.ColorUtil
+                                                  .fromDartColor(
+                                                      HexColor.fromHex(
+                                                          uniformColour));
+                                            }
 
-                                          // construct you're chart data series
-                                          _chartDataSeries.add(
-                                            charts.Series<
-                                                PointModel,
-                                                num>(
-                                              colorFn: (_, __) =>
-                                              color[0]!,
-                                              id: '${widget
-                                                  .name}',
-                                              data: chartDataList,
-                                              domainFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointX,
-                                              measureFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointY,
-                                            ),
-                                          );
+                                            if (setIconColour == true) {
+                                              color[1] = uniformColour;
+                                            }
 
-                                          // now change the 'Loading...' widget with the real chart widget
-                                          lineChart =
-                                              charts.LineChart(
-                                                _chartDataSeries,
-                                                defaultRenderer: charts
-                                                    .LineRendererConfig(
-                                                    includeArea:
-                                                    true,
-                                                    stacked: true),
-                                                animate: true,
-                                                animationDuration:
-                                                const Duration(
-                                                    milliseconds:
-                                                    500),
-                                                primaryMeasureAxis:
-                                                const charts
-                                                    .NumericAxisSpec(
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                                domainAxis: const charts
-                                                    .NumericAxisSpec(
-                                                  //                showAxisLine: true,
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                              );
-                                        });
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else if (userData[widget.alt] -
-                              double.parse(value) ==
-                              0 || all) {
+                                            // construct you're chart data series
+                                            _chartDataSeries.add(
+                                              charts.Series<PointModel, num>(
+                                                colorFn: (_, __) => color[0]!,
+                                                id: '${widget.name}',
+                                                data: chartDataList,
+                                                domainFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointX,
+                                                measureFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointY,
+                                              ),
+                                            );
 
-                            wallets.locked = true;
+                                            // now change the 'Loading...' widget with the real chart widget
+                                            lineChart = charts.LineChart(
+                                              _chartDataSeries,
+                                              defaultRenderer:
+                                                  charts.LineRendererConfig(
+                                                      includeArea: true,
+                                                      stacked: true),
+                                              animate: true,
+                                              animationDuration: const Duration(
+                                                  milliseconds: 500),
+                                              primaryMeasureAxis:
+                                                  const charts.NumericAxisSpec(
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                              domainAxis:
+                                                  const charts.NumericAxisSpec(
+                                                //                showAxisLine: true,
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                            );
+                                          });
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              await showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Sorry!'),
+                                    content: const Text(
+                                        "You don't have enough money for this transaction :("),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            chartDataList = widget.data!;
+                                            _chartDataSeries.clear();
+                                            bool setIconColour = false;
+                                            bool setGraphColour = false;
 
-                            await fireStoreUserRef.update({
-                              'USD': userData['USD'] + (userData[widget.alt] *
-                                  double.parse(widget.altRate!))
-                            });
+                                            if (Config.getMode() ==
+                                                mode.uniform) {
+                                              setIconColour = true;
+                                              setGraphColour = true;
+                                            } else if (Config.getMode() ==
+                                                mode.graphUniform) {
+                                              setGraphColour = true;
+                                              color[1] = "";
+                                            }
 
-                            await fireStoreUserRef.update({
-                              '${widget.alt}': 0
-                            });
+                                            if (setGraphColour == true) {
+                                              color[0] = charts.ColorUtil
+                                                  .fromDartColor(
+                                                      HexColor.fromHex(
+                                                          uniformColour));
+                                            }
 
-                            userData['assets'].remove(widget.alt);
+                                            if (setIconColour == true) {
+                                              color[1] = uniformColour;
+                                            }
 
-                            await fireStoreUserRef.update({
-                              'assets': userData['assets']
-                            });
+                                            // construct you're chart data series
+                                            _chartDataSeries.add(
+                                              charts.Series<PointModel, num>(
+                                                colorFn: (_, __) => color[0]!,
+                                                id: '${widget.name}',
+                                                data: chartDataList,
+                                                domainFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointX,
+                                                measureFn:
+                                                    (PointModel pointModel,
+                                                            _) =>
+                                                        pointModel.pointY,
+                                              ),
+                                            );
 
-                            widget.notifyParent();
-
-                            wallets.locked = false;
-
-                            await showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Thanks!'),
-                                  content: Text(
-                                      'You withdrew $value from ${widget
-                                          .name}, and got ${double.parse(value) *
-                                          double.parse(widget.altRate!)} USD!'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        setState(() {
-                                          chartDataList =
-                                          widget.data!;
-                                          _chartDataSeries
-                                              .clear();
-                                          bool setIconColour =
-                                          false;
-                                          bool setGraphColour =
-                                          false;
-
-                                          if (Config.getMode() ==
-                                              mode.uniform) {
-                                            setIconColour = true;
-                                            setGraphColour = true;
-                                          } else if (Config
-                                              .getMode() ==
-                                              mode.graphUniform) {
-                                            setGraphColour = true;
-                                            color[1] = "";
-                                          }
-
-                                          if (setGraphColour ==
-                                              true) {
-                                            color[0] = charts
-                                                .ColorUtil
-                                                .fromDartColor(
-                                                HexColor.fromHex(
-                                                    uniformColour));
-                                          }
-
-                                          if (setIconColour ==
-                                              true) {
-                                            color[1] =
-                                                uniformColour;
-                                          }
-
-                                          // construct you're chart data series
-                                          _chartDataSeries.add(
-                                            charts.Series<
-                                                PointModel,
-                                                num>(
-                                              colorFn: (_, __) =>
-                                              color[0]!,
-                                              id: '${widget
-                                                  .name}',
-                                              data: chartDataList,
-                                              domainFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointX,
-                                              measureFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointY,
-                                            ),
-                                          );
-
-                                          // now change the 'Loading...' widget with the real chart widget
-                                          lineChart =
-                                              charts.LineChart(
-                                                _chartDataSeries,
-                                                defaultRenderer: charts
-                                                    .LineRendererConfig(
-                                                    includeArea:
-                                                    true,
-                                                    stacked: true),
-                                                animate: true,
-                                                animationDuration:
-                                                const Duration(
-                                                    milliseconds:
-                                                    500),
-                                                primaryMeasureAxis:
-                                                const charts
-                                                    .NumericAxisSpec(
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                                domainAxis: const charts
-                                                    .NumericAxisSpec(
-                                                  //                showAxisLine: true,
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                              );
-                                        });
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                                            // now change the 'Loading...' widget with the real chart widget
+                                            lineChart = charts.LineChart(
+                                              _chartDataSeries,
+                                              defaultRenderer:
+                                                  charts.LineRendererConfig(
+                                                      includeArea: true,
+                                                      stacked: true),
+                                              animate: true,
+                                              animationDuration: const Duration(
+                                                  milliseconds: 500),
+                                              primaryMeasureAxis:
+                                                  const charts.NumericAxisSpec(
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                              domainAxis:
+                                                  const charts.NumericAxisSpec(
+                                                //                showAxisLine: true,
+                                                renderSpec:
+                                                    charts.NoneRenderSpec(),
+                                              ),
+                                            );
+                                          });
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
                           } else {
-                            await showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Sorry!'),
-                                  content: const Text(
-                                      "You don't have enough money for this transaction :("),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        setState(() {
-                                          chartDataList =
-                                          widget.data!;
-                                          _chartDataSeries
-                                              .clear();
-                                          bool setIconColour =
-                                          false;
-                                          bool setGraphColour =
-                                          false;
+                            setState(() {
+                              chartDataList = widget.data!;
+                              _chartDataSeries.clear();
+                              bool setIconColour = false;
+                              bool setGraphColour = false;
 
-                                          if (Config.getMode() ==
-                                              mode.uniform) {
-                                            setIconColour = true;
-                                            setGraphColour = true;
-                                          } else if (Config
-                                              .getMode() ==
-                                              mode.graphUniform) {
-                                            setGraphColour = true;
-                                            color[1] = "";
-                                          }
+                              if (Config.getMode() == mode.uniform) {
+                                setIconColour = true;
+                                setGraphColour = true;
+                              } else if (Config.getMode() ==
+                                  mode.graphUniform) {
+                                setGraphColour = true;
+                                color[1] = "";
+                              }
 
-                                          if (setGraphColour ==
-                                              true) {
-                                            color[0] = charts
-                                                .ColorUtil
-                                                .fromDartColor(
-                                                HexColor.fromHex(
-                                                    uniformColour));
-                                          }
+                              if (setGraphColour == true) {
+                                color[0] = charts.ColorUtil.fromDartColor(
+                                    HexColor.fromHex(uniformColour));
+                              }
 
-                                          if (setIconColour ==
-                                              true) {
-                                            color[1] =
-                                                uniformColour;
-                                          }
+                              if (setIconColour == true) {
+                                color[1] = uniformColour;
+                              }
 
-                                          // construct you're chart data series
-                                          _chartDataSeries.add(
-                                            charts.Series<
-                                                PointModel,
-                                                num>(
-                                              colorFn: (_, __) =>
-                                              color[0]!,
-                                              id: '${widget
-                                                  .name}',
-                                              data: chartDataList,
-                                              domainFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointX,
-                                              measureFn: (PointModel
-                                              pointModel,
-                                                  _) =>
-                                              pointModel.pointY,
-                                            ),
-                                          );
+                              // construct you're chart data series
+                              _chartDataSeries.add(
+                                charts.Series<PointModel, num>(
+                                  colorFn: (_, __) => color[0]!,
+                                  id: '${widget.name}',
+                                  data: chartDataList,
+                                  domainFn: (PointModel pointModel, _) =>
+                                      pointModel.pointX,
+                                  measureFn: (PointModel pointModel, _) =>
+                                      pointModel.pointY,
+                                ),
+                              );
 
-                                          // now change the 'Loading...' widget with the real chart widget
-                                          lineChart =
-                                              charts.LineChart(
-                                                _chartDataSeries,
-                                                defaultRenderer: charts
-                                                    .LineRendererConfig(
-                                                    includeArea:
-                                                    true,
-                                                    stacked: true),
-                                                animate: true,
-                                                animationDuration:
-                                                const Duration(
-                                                    milliseconds:
-                                                    500),
-                                                primaryMeasureAxis:
-                                                const charts
-                                                    .NumericAxisSpec(
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                                domainAxis: const charts
-                                                    .NumericAxisSpec(
-                                                  //                showAxisLine: true,
-                                                  renderSpec: charts
-                                                      .NoneRenderSpec(),
-                                                ),
-                                              );
-                                        });
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                              // now change the 'Loading...' widget with the real chart widget
+                              lineChart = charts.LineChart(
+                                _chartDataSeries,
+                                defaultRenderer: charts.LineRendererConfig(
+                                    includeArea: true, stacked: true),
+                                animate: true,
+                                animationDuration:
+                                    const Duration(milliseconds: 500),
+                                primaryMeasureAxis:
+                                    const charts.NumericAxisSpec(
+                                  renderSpec: charts.NoneRenderSpec(),
+                                ),
+                                domainAxis: const charts.NumericAxisSpec(
+                                  //                showAxisLine: true,
+                                  renderSpec: charts.NoneRenderSpec(),
+                                ),
+                              );
+                            });
                           }
-                        } else {
-                          setState(() {
-                            chartDataList = widget.data!;
-                            _chartDataSeries.clear();
-                            bool setIconColour = false;
-                            bool setGraphColour = false;
-
-                            if (Config.getMode() ==
-                                mode.uniform) {
-                              setIconColour = true;
-                              setGraphColour = true;
-                            } else if (Config.getMode() ==
-                                mode.graphUniform) {
-                              setGraphColour = true;
-                              color[1] = "";
-                            }
-
-                            if (setGraphColour == true) {
-                              color[0] =
-                                  charts.ColorUtil.fromDartColor(
-                                      HexColor.fromHex(
-                                          uniformColour));
-                            }
-
-                            if (setIconColour == true) {
-                              color[1] = uniformColour;
-                            }
-
-                            // construct you're chart data series
-                            _chartDataSeries.add(
-                              charts.Series<PointModel, num>(
-                                colorFn: (_, __) => color[0]!,
-                                id: '${widget.name}',
-                                data: chartDataList,
-                                domainFn:
-                                    (PointModel pointModel, _) =>
-                                pointModel.pointX,
-                                measureFn:
-                                    (PointModel pointModel, _) =>
-                                pointModel.pointY,
-                              ),
-                            );
-
-                            // now change the 'Loading...' widget with the real chart widget
-                            lineChart = charts.LineChart(
-                              _chartDataSeries,
-                              defaultRenderer:
-                              charts.LineRendererConfig(
-                                  includeArea: true,
-                                  stacked: true),
-                              animate: true,
-                              animationDuration:
-                              const Duration(milliseconds: 500),
-                              primaryMeasureAxis:
-                              const charts.NumericAxisSpec(
-                                renderSpec: charts
-                                    .NoneRenderSpec(),
-                              ),
-                              domainAxis:
-                              const charts.NumericAxisSpec(
-                                //                showAxisLine: true,
-                                renderSpec: charts
-                                    .NoneRenderSpec(),
-                              ),
-                            );
-                          });
                         }
+
+                        submitValue(inputController.text.toString());
+                        graphState = false;
                       }
-                      submitValue(inputController.text.toString());
-                      graphState = false;
-                    }
-                  });
-                },
-                child: Container(
-                  height: 30.0,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.secondary,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      12.0,
-                    ),
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 8.0,
-                  ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Text('Sell',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary)),
+                    });
+                  },
+                  child: Container(
+                    height: 30.0,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 2.0,
                       ),
-                    ],
+                      borderRadius: BorderRadius.circular(
+                        12.0,
+                      ),
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8.0,
+                    ),
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Text('Sell',
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary)),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }
+                );
+              }
             } else {
               return SizedBox();
             }
@@ -2460,9 +3234,11 @@ class _WalletState extends State<Wallet> {
                     (() {
                       if (widget.buy!) {
                         if (priceChange > 0) {
-                          return Icon(Icons.arrow_drop_up_rounded, color: Colors.green[400]);
+                          return Icon(Icons.arrow_drop_up_rounded,
+                              color: Colors.green[400]);
                         } else {
-                          return Icon(Icons.arrow_drop_down_rounded, color: Colors.red[400]);
+                          return Icon(Icons.arrow_drop_down_rounded,
+                              color: Colors.red[400]);
                         }
                       } else {
                         return const Text("");
@@ -2471,9 +3247,7 @@ class _WalletState extends State<Wallet> {
                     (() {
                       if (widget.buy!) {
                         return Text(
-                          "(${(priceChange * 100).toStringAsFixed(
-                              2)}%) ${(priceChange * double.parse(widget.rate!))
-                              .toStringAsFixed(2)}",
+                          "(${(priceChange * 100).toStringAsFixed(2)}%) ${(priceChange * double.parse(widget.rate!)).toStringAsFixed(2)}",
                           style: TextStyle(
                             fontSize: 12,
                             color: (() {
@@ -2487,7 +3261,10 @@ class _WalletState extends State<Wallet> {
                         );
                       } else {
                         return Text(
-                          "Value in USD: " + (double.parse(widget.altRate!) * double.parse(widget.rate!)).toStringAsFixed(2),
+                          "Value in USD: " +
+                              (double.parse(widget.altRate!) *
+                                      double.parse(widget.rate!))
+                                  .toStringAsFixed(2),
                           style: const TextStyle(
                             fontSize: 12,
                           ),

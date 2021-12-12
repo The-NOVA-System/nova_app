@@ -13,38 +13,66 @@ import 'package:nova/screens/user_view.dart';
 firebase_storage.FirebaseStorage storage =
     firebase_storage.FirebaseStorage.instance;
 
-Map<String, List> badges = {};
+Map badges = {};
 Map userInfo = {};
 late ListResult badgesList;
-Map<String, String> customProfiles = {};
+Map customProfiles = {};
 
 Future<List> fetchLeader(apiKey) async {
-  badgesList = await storage.ref('badges').list();
-  for (var value in badgesList.items) {
-    badges[value.fullPath.split('.')[0].split('/')[1]] = [await storage.ref(value.fullPath).getDownloadURL(), value.fullPath.split('.')[1]];
-  }
-  
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference global = FirebaseFirestore.instance.collection('global');
+
+  var badgeURLGet = await global.doc('badge-urls').get();
+  badges = badgeURLGet.data()! as Map;
+
+  badgesList = await storage.ref('badges').list();
+  for (var value in badgesList.items) {
+    if (badges.containsKey(value.fullPath.split('.')[0].split('/')[1])) {
+
+    } else {
+      badges[value.fullPath.split('.')[0].split('/')[1]] = [
+        await storage.ref(value.fullPath).getDownloadURL(),
+        value.fullPath.split('.')[1]
+      ];
+    }
+  }
+
+  /*global.doc('badge-urls').set(
+    badges,
+    SetOptions(merge: true),
+  );*/
+
   var userGet = await users.get();
   var badgeGet = await global.doc('badges').get();
+  var cacheURLGet = await global.doc('cached-urls').get();
+
   var assetList = [];
+
+  customProfiles = cacheURLGet.data()! as Map;
 
   for (var value in userGet.docs) {
     if (value['defaultProfile'] == false) {
-      customProfiles[value['email'].split('@')[0]] = await storage.ref(
-          'profiles/${value.id}/profile.${value['profileType'].split('/')[1]}')
-          .getDownloadURL();
+      if (customProfiles.containsKey(value['email'].split('@')[0])) {
+
+      } else {
+        customProfiles[value['email'].split('@')[0]] = await storage
+            .ref(
+            'profiles/${value.id}/profile.${value['profileType'].split(
+                '/')[1]}')
+            .getDownloadURL();
+      }
     }
-    for (var asset in value['assets']) {
-      assetList.add(asset);
-      assetList = assetList.toSet().toList();
-    }
+    assetList.addAll(value['assets']);
+    assetList = assetList.toSet().toList();
   }
+
+  /*global.doc('cached-urls').set(
+      customProfiles,
+      SetOptions(merge: true),
+    );*/
 
   var cryptoResponse = await client.post(Uri.parse(
       'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
-
 
   List<dynamic> cryptoFinal;
   final _random = Random();
@@ -57,13 +85,15 @@ Future<List> fetchLeader(apiKey) async {
     });
 
     if (cryptoResponse.statusCode == 429) {
-      cryptoResponse = await Future.delayed(const Duration(seconds: 2), () async {
+      cryptoResponse =
+          await Future.delayed(const Duration(seconds: 2), () async {
         return await client.post(Uri.parse(
             'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
       });
 
       if (cryptoResponse.statusCode == 429) {
-        cryptoResponse = await Future.delayed(Duration(seconds: next(1, 5)), () async {
+        cryptoResponse =
+            await Future.delayed(Duration(seconds: next(1, 5)), () async {
           return await client.post(Uri.parse(
               'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active'));
         });
@@ -85,7 +115,9 @@ Future<List> fetchLeader(apiKey) async {
 class leaderboard extends StatefulWidget {
   final String nomicsApi;
   final Function() notifyParent;
-  const leaderboard({Key? key, required this.nomicsApi, required this.notifyParent}) : super(key: key);
+  const leaderboard(
+      {Key? key, required this.nomicsApi, required this.notifyParent})
+      : super(key: key);
 
   @override
   _leaderboardState createState() => _leaderboardState();
@@ -106,7 +138,6 @@ class _leaderboardState extends State<leaderboard> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           for (var value in snapshot.data![0].docs) {
-
             /*CollectionReference users = FirebaseFirestore.instance.collection('users');
 
             users.doc(value.id).set({
@@ -125,48 +156,47 @@ class _leaderboardState extends State<leaderboard> {
                 }
               }
             }
-            leaderList.add([money + value['USD'], value['email'].split("@")[0], value['badges'], value['username']]);
+            leaderList.add([
+              money + value['USD'],
+              value['email'].split("@")[0],
+              value['badges'],
+              value['username']
+            ]);
             if (value['defaultProfile'] == true) {
               profileList[value['email'].split("@")[0]] = ClipOval(
                   child: AspectRatio(
-                    aspectRatio: 1.0,
-                    child: SvgPicture.network(
-                      'https://avatars.dicebear.com/api/avataaars/${value['email']
-                          .split("@")[0]}.svg',
-                      width: 50,
+                aspectRatio: 1.0,
+                child: SvgPicture.network(
+                  'https://avatars.dicebear.com/api/avataaars/${value['email'].split("@")[0]}.svg',
+                  width: 50,
+                  height: 50,
+                  semanticsLabel: 'profile picture',
+                  placeholderBuilder: (BuildContext context) => const SizedBox(
                       height: 50,
-                      semanticsLabel: 'profile picture',
-                      placeholderBuilder: (BuildContext context) =>
-                      const SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: CircularProgressIndicator()),
-                    ),
-                  ));
+                      width: 50,
+                      child: CircularProgressIndicator()),
+                ),
+              ));
             } else {
               profileList[value['email'].split("@")[0]] = AspectRatio(
-                  aspectRatio: 1.0,
-                  child: CachedNetworkImage(
-                    imageUrl: customProfiles[value['email'].split("@")[0]]!,
-                    fit: BoxFit.fill,
-                    width: 50,
-                    height: 50,
-                    imageBuilder: (context, imageProvider) => CircleAvatar(
-                      radius: 25,
-                      backgroundImage: imageProvider,
-                    ),
-                    placeholder: (context, url) =>
-                    const SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) =>
-                    const SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Icon(Icons.error)),
+                aspectRatio: 1.0,
+                child: CachedNetworkImage(
+                  imageUrl: customProfiles[value['email'].split("@")[0]]!,
+                  fit: BoxFit.fill,
+                  width: 50,
+                  height: 50,
+                  imageBuilder: (context, imageProvider) => CircleAvatar(
+                    radius: 25,
+                    backgroundImage: imageProvider,
                   ),
-                );
+                  placeholder: (context, url) => const SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => const SizedBox(
+                      height: 50, width: 50, child: Icon(Icons.error)),
+                ),
+              );
             }
           }
           leaderList.sort((b, a) => a[0].compareTo(b[0]));
@@ -189,7 +219,8 @@ class _leaderboardState extends State<leaderboard> {
                     context,
                     PageRouteBuilder(
                       pageBuilder: (c, a1, a2) => UserWallets(
-                        worth: "\$${leaderList[index][0].toStringAsFixed(2)} USD",
+                        worth:
+                            "\$${leaderList[index][0].toStringAsFixed(2)} USD",
                         profile: profileList[leaderList[index][1]]!,
                         userData: userInfo[leaderList[index][1]],
                         notifyParent: widget.notifyParent,
@@ -201,7 +232,8 @@ class _leaderboardState extends State<leaderboard> {
                                 return Row(
                                   children: [
                                     Hero(
-                                      tag: "${leaderList[index][1]}'s ${entry.key} badge",
+                                      tag:
+                                          "${leaderList[index][1]}'s ${entry.key} badge",
                                       child: Tooltip(
                                         message: snapshot.data![2][entry.key],
                                         child: SvgPicture.network(
@@ -210,11 +242,13 @@ class _leaderboardState extends State<leaderboard> {
                                           width: 40,
                                           height: 40,
                                           semanticsLabel: '${entry.key} badge',
-                                          placeholderBuilder: (BuildContext context) =>
-                                          const SizedBox(
-                                              height: 40,
-                                              width: 40,
-                                              child: CircularProgressIndicator()),
+                                          placeholderBuilder: (BuildContext
+                                                  context) =>
+                                              const SizedBox(
+                                                  height: 40,
+                                                  width: 40,
+                                                  child:
+                                                      CircularProgressIndicator()),
                                         ),
                                       ),
                                     ),
@@ -225,7 +259,8 @@ class _leaderboardState extends State<leaderboard> {
                                 return Row(
                                   children: [
                                     Hero(
-                                      tag: "${leaderList[index][1]}'s ${entry.key} badge",
+                                      tag:
+                                          "${leaderList[index][1]}'s ${entry.key} badge",
                                       child: Tooltip(
                                         message: snapshot.data![2][entry.key],
                                         child: CachedNetworkImage(
@@ -234,15 +269,16 @@ class _leaderboardState extends State<leaderboard> {
                                           width: 40,
                                           height: 40,
                                           placeholder: (context, url) =>
-                                          const SizedBox(
-                                              height: 40,
-                                              width: 40,
-                                              child: CircularProgressIndicator()),
+                                              const SizedBox(
+                                                  height: 40,
+                                                  width: 40,
+                                                  child:
+                                                      CircularProgressIndicator()),
                                           errorWidget: (context, url, error) =>
-                                          const SizedBox(
-                                              height: 40,
-                                              width: 40,
-                                              child: Icon(Icons.error)),
+                                              const SizedBox(
+                                                  height: 40,
+                                                  width: 40,
+                                                  child: Icon(Icons.error)),
                                         ),
                                       ),
                                     ),
@@ -256,7 +292,8 @@ class _leaderboardState extends State<leaderboard> {
                           }).toList(),
                         ),
                       ),
-                      transitionsBuilder: (c, anim, a2, child) => FadeTransition(opacity: anim, child: child),
+                      transitionsBuilder: (c, anim, a2, child) =>
+                          FadeTransition(opacity: anim, child: child),
                       transitionDuration: const Duration(milliseconds: 1500),
                     ),
                   );
@@ -270,61 +307,63 @@ class _leaderboardState extends State<leaderboard> {
                   ),
                   child: ListTile(
                     leading: Hero(
-                      tag: leaderList[index][1],
-                        child: profileList[leaderList[index][1]]!
-                    ),
+                        tag: leaderList[index][1],
+                        child: profileList[leaderList[index][1]]!),
                     title: Hero(
                         tag: leaderList[index][1] + " name",
                         child: Material(
-                          color: Colors.transparent,
-                            child: Text(leaderList[index][3],
+                            color: Colors.transparent,
+                            child: Text(
+                              leaderList[index][3],
                               style: const TextStyle(
                                 fontSize: 18.0,
-                              ),)
-                        )
-                    ),
+                              ),
+                            ))),
                     subtitle: Hero(
-                      tag: leaderList[index][1] + " worth",
+                        tag: leaderList[index][1] + " worth",
                         child: Material(
                             color: Colors.transparent,
-                            child: Text("\$${leaderList[index][0].toStringAsFixed(2)} USD")
-                        )
-                    ),
+                            child: Text(
+                                "\$${leaderList[index][0].toStringAsFixed(2)} USD"))),
                     trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Row(
                           children: badges.entries.map((entry) {
                             if (leaderList[index][2].contains(entry.key)) {
                               if (entry.value[1] == "svg") {
                                 return Row(
-                                    children: [
-                                      Hero(
-                                        tag: "${leaderList[index][1]}'s ${entry.key} badge",
-                                        child: Tooltip(
-                                          message: snapshot.data![2][entry.key],
-                                          child: SvgPicture.network(
-                                            entry.value[0],
-                                            fit: BoxFit.fill,
-                                            width: 40,
-                                            height: 40,
-                                            semanticsLabel: '${entry.key} badge',
-                                            placeholderBuilder: (BuildContext context) =>
-                                            const SizedBox(
-                                                height: 40,
-                                                width: 40,
-                                                child: CircularProgressIndicator()),
-                                          ),
+                                  children: [
+                                    Hero(
+                                      tag:
+                                          "${leaderList[index][1]}'s ${entry.key} badge",
+                                      child: Tooltip(
+                                        message: snapshot.data![2][entry.key],
+                                        child: SvgPicture.network(
+                                          entry.value[0],
+                                          fit: BoxFit.fill,
+                                          width: 40,
+                                          height: 40,
+                                          semanticsLabel: '${entry.key} badge',
+                                          placeholderBuilder: (BuildContext
+                                                  context) =>
+                                              const SizedBox(
+                                                  height: 40,
+                                                  width: 40,
+                                                  child:
+                                                      CircularProgressIndicator()),
                                         ),
                                       ),
-                                      const SizedBox(width: 10)
-                                    ],
-                                  );
+                                    ),
+                                    const SizedBox(width: 10)
+                                  ],
+                                );
                               } else {
                                 return Row(
                                   children: [
                                     Hero(
-                                      tag: "${leaderList[index][1]}'s ${entry.key} badge",
+                                      tag:
+                                          "${leaderList[index][1]}'s ${entry.key} badge",
                                       child: Tooltip(
                                         message: snapshot.data![2][entry.key],
                                         child: CachedNetworkImage(
@@ -333,15 +372,16 @@ class _leaderboardState extends State<leaderboard> {
                                           width: 40,
                                           height: 40,
                                           placeholder: (context, url) =>
-                                          const SizedBox(
-                                              height: 40,
-                                              width: 40,
-                                              child: CircularProgressIndicator()),
+                                              const SizedBox(
+                                                  height: 40,
+                                                  width: 40,
+                                                  child:
+                                                      CircularProgressIndicator()),
                                           errorWidget: (context, url, error) =>
-                                          const SizedBox(
-                                              height: 40,
-                                              width: 40,
-                                              child: Icon(Icons.error)),
+                                              const SizedBox(
+                                                  height: 40,
+                                                  width: 40,
+                                                  child: Icon(Icons.error)),
                                         ),
                                       ),
                                     ),
