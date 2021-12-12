@@ -384,8 +384,7 @@ class _UserWalletsState extends State<UserWallets> {
                                         child: Material(
                                             color: Colors.transparent,
                                             child: Text(
-                                                widget.userData['email']
-                                                    .split('@')[0],
+                                              widget.userData['username'],
                                                 style: const TextStyle(
                                                   fontSize: 20.0,
                                                 ),
