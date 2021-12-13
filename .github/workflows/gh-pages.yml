@@ -19,11 +19,6 @@ jobs:
           channel: 'stable'  
       - run: |
           flutter clean
-          sudo sh -c "echo 'deb https://gitsecret.jfrog.io/artifactory/git-secret-deb git-secret main' >> /etc/apt/sources.list"
-          wget -qO - 'https://gitsecret.jfrog.io/artifactory/api/gpg/key/public' | sudo apt-key add -
-          sudo apt-get update && sudo apt-get install -y git-secret
-          git secret --version
-          git secret reveal -p ${{ secrets.GIT_SECRET_PASSWORD }}
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           baseHref: /nova_app/
