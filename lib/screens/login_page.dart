@@ -1,207 +1,152 @@
-import 'package:flutter/gestures.dart';
-import 'package:nova/util/const.dart';
-import 'package:nova/screens/register_page.dart';
-import 'package:nova/screens/forgot_password_page.dart';
-import 'package:nova/widgets/custom_btn.dart';
-import 'package:nova/widgets/custom_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
+import 'package:flutterfire_ui/i10n.dart';
+import 'package:nova/util/decorations.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+// Overrides a label for en locale
+// To add localization for a custom language follow the guide here:
+// https://flutter.dev/docs/development/accessibility-and-localization/internationalization#an-alternative-class-for-the-apps-localized-resources
+class LabelOverrides extends DefaultLocalizations {
+  const LabelOverrides();
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  String get emailInputLabel => 'Enter your email';
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController username = TextEditingController();
-  final TextEditingController password = TextEditingController();
+final providerConfigs = [
+  const EmailProviderConfiguration(),
+  const GoogleProviderConfiguration(clientId: '517310904511-letk4godmrh1uifmg7j4ocii8f7e1op4.apps.googleusercontent.com'),
+  const AppleProviderConfiguration(),
+];
 
-  Future<void> _alertDialogBuilder(String error) async {
-    return showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: Text(error),
-            actions: [
-              TextButton(
-                child: const Text("Close Dialog"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          );
-        });
-  }
-
-  // Create a new user account
-  Future<String?> _loginAccount() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _loginEmail, password: _loginPassword);
-      return null;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        return 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        return 'The account already exists for that email.';
-      }
-      return e.message;
-    } catch (e) {
-      return e.toString();
-    }
-  }
-
-  void _submitForm() async {
-    // Set the form to loading state
-    setState(() {
-      _loginFormLoading = true;
-    });
-
-    // Run the create account method
-    String? _loginFeedback = await _loginAccount();
-
-    // If the string is not null, we got error while create account.
-    if (_loginFeedback != null) {
-      _alertDialogBuilder(_loginFeedback);
-
-      // Set the form to regular state [not loading].
-      setState(() {
-        _loginFormLoading = false;
-      });
-    }
-  }
-
-  // Default Form Loading State
-  bool _loginFormLoading = false;
-
-  // Form Input Field Values
-  String _loginEmail = "";
-  String _loginPassword = "";
-
-  // Focus Node for input fields
-  late FocusNode _passwordFocusNode;
-
-  @override
-  void initState() {
-    _passwordFocusNode = FocusNode();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _passwordFocusNode.dispose();
-    super.dispose();
-  }
-
+class FirebaseAuthUIExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF404e8f), Color(0xFF011569)])),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(
-                    top: 24.0,
-                  ),
-                  child: const Text(
-                    "The Nova System",
-                    textAlign: TextAlign.center,
-                    style: Constants.boldHeading,
-                  ),
-                ),
-                AutofillGroup(
-                  child: Column(
-                  children: <Widget>[
-                    CustomInput(
-                      hintText: "Email...",
-                      autoFillController: username,
-                      onChanged: (value) {
-                        _loginEmail = value;
-                      },
-                      onSubmitted: (value) {
-                        _passwordFocusNode.requestFocus();
-                      },
-                      textInputAction: TextInputAction.next,
-                      autoFillHints: const [AutofillHints.username],
-                    ),
-                    CustomInput(
-                      hintText: "Password...",
-                      autoFillController: password,
-                      onChanged: (value) {
-                        _loginPassword = value;
-                      },
-                      focusNode: _passwordFocusNode,
-                      isPasswordField: true,
-                      autoFillHints: const [AutofillHints.password],
-                      onSubmitted: (value) {
-                        _submitForm();
-                      },
-                    ),
-                    CustomBtn(
-                      text: "Login",
-                      onPressed: () {
-                        _submitForm();
-                      },
-                      isLoading: _loginFormLoading,
-                    ),
-                    const SizedBox(height: 10),
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(color: Colors.blueGrey),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: 'Forgot Password?',
-                            style: const TextStyle(color: Colors.grey),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const ForgotPasswordPage()),
-                                );
-                              }),
-                      ],
-                    ),
-                  )
-                  ],
-                ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 16.0,
-                  ),
-                  child: CustomBtn(
-                    text: "Create New Account",
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterPage()),
-                      );
-                    },
-                    outlineBtn: true,
-                  ),
-                ),
-              ],
-            ),
-          ),
+    final auth = FirebaseAuth.instance;
+
+    return MaterialApp(
+      theme: ThemeData(
+        brightness: Theme.of(context).brightness,
+        visualDensity: VisualDensity.standard,
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(),
         ),
       ),
+      initialRoute: auth.currentUser == null ? '/' : '/profile',
+      routes: {
+        '/': (context) {
+          return SignInScreen(
+            actions: [
+              ForgotPasswordAction((context, email) {
+                Navigator.pushNamed(
+                  context,
+                  '/forgot-password',
+                  arguments: {'email': email},
+                );
+              }),
+              VerifyPhoneAction((context, _) {
+                Navigator.pushNamed(context, '/phone');
+              }),
+              AuthStateChangeAction<SignedIn>((context, state) {
+                Navigator.pushReplacementNamed(context, '/profile');
+              }),
+              EmailLinkSignInAction((context) {
+                Navigator.pushReplacementNamed(context, '/email-link-sign-in');
+              }),
+            ],
+            sideBuilder: sideImage('assets/icon/app_icon.svg'),
+            subtitleBuilder: (context, action) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  action == AuthAction.signIn
+                      ? 'Welcome to The Nova System! Please sign in to continue.'
+                      : 'Welcome to The Nova System! Please create an account to continue',
+                ),
+              );
+            },
+            footerBuilder: (context, action) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Text(
+                    action == AuthAction.signIn
+                        ? 'By signing in, you agree to our terms and conditions.'
+                        : 'By registering, you agree to our terms and conditions.',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ),
+              );
+            },
+            providerConfigs: providerConfigs,
+          );
+        },
+        '/phone': (context) {
+          return PhoneInputScreen(
+            actions: [
+              SMSCodeRequestedAction((context, action, flowKey, phone) {
+                Navigator.of(context).pushReplacementNamed(
+                  '/sms',
+                  arguments: {
+                    'action': action,
+                    'flowKey': flowKey,
+                    'phone': phone,
+                  },
+                );
+              }),
+            ],
+            headerBuilder: headerIcon(Icons.phone),
+            sideBuilder: sideIcon(Icons.phone),
+          );
+        },
+        '/sms': (context) {
+          final arguments = ModalRoute.of(context)?.settings.arguments
+          as Map<String, dynamic>?;
+
+          return SMSCodeInputScreen(
+            actions: [
+              AuthStateChangeAction<SignedIn>((context, state) {
+                Navigator.of(context).pushReplacementNamed('/profile');
+              })
+            ],
+            flowKey: arguments?['flowKey'],
+            action: arguments?['action'],
+            headerBuilder: headerIcon(Icons.sms_outlined),
+            sideBuilder: sideIcon(Icons.sms_outlined),
+          );
+        },
+        '/profile': (context) {
+          return ProfileScreen(
+            providerConfigs: providerConfigs,
+            actions: [
+              SignedOutAction((context) {
+                Navigator.pushReplacementNamed(context, '/');
+              }),
+            ],
+          );
+        },
+        '/forgot-password': (context) {
+          final arguments = ModalRoute.of(context)?.settings.arguments
+          as Map<String, dynamic>?;
+
+          return ForgotPasswordScreen(
+            email: arguments?['email'],
+            headerMaxExtent: 200,
+            headerBuilder: headerIcon(Icons.lock),
+            sideBuilder: sideIcon(Icons.lock),
+          );
+        },
+      },
+      title: 'Nova System Login',
+      debugShowCheckedModeBanner: false,
+      locale: const Locale('en'),
+      localizationsDelegates: [
+        FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides()),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        FlutterFireUILocalizations.delegate,
+      ],
     );
   }
 }

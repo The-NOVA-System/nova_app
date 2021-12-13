@@ -7,6 +7,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:nova/screens/landing_page.dart';
+import 'package:nova/screens/register_page.dart';
 import 'package:nova/screens/wallets.dart' as wallets;
 import 'package:nova/screens/leaderboard.dart';
 import 'package:nova/screens/buy.dart' as buy;
@@ -367,7 +369,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   title: const Text('Logout'),
                   onTap: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LandingPage()),
+                    );
                   },
                 ),
                 Expanded(
@@ -800,6 +806,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
                                 if (snapshot.hasData &&
                                     !snapshot.data!.exists) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const RegisterPage()),
+                                  );
                                   return const Text("Document does not exist");
                                 }
 

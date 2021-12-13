@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'home.dart';
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
@@ -39,24 +41,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   // Create a new user account
-  Future<String?> _createAccount() async {
-    try {
-      if (_registerUsername == "") {
-        return 'The username must not be empty';
-      } else {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: _registerEmail, password: _registerPassword);
-        return null;
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        return 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        return 'The account already exists for that email.';
-      }
-      return e.message;
-    } catch (e) {
-      return e.toString();
+  String? _createAccount() {
+    if (_registerUsername == "") {
+      return "username must not be empty";
+    } else {
+      return null;
     }
   }
 
@@ -67,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     // Run the create account method
-    String? _createAccountFeedback = await _createAccount();
+    String? _createAccountFeedback = _createAccount();
 
     // If the string is not null, we got error while create account.
     if (_createAccountFeedback != null) {
@@ -91,7 +80,11 @@ class _RegisterPageState extends State<RegisterPage> {
       })
           .then((value) => print("User Added"))
           .catchError((error) => print("Failed to add user: $error"));
-      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const Home()),
+      );
     }
   }
 
@@ -135,18 +128,19 @@ class _RegisterPageState extends State<RegisterPage> {
           child: SizedBox(
             width: double.infinity,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   padding: const EdgeInsets.only(
                     top: 24.0,
                   ),
                   child: const Text(
-                    "Create A New Account",
+                    "Enter Username",
                     textAlign: TextAlign.center,
                     style: Constants.boldHeading,
                   ),
                 ),
+                const SizedBox(height: 15),
                 AutofillGroup(
                   child: Column(
                     children: [
@@ -157,34 +151,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                         isPasswordField: false,
                         onSubmitted: (value) {
-                          _emailFocusNode.requestFocus();
-                        },
-                      ),
-                      CustomInput(
-                        hintText: "Email...",
-                        autoFillController: username,
-                        focusNode: _emailFocusNode,
-                        onChanged: (value) {
-                          _registerEmail = value;
-                        },
-                        onSubmitted: (value) {
-                          _passwordFocusNode.requestFocus();
-                        },
-                        textInputAction: TextInputAction.next,
-                        autoFillHints: const [AutofillHints.newUsername],
-                      ),
-                      CustomInput(
-                        hintText: "Password...",
-                        autoFillController: password,
-                        onChanged: (value) {
-                          _registerPassword = value;
-                        },
-                        focusNode: _passwordFocusNode,
-                        isPasswordField: true,
-                        onSubmitted: (value) {
                           _submitForm();
                         },
-                        autoFillHints: const [AutofillHints.newPassword],
                       ),
                       CustomBtn(
                         text: "Create New Account",
@@ -196,17 +164,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
+                const Padding(
+                  padding: EdgeInsets.only(
                     bottom: 16.0,
                   ),
-                  child: CustomBtn(
-                    text: "Back To Login",
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    outlineBtn: true,
-                  ),
+                  child: Text(""),
                 ),
               ],
             ),

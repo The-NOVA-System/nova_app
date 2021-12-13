@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nova/screens/register_page.dart';
 import 'package:nova/util/const.dart';
 import 'package:nova/screens/home.dart';
 import 'package:nova/screens/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
+CollectionReference users = FirebaseFirestore.instance.collection('users');
 
 class LandingPage extends StatelessWidget {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
@@ -48,10 +52,44 @@ class LandingPage extends StatelessWidget {
                 // If the user is null, we're not logged in
                 if(_user == null) {
                   // user not logged in, head to login
-                  return LoginPage();
+                  return FirebaseAuthUIExample();
                 } else {
+                  return FutureBuilder<DocumentSnapshot>(
+                    future: users
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .get(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return const Text("Something went wrong");
+                      }
+
+                      if (snapshot.hasData &&
+                          !snapshot.data!.exists) {
+                        return const RegisterPage();
+                      }
+
+                      if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        return const Home();
+                      }
+
+                      return Container(
+                        decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [Color(0xFF404e8f), Color(0xFF011569)])),
+                        child: const Scaffold(
+                          backgroundColor: Colors.transparent,
+                          body: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                      );
+                    },
+                  );
                   // The user is logged in, head to homepage
-                  return const Home();
                 }
               }
 
