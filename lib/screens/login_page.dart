@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:flutterfire_ui/i10n.dart';
+import 'package:nova/util/const.dart';
 import 'package:nova/util/decorations.dart';
 
 // Overrides a label for en locale
@@ -16,7 +18,9 @@ class LabelOverrides extends DefaultLocalizations {
 
 final providerConfigs = [
   const EmailProviderConfiguration(),
-  const GoogleProviderConfiguration(clientId: '517310904511-letk4godmrh1uifmg7j4ocii8f7e1op4.apps.googleusercontent.com'),
+  const GoogleProviderConfiguration(
+      clientId:
+          '517310904511-letk4godmrh1uifmg7j4ocii8f7e1op4.apps.googleusercontent.com'),
   const AppleProviderConfiguration(),
 ];
 
@@ -55,6 +59,30 @@ class FirebaseAuthUIExample extends StatelessWidget {
                 Navigator.pushReplacementNamed(context, '/email-link-sign-in');
               }),
             ],
+            headerBuilder: (context, constraints, _) {
+              return Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(26.0),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 60,
+                        child: SvgPicture.asset('assets/icon/app_icon.svg',
+                            semanticsLabel: 'Nova System logo'),
+                      ),
+                      const SizedBox(width: 15),
+                      const Text(
+                        "The Nova System",
+                        textScaleFactor: 1.0,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 32),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
             sideBuilder: sideImage('assets/icon/app_icon.svg'),
             subtitleBuilder: (context, action) {
               return Padding(
@@ -102,7 +130,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
         },
         '/sms': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments
-          as Map<String, dynamic>?;
+              as Map<String, dynamic>?;
 
           return SMSCodeInputScreen(
             actions: [
@@ -128,7 +156,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
         },
         '/forgot-password': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments
-          as Map<String, dynamic>?;
+              as Map<String, dynamic>?;
 
           return ForgotPasswordScreen(
             email: arguments?['email'],
