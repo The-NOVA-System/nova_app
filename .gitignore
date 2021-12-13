@@ -21,3 +21,9 @@ doc/api/
 *.js.map
 .DS_Store
 ios/fastlane/.env
+.gitsecret/keys/random_seed
+!*.secret
+web/index.html
+macos/Runner/GoogleService-Info.plist
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
