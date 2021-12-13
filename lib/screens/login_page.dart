@@ -20,7 +20,7 @@ final providerConfigs = [
   const EmailProviderConfiguration(),
   const GoogleProviderConfiguration(
       clientId:
-          '517310904511-letk4godmrh1uifmg7j4ocii8f7e1op4.apps.googleusercontent.com'),
+          '9939219864-s86mneko4kqcpfn1uqu7ka8eft6b09vr.apps.googleusercontent.com'),
   const AppleProviderConfiguration(),
 ];
 
