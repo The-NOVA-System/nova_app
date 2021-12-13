@@ -76,6 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'badges': [],
         'defaultProfile': true,
         'profileType': '',
+        'superNova': false,
         'username': _registerUsername
       })
           .then((value) => print("User Added"))
@@ -92,8 +93,6 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _registerFormLoading = false;
 
   // Form Input Field Values
-  String _registerEmail = "";
-  String _registerPassword = "";
   String _registerUsername = "";
 
   // Focus Node for input fields
