@@ -72,11 +72,19 @@ class FirebaseAuthUIExample extends StatelessWidget {
                             semanticsLabel: 'Nova System logo'),
                       ),
                       const SizedBox(width: 15),
-                      const Text(
-                        "The Nova System",
-                        textScaleFactor: 1.0,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 32),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 130,
+                        child: const Align(
+                          alignment: Alignment.centerLeft,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "The Nova System",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 32),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),

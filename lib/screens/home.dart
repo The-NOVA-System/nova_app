@@ -494,6 +494,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                   'profileType':
                                       lookupMimeType('', headerBytes: bytes)
                                 });
+                                await global.doc('cached-urls').set(
+                                  {
+                                    FirebaseAuth.instance.currentUser!.email!.split("@")[0]: await ref.getDownloadURL(),
+                                  },
+                                  SetOptions(merge: true),
+                                );
                               }
                             } else {
                               setState(() {
@@ -523,6 +529,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 'profileType':
                                     lookupMimeType('', headerBytes: bytes)
                               });
+                              await global.doc('cached-urls').set(
+                                {
+                                  FirebaseAuth.instance.currentUser!.email!.split("@")[0]: await ref.getDownloadURL(),
+                                },
+                                SetOptions(merge: true),
+                              );
                             }
                           } else if (Platform.isMacOS) {
                             XTypeGroup typeGroup;
@@ -566,6 +578,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               'profileType':
                                   lookupMimeType('', headerBytes: bytes)
                             });
+                            await global.doc('cached-urls').set(
+                              {
+                                FirebaseAuth.instance.currentUser!.email!.split("@")[0]: await ref.getDownloadURL(),
+                              },
+                              SetOptions(merge: true),
+                            );
                           } else {
                             showDialog(
                                 context: context,
@@ -618,6 +636,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                               'profileType': lookupMimeType('',
                                                   headerBytes: bytes)
                                             });
+                                            await global.doc('cached-urls').set(
+                                              {
+                                                FirebaseAuth.instance.currentUser!.email!.split("@")[0]: await ref.getDownloadURL(),
+                                              },
+                                              SetOptions(merge: true),
+                                            );
                                           },
                                           child:
                                               const Text('Pick From Gallery'),
@@ -665,6 +689,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                               'profileType': lookupMimeType('',
                                                   headerBytes: bytes)
                                             });
+                                            await global.doc('cached-urls').set(
+                                              {
+                                                FirebaseAuth.instance.currentUser!.email!.split("@")[0]: await ref.getDownloadURL(),
+                                              },
+                                              SetOptions(merge: true),
+                                            );
                                           },
                                           child:
                                               const Text('Take A New Picture'),

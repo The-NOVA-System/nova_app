@@ -37,10 +37,12 @@ Future<List> fetchLeader(apiKey) async {
     }
   }
 
-  /*global.doc('badge-urls').set(
-    badges,
-    SetOptions(merge: true),
-  );*/
+  if (badges != badgeURLGet.data()! as Map) {
+    global.doc('badge-urls').set(
+      badges,
+      SetOptions(merge: true),
+    );
+  }
 
   var userGet = await users.get();
   var badgeGet = await global.doc('badges').get();
@@ -66,10 +68,12 @@ Future<List> fetchLeader(apiKey) async {
     assetList = assetList.toSet().toList();
   }
 
-  /*global.doc('cached-urls').set(
+  if (customProfiles != cacheURLGet.data()! as Map) {
+    global.doc('cached-urls').set(
       customProfiles,
       SetOptions(merge: true),
-    );*/
+    );
+  }
 
   var cryptoResponse = await client.post(Uri.parse(
       'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
