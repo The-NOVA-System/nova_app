@@ -35,7 +35,6 @@ jobs:
     - run: flutter build apk --release
     - run: flutter build appbundle --release
     - run: flutter build web --release
-    - run: flutter build macos --release
     - name: 'Upload APK'
       uses: actions/upload-artifact@v2
       with:
@@ -46,11 +45,6 @@ jobs:
       with:
         name: appbundle
         path: build/app/outputs/bundle/release/app-release.aab
-    - name: 'Upload MacOS'
-      uses: actions/upload-artifact@v2
-      with:
-        name: macos
-        path: build/macos/Build/Products/
     - name: 'Upload Web'
       uses: actions/upload-artifact@v2
       with:
