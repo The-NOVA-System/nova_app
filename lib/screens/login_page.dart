@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:flutterfire_ui/i10n.dart';
-import 'package:nova/util/const.dart';
 import 'package:nova/util/decorations.dart';
 
 // Overrides a label for en locale

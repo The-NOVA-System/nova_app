@@ -23,6 +23,7 @@ Future<List> fetchLeader(apiKey) async {
   CollectionReference global = FirebaseFirestore.instance.collection('global');
 
   var badgeURLGet = await global.doc('badge-urls').get();
+
   badges = badgeURLGet.data()! as Map;
 
   badgesList = await storage.ref('badges').list();
@@ -76,7 +77,7 @@ Future<List> fetchLeader(apiKey) async {
   }
 
   var cryptoResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
+      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&ids=${assetList.join(',')}'));
 
   List<dynamic> cryptoFinal;
   final _random = Random();
@@ -85,21 +86,21 @@ Future<List> fetchLeader(apiKey) async {
   if (cryptoResponse.statusCode == 429) {
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
       return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
+          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&ids=${assetList.join(',')}'));
     });
 
     if (cryptoResponse.statusCode == 429) {
       cryptoResponse =
           await Future.delayed(const Duration(seconds: 2), () async {
         return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&ids=${assetList.join(',')}'));
+            'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&ids=${assetList.join(',')}'));
       });
 
       if (cryptoResponse.statusCode == 429) {
         cryptoResponse =
             await Future.delayed(Duration(seconds: next(1, 5)), () async {
           return await client.post(Uri.parse(
-              'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active'));
+              'https://api.nomics.com/v1/currencies/ticker?key=$apiKey'));
         });
 
         cryptoFinal = jsonDecode(cryptoResponse.body);

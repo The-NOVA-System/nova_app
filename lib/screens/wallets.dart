@@ -25,7 +25,7 @@ Future<List> fetchCharts(pageInternal, idArray, apiKey) async {
   bool decodeError = false;
 
   cryptoResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
+      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
 
   try {
     var idData = jsonDecode(cryptoResponse.body);
@@ -49,7 +49,7 @@ Future<List> fetchCharts(pageInternal, idArray, apiKey) async {
     decodeError = false;
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
       return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
+          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=$length&page=$pageInternal&ids=${idArray.join(',')}'));
     });
 
     try {

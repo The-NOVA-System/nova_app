@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:nova/util/const.dart';
@@ -8,11 +9,25 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:paginated_search_bar/paginated_search_bar.dart';
 
 int length = 100;
 int counter = 1;
 double page = 1.0;
 late IDS idList;
+
+CollectionReference global =
+FirebaseFirestore.instance.collection('global');
+
+var searchGet = global.doc('search').get();
+
+class ExampleItem {
+  final String title;
+
+  ExampleItem({
+    required this.title,
+  });
+}
 
 Future<List> fetchCharts(pageInternal, apiKey) async {
   late Response cryptoResponse;
@@ -20,7 +35,7 @@ Future<List> fetchCharts(pageInternal, apiKey) async {
   bool decodeError = false;
 
   cryptoResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&per-page=$length&page=$pageInternal'));
+      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=$length&page=$pageInternal'));
 
   try {
     var idData = jsonDecode(cryptoResponse.body);
@@ -44,7 +59,7 @@ Future<List> fetchCharts(pageInternal, apiKey) async {
     decodeError = false;
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
       return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&status=active&per-page=$length&page=$pageInternal'));
+          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=$length&page=$pageInternal'));
     });
 
     try {
@@ -127,6 +142,37 @@ class IDS {
   }
 }
 
+class Search {
+  List idList;
+  List nameList;
+  Map<String, dynamic> map;
+
+  Search({
+    required this.idList,
+    required this.nameList,
+    required this.map,
+  });
+
+  factory Search.fromJson(List<dynamic> json) {
+    List returnIDList = [];
+    List returnNameList = [];
+    Map<String, dynamic> returnMap = {};
+
+    for (var i = 0; i < json.length; i++) {
+      if (json[i]["name"] != null && json[i]["id"] != null && json[i]["name"] != '' && json[i]["id"] != '') {
+        returnIDList.add(json[i]["id"]);
+        returnNameList.add(json[i]["name"]);
+        if (returnMap[json[i]["name"]] == null) {
+          returnMap[json[i]["name"]] = json[i]["id"];
+        }
+      }
+    }
+
+    return Search(
+        idList: returnIDList, nameList: returnNameList, map: returnMap);
+  }
+}
+
 class Buy extends StatefulWidget {
   final Function() notifyParent;
   final String nomicsApi;
@@ -190,7 +236,99 @@ class _BuyState extends State<Buy> {
               itemCount: length * counter,
               itemBuilder: (BuildContext context, int index) {
                 var color = colorList[index % Constants.matColors.length];
-                if (index == length * counter - 1) {
+                if (index == 0) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: PaginatedSearchBar<ExampleItem>(
+                      hintText: "Search for Cryptocurrencies",
+                      onSubmit: (
+                          {required ExampleItem? item,
+                          required String searchQuery}) async {
+                        var searchMap = (await searchGet).data()! as Map;
+
+                        if (searchQuery.split(':')[0] == 'ids') {
+                          var cryptoResponse = await client.post(Uri.parse(
+                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchQuery.split(':')[1]}'));
+                          var idData = jsonDecode(cryptoResponse.body);
+                          print(idData);
+                        } else {
+                          var cryptoResponse = await client.post(Uri.parse(
+                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchMap[item?.title]}'));
+                          var idData = jsonDecode(cryptoResponse.body);
+                          print(idData);
+                        }
+
+                        var cryptoResponse = await client.post(Uri.parse(
+                            'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&status=active'));
+                        var idData = jsonDecode(cryptoResponse.body);
+                        var search = Search.fromJson(await idData);
+
+                        Map<String, dynamic> map = search.map;
+                        print(map);
+
+                        if (searchMap != map) {
+                          await global.doc("search").set(
+                            map,
+                            SetOptions(merge: true),
+                          );
+                        }
+                      },
+                      onSearch: ({
+                        required pageIndex,
+                        required pageSize,
+                        required searchQuery,
+                      }) async {
+                        // Call your search API to return a list of items
+                        var searchMap = (await searchGet).data()! as Map;
+
+                        List _itemList =
+                        searchMap.entries.map( (entry) => entry.key).toList();
+
+                        var itemList = _itemList
+                            .where((food) => food
+                                .toLowerCase()
+                                .contains(searchQuery.toLowerCase()))
+                            .toList();
+                        List<ExampleItem> itemListFinal = [];
+                        for (var value in itemList) {
+                          itemListFinal.add(ExampleItem(title: value));
+                        }
+                        return itemListFinal;
+                      },
+                      itemBuilder: (
+                        context, {
+                        required item,
+                        required index,
+                      }) {
+                        return InkWell(
+                            onTap: () async {
+                              var searchMap = (await searchGet).data()! as Map;
+                              var searchResponse = await client.post(Uri.parse(
+                                  'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchMap[item.title]}'));
+                              var searchData = jsonDecode(searchResponse.body);
+                              print(searchData);
+
+
+                              var cryptoResponse = await client.post(Uri.parse(
+                                  'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&status=active'));
+                              var idData = jsonDecode(cryptoResponse.body);
+                              var search = Search.fromJson(await idData);
+
+                              Map<String, dynamic> map = search.map;
+                              print(map);
+
+                              if (searchMap != map) {
+                                await global.doc("search").set(
+                                  map,
+                                  SetOptions(merge: true),
+                                );
+                              }
+                            },
+                            child: Text(item.title));
+                      },
+                    ),
+                  );
+                } else if (index == length * counter - 1) {
                   return const SizedBox(
                     width: 20.0,
                     height: 288.0,
@@ -210,6 +348,7 @@ class _BuyState extends State<Buy> {
                         )),
                   );
                 } else {
+                  index = index - 1;
                   if (kIsWeb) {
                     return FutureBuilder<List>(
                       future: futureCharts,

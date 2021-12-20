@@ -47,6 +47,7 @@ dependencies:
   file_selector_macos: ^0.0.4+1
   adaptive_dialog: ^1.2.0
   flutterfire_ui: ^0.2.0+2
+  paginated_search_bar: ^1.1.2
 
 dev_dependencies:
   flutter_test:
