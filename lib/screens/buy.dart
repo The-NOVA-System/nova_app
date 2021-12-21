@@ -16,8 +16,7 @@ int counter = 1;
 double page = 1.0;
 late IDS idList;
 
-CollectionReference global =
-FirebaseFirestore.instance.collection('global');
+CollectionReference global = FirebaseFirestore.instance.collection('global');
 
 var searchGet = global.doc('search').get();
 
@@ -29,13 +28,15 @@ class ExampleItem {
   });
 }
 
-Future<List> fetchCharts(pageInternal, apiKey) async {
+Future<List> fetchCharts(pageInternal, apiKey, [urlString]) async {
   late Response cryptoResponse;
   late Response chartResponse;
   bool decodeError = false;
 
-  cryptoResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=$length&page=$pageInternal'));
+  urlString ??=
+      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=$length&page=$pageInternal';
+
+  cryptoResponse = await client.post(Uri.parse(urlString));
 
   try {
     var idData = jsonDecode(cryptoResponse.body);
@@ -58,8 +59,7 @@ Future<List> fetchCharts(pageInternal, apiKey) async {
   } else if (chartResponse.statusCode == 429 || decodeError == true) {
     decodeError = false;
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
-      return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=$length&page=$pageInternal'));
+      return await client.post(Uri.parse(urlString));
     });
 
     try {
@@ -159,7 +159,10 @@ class Search {
     Map<String, dynamic> returnMap = {};
 
     for (var i = 0; i < json.length; i++) {
-      if (json[i]["name"] != null && json[i]["id"] != null && json[i]["name"] != '' && json[i]["id"] != '') {
+      if (json[i]["name"] != null &&
+          json[i]["id"] != null &&
+          json[i]["name"] != '' &&
+          json[i]["id"] != '') {
         returnIDList.add(json[i]["id"]);
         returnNameList.add(json[i]["name"]);
         if (returnMap[json[i]["name"]] == null) {
@@ -247,31 +250,601 @@ class _BuyState extends State<Buy> {
                         var searchMap = (await searchGet).data()! as Map;
 
                         if (searchQuery.split(':')[0] == 'ids') {
-                          var cryptoResponse = await client.post(Uri.parse(
-                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchQuery.split(':')[1]}'));
-                          var idData = jsonDecode(cryptoResponse.body);
-                          print(idData);
+                          var idData = fetchCharts(1, widget.nomicsApi,
+                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchQuery.split(':')[1]}');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => (() {
+                                      return Scaffold(
+                                        appBar: AppBar(
+                                          title: const Text("Search Results..."),
+                                          backgroundColor: Theme.of(context).primaryColor,
+                                          foregroundColor: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
+                                        ),
+                                        body: ListView.builder(
+                                            shrinkWrap: true,
+                                            cacheExtent: 9999,
+                                            physics:
+                                                const AlwaysScrollableScrollPhysics(),
+                                            primary: false,
+                                            itemCount: searchQuery.split(':')[1].split(",").length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              if (kIsWeb) {
+                                                return FutureBuilder<List>(
+                                                  future: idData,
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      aggregateList =
+                                                          snapshot.data!;
+                                                      return Wallet(
+                                                        buttonActive: true,
+                                                        notifyParent:
+                                                            widget.notifyParent,
+                                                        name: snapshot.data![1]
+                                                            [index]["name"],
+                                                        icon:
+                                                            "https://corsproxy.garvshah.workers.dev/?" +
+                                                                snapshot.data![1]
+                                                                        [index]
+                                                                    ["logo_url"],
+                                                        rate: snapshot.data![1]
+                                                            [index]["price"],
+                                                        day: double.parse(snapshot
+                                                                    .data![1]
+                                                                [index]["1d"]
+                                                            ["price_change_pct"]),
+                                                        week: double.parse(snapshot
+                                                                    .data![1]
+                                                                [index]["7d"]
+                                                            ["price_change_pct"]),
+                                                        month: double.parse(snapshot
+                                                                    .data![1]
+                                                                [index]["30d"]
+                                                            ["price_change_pct"]),
+                                                        year: double.parse(snapshot
+                                                                    .data![1]
+                                                                [index]["365d"]
+                                                            ["price_change_pct"]),
+                                                        ytd: double.parse(snapshot
+                                                                    .data![1]
+                                                                [index]["ytd"]
+                                                            ["price_change_pct"]),
+                                                        color: color[0],
+                                                        alt: snapshot.data![1]
+                                                            [index]["id"],
+                                                        colorHex: color[1],
+                                                        data: snapshot.data![0]
+                                                            .chartData[index],
+                                                        buy: true,
+                                                        index: index,
+                                                      );
+                                                    } else if (snapshot
+                                                        .hasError) {
+                                                      return SizedBox(
+                                                        width: 20.0,
+                                                        height: 288.0,
+                                                        child: Card(
+                                                            shape:
+                                                                const RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .all(
+                                                                Radius.circular(
+                                                                    10),
+                                                              ),
+                                                            ),
+                                                            child: SizedBox(
+                                                              height: 25.0,
+                                                              width: 25.0,
+                                                              child: Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                                .all(
+                                                                            16.0),
+                                                                    child: Text(
+                                                                      '${snapshot.error}',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                    )),
+                                                              ),
+                                                            )),
+                                                      );
+                                                    }
+
+                                                    // By default, show a loading spinner.
+                                                    return const SizedBox(
+                                                      width: 20.0,
+                                                      height: 288.0,
+                                                      child: Card(
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                              Radius.circular(10),
+                                                            ),
+                                                          ),
+                                                          child: SizedBox(
+                                                            height: 25.0,
+                                                            width: 25.0,
+                                                            child: Align(
+                                                              alignment: Alignment
+                                                                  .center,
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            ),
+                                                          )),
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                return FutureBuilder<List>(
+                                                  future: idData,
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      aggregateList =
+                                                          snapshot.data!;
+                                                      return Wallet(
+                                                        buttonActive: true,
+                                                        notifyParent:
+                                                            widget.notifyParent,
+                                                        name: snapshot.data![1]
+                                                            [index]["name"],
+                                                        icon: snapshot.data![1]
+                                                            [index]["logo_url"],
+                                                        rate: snapshot.data![1]
+                                                            [index]["price"],
+                                                        day: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                            index]
+                                                                        ["1d"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        week: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                            index]
+                                                                        ["7d"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        month: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                            index]
+                                                                        ["30d"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        year: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                            index]
+                                                                        ["365d"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        ytd: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                            index]
+                                                                        ["ytd"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        color: color[0],
+                                                        alt: snapshot.data![1]
+                                                            [index]["id"],
+                                                        colorHex: color[1],
+                                                        data: snapshot.data![0]
+                                                            .chartData[index],
+                                                        buy: true,
+                                                        index: index,
+                                                      );
+                                                    } else if (snapshot
+                                                        .hasError) {
+                                                      return SizedBox(
+                                                        width: 20.0,
+                                                        height: 288.0,
+                                                        child: Card(
+                                                            shape:
+                                                                const RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .all(
+                                                                Radius.circular(
+                                                                    10),
+                                                              ),
+                                                            ),
+                                                            child: SizedBox(
+                                                              height: 25.0,
+                                                              width: 25.0,
+                                                              child: Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                                .all(
+                                                                            16.0),
+                                                                    child: Text(
+                                                                      '${snapshot.error}',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                    )),
+                                                              ),
+                                                            )),
+                                                      );
+                                                    }
+
+                                                    // By default, show a loading spinner.
+                                                    return const SizedBox(
+                                                      width: 20.0,
+                                                      height: 288.0,
+                                                      child: Card(
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                              Radius.circular(10),
+                                                            ),
+                                                          ),
+                                                          child: SizedBox(
+                                                            height: 25.0,
+                                                            width: 25.0,
+                                                            child: Align(
+                                                              alignment: Alignment
+                                                                  .center,
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            ),
+                                                          )),
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            }),
+                                      );
+                                    }())),
+                          );
                         } else {
-                          var cryptoResponse = await client.post(Uri.parse(
-                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchMap[item?.title]}'));
-                          var idData = jsonDecode(cryptoResponse.body);
-                          print(idData);
+                          List _itemList = searchMap.entries
+                              .map((entry) => entry.key)
+                              .toList();
+
+                          var itemList = _itemList
+                              .where((item) => item
+                              .toLowerCase()
+                              .contains(searchQuery.toLowerCase()))
+                              .toList();
+
+                          itemList = itemList.map((item) => searchMap[item]).toList();
+
+                          print(itemList.join(","));
+
+                          var idData = fetchCharts(1, widget.nomicsApi,
+                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${itemList.take(100).join(",")}');
+
+                          var chartData = (await idData)[1];
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => (() {
+                                  return Scaffold(
+                                    appBar: AppBar(
+                                      title: const Text("Search Results..."),
+                                      backgroundColor: Theme.of(context).primaryColor,
+                                      foregroundColor: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
+                                    ),
+                                    body: ListView.builder(
+                                        shrinkWrap: true,
+                                        cacheExtent: 9999,
+                                        physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                        primary: false,
+                                        itemCount: itemList.take(75).length,
+                                        itemBuilder: (BuildContext context,
+                                            int index) {
+                                          if (kIsWeb) {
+                                            return FutureBuilder<List>(
+                                              future: idData,
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData) {
+                                                  aggregateList =
+                                                  snapshot.data!;
+                                                  return Wallet(
+                                                    buttonActive: true,
+                                                    notifyParent:
+                                                    widget.notifyParent,
+                                                    name: snapshot.data![1]
+                                                    [index]["name"],
+                                                    icon:
+                                                    "https://corsproxy.garvshah.workers.dev/?" +
+                                                        snapshot.data![1]
+                                                        [index]
+                                                        ["logo_url"],
+                                                    rate: snapshot.data![1]
+                                                    [index]["price"],
+                                                    day: double.parse(snapshot
+                                                        .data![1]
+                                                    [index]["1d"]
+                                                    ["price_change_pct"]),
+                                                    week: double.parse(snapshot
+                                                        .data![1]
+                                                    [index]["7d"]
+                                                    ["price_change_pct"]),
+                                                    month: double.parse(snapshot
+                                                        .data![1]
+                                                    [index]["30d"]
+                                                    ["price_change_pct"]),
+                                                    year: double.parse(snapshot
+                                                        .data![1]
+                                                    [index]["365d"]
+                                                    ["price_change_pct"]),
+                                                    ytd: double.parse(snapshot
+                                                        .data![1]
+                                                    [index]["ytd"]
+                                                    ["price_change_pct"]),
+                                                    color: color[0],
+                                                    alt: snapshot.data![1]
+                                                    [index]["id"],
+                                                    colorHex: color[1],
+                                                    data: snapshot.data![0]
+                                                        .chartData[index],
+                                                    buy: true,
+                                                    index: index,
+                                                  );
+                                                } else if (snapshot
+                                                    .hasError) {
+                                                  return SizedBox(
+                                                    width: 20.0,
+                                                    height: 288.0,
+                                                    child: Card(
+                                                        shape:
+                                                        const RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius
+                                                              .all(
+                                                            Radius.circular(
+                                                                10),
+                                                          ),
+                                                        ),
+                                                        child: SizedBox(
+                                                          height: 25.0,
+                                                          width: 25.0,
+                                                          child: Align(
+                                                            alignment:
+                                                            Alignment
+                                                                .center,
+                                                            child: Padding(
+                                                                padding:
+                                                                const EdgeInsets
+                                                                    .all(
+                                                                    16.0),
+                                                                child: Text(
+                                                                  '${snapshot.error}',
+                                                                  textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                                )),
+                                                          ),
+                                                        )),
+                                                  );
+                                                }
+
+                                                // By default, show a loading spinner.
+                                                return const SizedBox(
+                                                  width: 20.0,
+                                                  height: 288.0,
+                                                  child: Card(
+                                                      shape:
+                                                      RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.all(
+                                                          Radius.circular(10),
+                                                        ),
+                                                      ),
+                                                      child: SizedBox(
+                                                        height: 25.0,
+                                                        width: 25.0,
+                                                        child: Align(
+                                                          alignment: Alignment
+                                                              .center,
+                                                          child:
+                                                          CircularProgressIndicator(),
+                                                        ),
+                                                      )),
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            return FutureBuilder<List>(
+                                              future: idData,
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData) {
+                                                  aggregateList =
+                                                  snapshot.data!;
+                                                  return Wallet(
+                                                    buttonActive: true,
+                                                    notifyParent:
+                                                    widget.notifyParent,
+                                                    name: snapshot.data![1]
+                                                    [index]["name"],
+                                                    icon: snapshot.data![1]
+                                                    [index]["logo_url"],
+                                                    rate: snapshot.data![1]
+                                                    [index]["price"],
+                                                    day: (() {
+                                                      try {
+                                                        return double.parse(
+                                                            snapshot.data![1][
+                                                            index]
+                                                            ["1d"][
+                                                            "price_change_pct"]);
+                                                      } catch (err) {
+                                                        return 0.0;
+                                                      }
+                                                    }()),
+                                                    week: (() {
+                                                      try {
+                                                        return double.parse(
+                                                            snapshot.data![1][
+                                                            index]
+                                                            ["7d"][
+                                                            "price_change_pct"]);
+                                                      } catch (err) {
+                                                        return 0.0;
+                                                      }
+                                                    }()),
+                                                    month: (() {
+                                                      try {
+                                                        return double.parse(
+                                                            snapshot.data![1][
+                                                            index]
+                                                            ["30d"][
+                                                            "price_change_pct"]);
+                                                      } catch (err) {
+                                                        return 0.0;
+                                                      }
+                                                    }()),
+                                                    year: (() {
+                                                      try {
+                                                        return double.parse(
+                                                            snapshot.data![1][
+                                                            index]
+                                                            ["365d"][
+                                                            "price_change_pct"]);
+                                                      } catch (err) {
+                                                        return 0.0;
+                                                      }
+                                                    }()),
+                                                    ytd: (() {
+                                                      try {
+                                                        return double.parse(
+                                                            snapshot.data![1][
+                                                            index]
+                                                            ["ytd"][
+                                                            "price_change_pct"]);
+                                                      } catch (err) {
+                                                        return 0.0;
+                                                      }
+                                                    }()),
+                                                    color: color[0],
+                                                    alt: snapshot.data![1]
+                                                    [index]["id"],
+                                                    colorHex: color[1],
+                                                    data: snapshot.data![0]
+                                                        .chartData[index],
+                                                    buy: true,
+                                                    index: index,
+                                                  );
+                                                } else if (snapshot
+                                                    .hasError) {
+                                                  return SizedBox(
+                                                    width: 20.0,
+                                                    height: 288.0,
+                                                    child: Card(
+                                                        shape:
+                                                        const RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius
+                                                              .all(
+                                                            Radius.circular(
+                                                                10),
+                                                          ),
+                                                        ),
+                                                        child: SizedBox(
+                                                          height: 25.0,
+                                                          width: 25.0,
+                                                          child: Align(
+                                                            alignment:
+                                                            Alignment
+                                                                .center,
+                                                            child: Padding(
+                                                                padding:
+                                                                const EdgeInsets
+                                                                    .all(
+                                                                    16.0),
+                                                                child: Text(
+                                                                  '${snapshot.error}',
+                                                                  textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                                )),
+                                                          ),
+                                                        )),
+                                                  );
+                                                }
+
+                                                // By default, show a loading spinner.
+                                                return const SizedBox(
+                                                  width: 20.0,
+                                                  height: 288.0,
+                                                  child: Card(
+                                                      shape:
+                                                      RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.all(
+                                                          Radius.circular(10),
+                                                        ),
+                                                      ),
+                                                      child: SizedBox(
+                                                        height: 25.0,
+                                                        width: 25.0,
+                                                        child: Align(
+                                                          alignment: Alignment
+                                                              .center,
+                                                          child:
+                                                          CircularProgressIndicator(),
+                                                        ),
+                                                      )),
+                                                );
+                                              },
+                                            );
+                                          }
+                                        }),
+                                  );
+                                }())),
+                          );
                         }
 
-                        var cryptoResponse = await client.post(Uri.parse(
-                            'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&status=active'));
-                        var idData = jsonDecode(cryptoResponse.body);
-                        var search = Search.fromJson(await idData);
+                        /*var idData = await fetchCharts(1, widget.nomicsApi,
+                            'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&status=active');
+                        var search = Search.fromJson(idData[1]);
 
                         Map<String, dynamic> map = search.map;
-                        print(map);
 
                         if (searchMap != map) {
                           await global.doc("search").set(
-                            map,
-                            SetOptions(merge: true),
-                          );
-                        }
+                                map,
+                                SetOptions(merge: true),
+                              );
+                        }*/
                       },
                       onSearch: ({
                         required pageIndex,
@@ -281,11 +854,12 @@ class _BuyState extends State<Buy> {
                         // Call your search API to return a list of items
                         var searchMap = (await searchGet).data()! as Map;
 
-                        List _itemList =
-                        searchMap.entries.map( (entry) => entry.key).toList();
+                        List _itemList = searchMap.entries
+                            .map((entry) => entry.key)
+                            .toList();
 
                         var itemList = _itemList
-                            .where((food) => food
+                            .where((item) => item
                                 .toLowerCase()
                                 .contains(searchQuery.toLowerCase()))
                             .toList();
@@ -303,26 +877,305 @@ class _BuyState extends State<Buy> {
                         return InkWell(
                             onTap: () async {
                               var searchMap = (await searchGet).data()! as Map;
-                              var searchResponse = await client.post(Uri.parse(
-                                  'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchMap[item.title]}'));
-                              var searchData = jsonDecode(searchResponse.body);
-                              print(searchData);
+                              var searchResponse = fetchCharts(
+                                  1,
+                                  widget.nomicsApi,
+                                  'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchMap[item.title]}');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => (() {
+                                      return Scaffold(
+                                        appBar: AppBar(
+                                          title: Text(item.title,),
+                                          backgroundColor: Theme.of(context).primaryColor,
+                                          foregroundColor: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
+                                        ),
+                                        body: ListView.builder(
+                                            shrinkWrap: true,
+                                            cacheExtent: 9999,
+                                            physics:
+                                            const AlwaysScrollableScrollPhysics(),
+                                            primary: false,
+                                            itemCount: 1,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              if (kIsWeb) {
+                                                return FutureBuilder<List>(
+                                                  future: searchResponse,
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      aggregateList =
+                                                      snapshot.data!;
+                                                      return Wallet(
+                                                        buttonActive: true,
+                                                        notifyParent:
+                                                        widget.notifyParent,
+                                                        name: snapshot.data![1]
+                                                        [index]["name"],
+                                                        icon:
+                                                        "https://corsproxy.garvshah.workers.dev/?" +
+                                                            snapshot.data![1]
+                                                            [index]
+                                                            ["logo_url"],
+                                                        rate: snapshot.data![1]
+                                                        [index]["price"],
+                                                        day: double.parse(snapshot
+                                                            .data![1]
+                                                        [index]["1d"]
+                                                        ["price_change_pct"]),
+                                                        week: double.parse(snapshot
+                                                            .data![1]
+                                                        [index]["7d"]
+                                                        ["price_change_pct"]),
+                                                        month: double.parse(snapshot
+                                                            .data![1]
+                                                        [index]["30d"]
+                                                        ["price_change_pct"]),
+                                                        year: double.parse(snapshot
+                                                            .data![1]
+                                                        [index]["365d"]
+                                                        ["price_change_pct"]),
+                                                        ytd: double.parse(snapshot
+                                                            .data![1]
+                                                        [index]["ytd"]
+                                                        ["price_change_pct"]),
+                                                        color: color[0],
+                                                        alt: snapshot.data![1]
+                                                        [index]["id"],
+                                                        colorHex: color[1],
+                                                        data: snapshot.data![0]
+                                                            .chartData[index],
+                                                        buy: true,
+                                                        index: index,
+                                                      );
+                                                    } else if (snapshot
+                                                        .hasError) {
+                                                      return SizedBox(
+                                                        width: 20.0,
+                                                        height: 288.0,
+                                                        child: Card(
+                                                            shape:
+                                                            const RoundedRectangleBorder(
+                                                              borderRadius:
+                                                              BorderRadius
+                                                                  .all(
+                                                                Radius.circular(
+                                                                    10),
+                                                              ),
+                                                            ),
+                                                            child: SizedBox(
+                                                              height: 25.0,
+                                                              width: 25.0,
+                                                              child: Align(
+                                                                alignment:
+                                                                Alignment
+                                                                    .center,
+                                                                child: Padding(
+                                                                    padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        16.0),
+                                                                    child: Text(
+                                                                      '${snapshot.error}',
+                                                                      textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                    )),
+                                                              ),
+                                                            )),
+                                                      );
+                                                    }
 
+                                                    // By default, show a loading spinner.
+                                                    return const SizedBox(
+                                                      width: 20.0,
+                                                      height: 288.0,
+                                                      child: Card(
+                                                          shape:
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.all(
+                                                              Radius.circular(10),
+                                                            ),
+                                                          ),
+                                                          child: SizedBox(
+                                                            height: 25.0,
+                                                            width: 25.0,
+                                                            child: Align(
+                                                              alignment: Alignment
+                                                                  .center,
+                                                              child:
+                                                              CircularProgressIndicator(),
+                                                            ),
+                                                          )),
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                return FutureBuilder<List>(
+                                                  future: searchResponse,
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      aggregateList =
+                                                      snapshot.data!;
+                                                      return Wallet(
+                                                        buttonActive: true,
+                                                        notifyParent:
+                                                        widget.notifyParent,
+                                                        name: snapshot.data![1]
+                                                        [index]["name"],
+                                                        icon: snapshot.data![1]
+                                                        [index]["logo_url"],
+                                                        rate: snapshot.data![1]
+                                                        [index]["price"],
+                                                        day: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                index]
+                                                                ["1d"][
+                                                                "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        week: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                index]
+                                                                ["7d"][
+                                                                "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        month: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                index]
+                                                                ["30d"][
+                                                                "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        year: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                index]
+                                                                ["365d"][
+                                                                "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        ytd: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1][
+                                                                index]
+                                                                ["ytd"][
+                                                                "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        color: color[0],
+                                                        alt: snapshot.data![1]
+                                                        [index]["id"],
+                                                        colorHex: color[1],
+                                                        data: snapshot.data![0]
+                                                            .chartData[index],
+                                                        buy: true,
+                                                        index: index,
+                                                      );
+                                                    } else if (snapshot
+                                                        .hasError) {
+                                                      return SizedBox(
+                                                        width: 20.0,
+                                                        height: 288.0,
+                                                        child: Card(
+                                                            shape:
+                                                            const RoundedRectangleBorder(
+                                                              borderRadius:
+                                                              BorderRadius
+                                                                  .all(
+                                                                Radius.circular(
+                                                                    10),
+                                                              ),
+                                                            ),
+                                                            child: SizedBox(
+                                                              height: 25.0,
+                                                              width: 25.0,
+                                                              child: Align(
+                                                                alignment:
+                                                                Alignment
+                                                                    .center,
+                                                                child: Padding(
+                                                                    padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        16.0),
+                                                                    child: Text(
+                                                                      '${snapshot.error}',
+                                                                      textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                    )),
+                                                              ),
+                                                            )),
+                                                      );
+                                                    }
 
-                              var cryptoResponse = await client.post(Uri.parse(
-                                  'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&status=active'));
-                              var idData = jsonDecode(cryptoResponse.body);
-                              var search = Search.fromJson(await idData);
+                                                    // By default, show a loading spinner.
+                                                    return const SizedBox(
+                                                      width: 20.0,
+                                                      height: 288.0,
+                                                      child: Card(
+                                                          shape:
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.all(
+                                                              Radius.circular(10),
+                                                            ),
+                                                          ),
+                                                          child: SizedBox(
+                                                            height: 25.0,
+                                                            width: 25.0,
+                                                            child: Align(
+                                                              alignment: Alignment
+                                                                  .center,
+                                                              child:
+                                                              CircularProgressIndicator(),
+                                                            ),
+                                                          )),
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            }),
+                                      );
+                                    }())),
+                              );
+
+                              /*var idData = await fetchCharts(
+                                  1,
+                                  widget.nomicsApi,
+                                  'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&status=active');
+                              var search = Search.fromJson(idData[1]);
 
                               Map<String, dynamic> map = search.map;
-                              print(map);
 
                               if (searchMap != map) {
                                 await global.doc("search").set(
-                                  map,
-                                  SetOptions(merge: true),
-                                );
-                              }
+                                      map,
+                                      SetOptions(merge: true),
+                                    );
+                              }*/
                             },
                             child: Text(item.title));
                       },
