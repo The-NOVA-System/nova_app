@@ -545,12 +545,9 @@ class _BuyState extends State<Buy> {
 
                           itemList = itemList.map((item) => searchMap[item]).toList();
 
-                          print(itemList.join(","));
-
                           var idData = fetchCharts(1, widget.nomicsApi,
                               'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${itemList.take(100).join(",")}');
 
-                          var chartData = (await idData)[1];
                           Navigator.push(
                             context,
                             MaterialPageRoute(
