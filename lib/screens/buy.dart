@@ -243,6 +243,14 @@ class _BuyState extends State<Buy> {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: PaginatedSearchBar<ExampleItem>(
+                      containerDecoration: (() {
+                        if (Theme.of(context).brightness ==
+                            Brightness.light) {
+                          return null;
+                        } else {
+                          return BoxDecoration(color: Colors.grey.shade800, borderRadius: BorderRadius.circular(8));
+                        }
+                      }()),
                       hintText: "Search for Cryptocurrencies",
                       onSubmit: (
                           {required ExampleItem? item,
@@ -1174,7 +1182,20 @@ class _BuyState extends State<Buy> {
                                     );
                               }*/
                             },
-                            child: Text(item.title));
+                            child: (() {
+                              if (Theme.of(context).brightness ==
+                                  Brightness.light) {
+                                return Text(item.title);
+                              } else {
+                                return Text(
+                                    item.title,
+                                  style: const TextStyle(
+                                    color: Colors.grey
+                                  ),
+                                );
+                              }
+                            }())
+                        );
                       },
                     ),
                   );
