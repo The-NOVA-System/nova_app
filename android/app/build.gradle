@@ -11,6 +11,8 @@ if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
@@ -45,6 +47,7 @@ android {
         targetSdkVersion 30
         multiDexEnabled = true
         versionCode 6
+        versionName flutterVersionName
     }
 
     signingConfigs {

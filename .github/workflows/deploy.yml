@@ -26,6 +26,9 @@ jobs:
           cp ./private/firebase/google-services.json ./android/app
           cp ./private/firebase/GoogleService-Info.plist ./ios/Runner
           cp ./private/firebase/GoogleService-Info.plist ./macos/Runner
+          cp ./private/google/google-play-secret.json ./android
+          cp ./private/google/key.properties ./android
+          cp ./private/google/upload-keystore.jks ./android
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Select Xcode version
@@ -77,4 +80,4 @@ jobs:
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       - name: Deploy to Play Store Beta
         run: |
-          cd ../android && bundle exec fastlane beta
+          cd ./android && bundle exec fastlane beta

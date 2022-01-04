@@ -24,6 +24,9 @@ jobs:
         cp ./private/firebase/google-services.json ./android/app
         cp ./private/firebase/GoogleService-Info.plist ./ios/Runner
         cp ./private/firebase/GoogleService-Info.plist ./macos/Runner
+        cp ./private/google/google-play-secret.json ./android
+        cp ./private/google/key.properties ./android
+        cp ./private/google/upload-keystore.jks ./android
       env:
         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - uses: subosito/flutter-action@v1
