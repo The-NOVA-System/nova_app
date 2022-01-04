@@ -27,3 +27,4 @@ web/index.html
 macos/Runner/GoogleService-Info.plist
 ios/Runner/GoogleService-Info.plist
 android/app/google-services.json
+android/google-play-secret.json

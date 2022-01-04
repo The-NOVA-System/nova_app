@@ -75,3 +75,6 @@ jobs:
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
           APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+      - name: Deploy to Play Store Beta
+        run: |
+          cd ../android && bundle exec fastlane beta
