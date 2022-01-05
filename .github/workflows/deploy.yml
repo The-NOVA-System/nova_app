@@ -64,7 +64,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Deploy to Play Store Beta
         run: |
-          cd ./android && sudo bundle install && bundle exec fastlane beta
+          cd ./android && fastlane beta
       - name: Deploy to TestFlight iOS
         run: |
           cd ./ios && bundle exec fastlane beta
