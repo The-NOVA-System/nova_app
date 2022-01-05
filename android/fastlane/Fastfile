@@ -25,7 +25,6 @@ platform :android do
     lane :beta do
       # Adjust the `build_type` and `flavor` params as needed to build the right APK for your setup
       gradle(task: "clean")
-      increment_version_code
       gradle(
         task: 'bundle',
         build_type: 'Release'
