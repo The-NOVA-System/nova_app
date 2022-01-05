@@ -42,7 +42,7 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v1
         with:
-          flutter-version: "2.8.0"
+          flutter-version: "2.8.1"
           channel: "stable"
       - name: Install tools
         run: |

@@ -25,8 +25,8 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 30
-   ndkVersion rootProject.ext.ndkVersion
+    compileSdkVersion 31
+    ndkVersion rootProject.ext.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -44,9 +44,9 @@ android {
     defaultConfig {
         applicationId "com.garv.nova"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         multiDexEnabled = true
-        versionCode 8
+        versionCode 9
         versionName flutterVersionName
     }
 
