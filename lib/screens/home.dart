@@ -27,6 +27,7 @@ import 'dart:io' show Platform;
 import 'package:file_selector/file_selector.dart';
 import 'package:nova/util/buy_me_a_coffee/buy_me_a_coffee_widget.dart';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:nova/util/contactus.dart';
 
 firebase_storage.FirebaseStorage storage =
     firebase_storage.FirebaseStorage.instance;
@@ -100,42 +101,42 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       Theme.of(context).appBarTheme.toolbarTextStyle!.color)),
           backgroundColor: Theme.of(context).primaryColor),
       body: Center(
-        child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'Created by Garv Shah\n',
-                style: TextStyle(
-                    color:
-                        Theme.of(context).appBarTheme.toolbarTextStyle!.color),
+        child: ListView(
+          children: [
+            ContactUs(
+              avatarPadding: 30.0,
+              cardColor: Colors.white,
+              textColor: Colors.black,
+              logo: const AssetImage('assets/images/garv.jpg'),
+              avatarRadius: 100,
+              email: 'gshah.6110@gmail.com',
+              companyName: 'Garv Shah',
+              companyColor: Theme.of(context).appBarTheme.toolbarTextStyle!.color!,
+              dividerThickness: 2,
+              dividerColor: Colors.grey,
+              website: 'https://garv-shah.github.io',
+              githubUserName: 'garv-shah',
+              tagLine: 'Developer & Student',
+              taglineColor: Theme.of(context).appBarTheme.toolbarTextStyle!.color!,
+            ),
+            const SizedBox(height: 25),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text:
+                        'Crypto Market Cap & Pricing Data Provided By Nomics.\n\n',
+                    style: const TextStyle(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launch('https://nomics.com/');
+                      },
+                  ),
+                ],
               ),
-              TextSpan(
-                text:
-                    'Crypto Market Cap & Pricing Data Provided By Nomics.\n\n',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    launch('https://nomics.com/');
-                  },
-              ),
-              TextSpan(
-                text:
-                    'Big thanks to the rest of The NOVA Team:\nLiam Shaw\nNatsuki Rogers\n\n',
-                style: TextStyle(
-                    color:
-                        Theme.of(context).appBarTheme.toolbarTextStyle!.color),
-              ),
-              TextSpan(
-                text: 'https://garv-shah.github.io',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    launch('https://garv-shah.github.io');
-                  },
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
