@@ -46,7 +46,7 @@ jobs:
           channel: "stable"
       - name: Install tools
         run: |
-          cd ./ios && pod repo update && pod install
+          cd ./ios && pod repo update
           flutter pub get
       - name: Setup SSH Keys and known_hosts for fastlane match
         run: |
