@@ -263,8 +263,8 @@ class _leaderboardState extends State<leaderboard>
             child: Scaffold(
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,
-              floatingActionButton: FadeTransition(
-                opacity: _hideAnimation,
+              floatingActionButton: ScaleTransition(
+                scale: _hideAnimation,
                 child: FloatingActionButton.extended(
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   onPressed: () {
