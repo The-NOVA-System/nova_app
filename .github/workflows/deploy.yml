@@ -42,7 +42,7 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v1
         with:
-          flutter-version: "2.8.1"
+          flutter-version: "2.10.0"
           channel: "stable"
       - name: Install tools
         run: |
@@ -66,19 +66,3 @@ jobs:
         run: |
           flutter build appbundle
           cd ./android && sudo bundle install && bundle exec fastlane beta
-      - name: Deploy to TestFlight iOS
-        run: |
-          cd ./ios && bundle exec fastlane beta
-        env:
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
-          FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
-          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
-          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
-          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
-          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
-          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}

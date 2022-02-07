@@ -272,16 +272,22 @@ class _WalletState extends State<Wallet> {
 
                                     userData = data;
 
-                                    return Text(
-                                      "You have ${data['USD']} USD available",
-                                      textAlign: TextAlign.center,
+                                    return FittedBox(
+                                      fit: BoxFit.fitWidth,
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+                                        child: Text(
+                                          "You have ${data['USD']} USD available",
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
                                     );
                                   }
 
                                   return const Text('');
                                 },
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 18),
                               SizedBox(
                                 height: 50,
                                 width: 250,
@@ -1547,16 +1553,22 @@ class _WalletState extends State<Wallet> {
 
                                     userData = data;
 
-                                    return Text(
-                                      "You have ${data[widget.alt]} ${widget.name} available",
-                                      textAlign: TextAlign.center,
+                                    return FittedBox(
+                                      fit: BoxFit.fitWidth,
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+                                        child: Text(
+                                          "You have ${data[widget.alt]} ${widget.name} available",
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
                                     );
                                   }
 
                                   return const Text('');
                                 },
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 18),
                               SizedBox(
                                 height: 50,
                                 width: 250,

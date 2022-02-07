@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:convert';
 
@@ -208,7 +209,8 @@ class _leaderboardState extends State<leaderboard>
               money + value['USD'],
               value['email'].split("@")[0],
               value['badges'],
-              value['username']
+              value['username'],
+              value.id
             ]);
 
             if (value['defaultProfile'] == true) {
@@ -373,6 +375,7 @@ class _leaderboardState extends State<leaderboard>
                               FadeTransition(opacity: anim, child: child),
                           transitionDuration:
                               const Duration(milliseconds: 1500),
+                          reverseTransitionDuration: const Duration(milliseconds: 650),
                         ),
                       );
                     },
@@ -390,11 +393,32 @@ class _leaderboardState extends State<leaderboard>
                                 tag: leaderList[index][1] + " name",
                                 child: Material(
                                     color: Colors.transparent,
-                                    child: Text(
-                                      leaderList[index][3],
-                                      style: const TextStyle(
-                                        fontSize: 18.0,
-                                      ),
+                                    child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                      stream: FirebaseFirestore.instance.collection("global").doc("badges").snapshots().asBroadcastStream(),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+                                        if (snapshot.hasError) {
+                                          return const Text("Something went wrong");
+                                        }
+
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.active) {
+
+                                          return Text(
+                                            leaderList[index][3],
+                                            style: const TextStyle(
+                                              fontSize: 18.0,
+                                            ),
+                                          );
+                                        }
+
+                                        return Text(
+                                          leaderList[index][3],
+                                          style: const TextStyle(
+                                            fontSize: 18.0,
+                                          ),
+                                        );
+                                      },
                                     ))),
                             subtitle: Hero(
                                 tag: leaderList[index][1] + " worth",
@@ -505,11 +529,32 @@ class _leaderboardState extends State<leaderboard>
                                 tag: leaderList[index][1] + " name",
                                 child: Material(
                                     color: Colors.transparent,
-                                    child: Text(
-                                      leaderList[index][3],
-                                      style: const TextStyle(
-                                        fontSize: 18.0,
-                                      ),
+                                    child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                      stream: FirebaseFirestore.instance.collection("global").doc("badges").snapshots().asBroadcastStream(),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+                                        if (snapshot.hasError) {
+                                          return const Text("Something went wrong");
+                                        }
+
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.active) {
+
+                                          return Text(
+                                            leaderList[index][3],
+                                            style: const TextStyle(
+                                              fontSize: 18.0,
+                                            ),
+                                          );
+                                        }
+
+                                        return Text(
+                                          leaderList[index][3],
+                                          style: const TextStyle(
+                                            fontSize: 18.0,
+                                          ),
+                                        );
+                                      },
                                     ))),
                             subtitle: Hero(
                                 tag: leaderList[index][1] + " worth",
