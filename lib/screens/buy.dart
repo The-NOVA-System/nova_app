@@ -323,8 +323,15 @@ class _BuyState extends State<Buy> {
                                                         alt: snapshot.data![1]
                                                             [index]["id"],
                                                         colorHex: color[1],
-                                                        data: snapshot.data![0]
-                                                            .chartData[index],
+                                                        data: (() {
+                                                          if (snapshot.data![0]
+                                                              .chartData.isEmpty == true) {
+                                                            return null;
+                                                          } else {
+                                                            return snapshot.data![0]
+                                                                .chartData[index];
+                                                          }
+                                                        } ()),
                                                         buy: true,
                                                         index: index,
                                                       );
@@ -467,8 +474,15 @@ class _BuyState extends State<Buy> {
                                                         alt: snapshot.data![1]
                                                             [index]["id"],
                                                         colorHex: color[1],
-                                                        data: snapshot.data![0]
-                                                            .chartData[index],
+                                                        data: (() {
+                                                          if (snapshot.data![0]
+                                                              .chartData.isEmpty == true) {
+                                                            return null;
+                                                          } else {
+                                                            return snapshot.data![0]
+                                                                .chartData[index];
+                                                          }
+                                                        } ()),
                                                         buy: true,
                                                         index: index,
                                                       );
@@ -619,8 +633,15 @@ class _BuyState extends State<Buy> {
                                                     alt: snapshot.data![1]
                                                     [index]["id"],
                                                     colorHex: color[1],
-                                                    data: snapshot.data![0]
-                                                        .chartData[index],
+                                                    data: (() {
+                                                      if (snapshot.data![0]
+                                                          .chartData.isEmpty == true) {
+                                                        return null;
+                                                      } else {
+                                                        return snapshot.data![0]
+                                                            .chartData[index];
+                                                      }
+                                                    } ()),
                                                     buy: true,
                                                     index: index,
                                                   );
@@ -763,8 +784,15 @@ class _BuyState extends State<Buy> {
                                                     alt: snapshot.data![1]
                                                     [index]["id"],
                                                     colorHex: color[1],
-                                                    data: snapshot.data![0]
-                                                        .chartData[index],
+                                                    data: (() {
+                                                      if (snapshot.data![0]
+                                                          .chartData.isEmpty == true) {
+                                                        return null;
+                                                      } else {
+                                                        return snapshot.data![0]
+                                                            .chartData[index];
+                                                      }
+                                                    } ()),
                                                     buy: true,
                                                     index: index,
                                                   );
@@ -837,6 +865,14 @@ class _BuyState extends State<Buy> {
                                 }())),
                           );
                         }
+                      },
+                      onSearch: ({
+                        required pageIndex,
+                        required pageSize,
+                        required searchQuery,
+                      }) async {
+
+                        var searchMap = (await searchGet).data()! as Map;
 
                         /*var idData = await fetchCharts(1, widget.nomicsApi,
                             'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&status=active');
@@ -846,18 +882,10 @@ class _BuyState extends State<Buy> {
 
                         if (searchMap != map) {
                           await global.doc("search").set(
-                                map,
-                                SetOptions(merge: true),
-                              );
+                            map,
+                            SetOptions(merge: true),
+                          );
                         }*/
-                      },
-                      onSearch: ({
-                        required pageIndex,
-                        required pageSize,
-                        required searchQuery,
-                      }) async {
-                        // Call your search API to return a list of items
-                        var searchMap = (await searchGet).data()! as Map;
 
                         List _itemList = searchMap.entries
                             .map((entry) => entry.key)
@@ -949,8 +977,15 @@ class _BuyState extends State<Buy> {
                                                         alt: snapshot.data![1]
                                                         [index]["id"],
                                                         colorHex: color[1],
-                                                        data: snapshot.data![0]
-                                                            .chartData[index],
+                                                        data: (() {
+                                                          if (snapshot.data![0]
+                                                              .chartData.isEmpty == true) {
+                                                            return null;
+                                                          } else {
+                                                            return snapshot.data![0]
+                                                                .chartData[index];
+                                                          }
+                                                        } ()),
                                                         buy: true,
                                                         index: index,
                                                       );
@@ -1022,6 +1057,10 @@ class _BuyState extends State<Buy> {
                                                   future: searchResponse,
                                                   builder: (context, snapshot) {
                                                     if (snapshot.hasData) {
+                                                      print("kim kim ${snapshot.data![1]
+                                                      [index]["name"]} - ${snapshot.data![0]
+                                                          .chartData.isEmpty}");
+
                                                       aggregateList =
                                                       snapshot.data!;
                                                       return Wallet(
@@ -1093,8 +1132,15 @@ class _BuyState extends State<Buy> {
                                                         alt: snapshot.data![1]
                                                         [index]["id"],
                                                         colorHex: color[1],
-                                                        data: snapshot.data![0]
-                                                            .chartData[index],
+                                                        data: (() {
+                                                          if (snapshot.data![0]
+                                                              .chartData.isEmpty == true) {
+                                                            return null;
+                                                          } else {
+                                                            return snapshot.data![0]
+                                                                .chartData[index];
+                                                          }
+                                                        } ()),
                                                         buy: true,
                                                         index: index,
                                                       );
@@ -1246,7 +1292,15 @@ class _BuyState extends State<Buy> {
                             color: color[0],
                             alt: snapshot.data![1][index]["id"],
                             colorHex: color[1],
-                            data: snapshot.data![0].chartData[index],
+                            data: (() {
+                              if (snapshot.data![0]
+                                  .chartData.isEmpty == true) {
+                                return null;
+                              } else {
+                                return snapshot.data![0]
+                                    .chartData[index];
+                              }
+                            } ()),
                             buy: true,
                             index: index,
                           );
@@ -1352,7 +1406,15 @@ class _BuyState extends State<Buy> {
                             color: color[0],
                             alt: snapshot.data![1][index]["id"],
                             colorHex: color[1],
-                            data: snapshot.data![0].chartData[index],
+                            data: (() {
+                              if (snapshot.data![0]
+                                  .chartData.isEmpty == true) {
+                                return null;
+                              } else {
+                                return snapshot.data![0]
+                                    .chartData[index];
+                              }
+                            } ()),
                             buy: true,
                             index: index,
                           );

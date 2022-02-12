@@ -304,7 +304,15 @@ class _WalletsState extends State<Wallets> {
                                     alt: snapshot.data![1][index]["id"],
                                     colorHex: color[1],
                                     altRate: snapshot.data![1][index]["price"],
-                                    data: snapshot.data![0].chartData[index],
+                                    data: (() {
+                                      if (snapshot.data![0]
+                                          .chartData.isEmpty == true) {
+                                        return null;
+                                      } else {
+                                        return snapshot.data![0]
+                                            .chartData[index];
+                                      }
+                                    } ()),
                                     buy: false,
                                     index: index,
                                   );
@@ -372,19 +380,55 @@ class _WalletsState extends State<Wallets> {
                                         .toString(),
                                     day: double.parse(snapshot.data![1][index]
                                     ["1d"]["price_change_pct"]),
-                                    week: double.parse(snapshot.data![1][index]
-                                    ["7d"]["price_change_pct"]),
-                                    month: double.parse(snapshot.data![1][index]
-                                    ["30d"]["price_change_pct"]),
-                                    year: double.parse(snapshot.data![1][index]
-                                    ["365d"]["price_change_pct"]),
-                                    ytd: double.parse(snapshot.data![1][index]
-                                    ["ytd"]["price_change_pct"]),
+                                    week: (() {
+                                      if (snapshot.data![1][index]
+                                      ["7d"] == null) {
+                                        return null;
+                                      } else {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["7d"]["price_change_pct"]);
+                                      }
+                                    } ()),
+                                    month: (() {
+                                      if (snapshot.data![1][index]
+                                      ["30d"] == null) {
+                                        return null;
+                                      } else {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["30d"]["price_change_pct"]);
+                                      }
+                                    } ()),
+                                    year: (() {
+                                      if (snapshot.data![1][index]
+                                      ["365d"] == null) {
+                                        return null;
+                                      } else {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["365d"]["price_change_pct"]);
+                                      }
+                                    } ()),
+                                    ytd: (() {
+                                      if (snapshot.data![1][index]
+                                      ["ytd"] == null) {
+                                        return null;
+                                      } else {
+                                        return double.parse(snapshot.data![1][index]
+                                        ["ytd"]["price_change_pct"]);
+                                      }
+                                    } ()),
                                     color: color[0],
                                     alt: snapshot.data![1][index]["id"],
                                     colorHex: color[1],
                                     altRate: snapshot.data![1][index]["price"],
-                                    data: snapshot.data![0].chartData[index],
+                                    data: (() {
+                                      if (snapshot.data![0]
+                                          .chartData.isEmpty == true) {
+                                        return null;
+                                      } else {
+                                        return snapshot.data![0]
+                                            .chartData[index];
+                                      }
+                                    } ()),
                                     buy: false,
                                     index: index,
                                   );

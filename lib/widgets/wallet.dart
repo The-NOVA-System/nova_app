@@ -148,7 +148,7 @@ class _WalletState extends State<Wallet> {
     Future.delayed(
         Duration.zero,
         () => setState(() {
-              chartDataList = widget.data!;
+              chartDataList = widget.data ?? [];
               _chartDataSeries.clear();
               bool setIconColour = false;
               bool setGraphColour = false;
@@ -212,17 +212,17 @@ class _WalletState extends State<Wallet> {
     double priceChange;
 
     if (interval == timeInterval.day) {
-      priceChange = widget.day!;
+      priceChange = widget.day ?? 0.0;
     } else if (interval == timeInterval.week) {
-      priceChange = widget.week!;
+      priceChange = widget.week ?? 0.0;
     } else if (interval == timeInterval.month) {
-      priceChange = widget.month!;
+      priceChange = widget.month ?? 0.0;
     } else if (interval == timeInterval.year) {
-      priceChange = widget.year!;
+      priceChange = widget.year ?? 0.0;
     } else if (interval == timeInterval.ytd) {
-      priceChange = widget.ytd!;
+      priceChange = widget.ytd ?? 0.0;
     } else {
-      priceChange = widget.year!;
+      priceChange = widget.year ?? 0.0;
     }
     // this is where i use Config class to perform my asynchronous load data
     // and check if it's loaded so this section will occur only once
@@ -3171,32 +3171,37 @@ class _WalletState extends State<Wallet> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        SizedBox(
-                            child: CachedNetworkImage(
-                              imageUrl: "${widget.icon}",
-                              placeholder: (context, url) =>
-                                  const CircularProgressIndicator(),
-                              errorWidget: (context, url, error) => (() {
-                                try {
-                                  return SvgPicture.network(
-                                    "${widget.icon}",
-                                    semanticsLabel: 'crypto logo',
-                                    placeholderBuilder:
-                                        (BuildContext context) =>
+                        (() {
+                          if (widget.icon == "") {
+                            return const SizedBox(height: 1, width: 1);
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: SizedBox(
+                                  child: CachedNetworkImage(
+                                    imageUrl: "${widget.icon}",
+                                    placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                    (() {
+                                        if (widget.icon?.split(".").last == "svg") {
+                                          return SvgPicture.network(
+                                            "${widget.icon}",
+                                            semanticsLabel: 'crypto logo',
+                                            placeholderBuilder:
+                                                (BuildContext context) =>
                                             const CircularProgressIndicator(),
-                                  );
-                                } catch (error) {
-                                  return const Icon(Icons.error);
-                                }
-                              }()),
-                            ),
-                            height: 25.0,
-                            width: 25.0),
-                        /*FadeInImage(
-                      image: NetworkImage("https://cryptoicons.org/api/icon/${widget.alt!.toLowerCase()}/100/${color[1]!.toLowerCase()}", scale: 4),
-                      placeholder: const AssetImage('assets/placeholder.png'),
-                    )*/
-                        const SizedBox(width: 10),
+                                          );
+                                        } else {
+                                          return const Icon(Icons.error);
+                                        }
+                                    }()),
+                                  ),
+                                  height: 25.0,
+                                  width: 25.0),
+                            );
+                          }
+                        } ()),
                         SizedBox(
                           width: (MediaQuery.of(context).size.width) * (2 / 5) -
                               22.5,
