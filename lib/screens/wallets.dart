@@ -12,7 +12,6 @@ import 'dart:convert';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-
 int length = 100;
 int counter = 1;
 double page = 1.0;
@@ -33,7 +32,7 @@ Future<List> fetchCharts(pageInternal, idArray, apiKey) async {
 
     chartResponse = await client.post(Uri.parse(
         'https://api.nomics.com/v1/currencies/sparkline?key=$apiKey&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
-  } catch(error) {
+  } catch (error) {
     chartResponse = cryptoResponse;
     decodeError = true;
   }
@@ -41,7 +40,7 @@ Future<List> fetchCharts(pageInternal, idArray, apiKey) async {
   if (chartResponse.statusCode == 200 && decodeError == false) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-        return [
+    return [
       Charts.fromJson(jsonDecode(chartResponse.body)),
       jsonDecode(cryptoResponse.body)
     ];
@@ -55,11 +54,12 @@ Future<List> fetchCharts(pageInternal, idArray, apiKey) async {
     try {
       var idData = jsonDecode(cryptoResponse.body);
       idList = IDS.fromJson(await idData);
-      chartResponse = await Future.delayed(const Duration(seconds: 1), () async {
+      chartResponse =
+          await Future.delayed(const Duration(seconds: 1), () async {
         return await client.post(Uri.parse(
             'https://api.nomics.com/v1/currencies/sparkline?key=$apiKey&ids=${idList.idList.take(length).join(",")}&start=${DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365))) + "T00%3A00%3A00Z"}'));
       });
-    } catch(error) {
+    } catch (error) {
       chartResponse = cryptoResponse;
       decodeError = true;
     }
@@ -134,7 +134,8 @@ class IDS {
 class Wallets extends StatefulWidget {
   final Function() notifyParent;
   final String nomicsApi;
-  const Wallets({Key? key,
+  const Wallets({
+    Key? key,
     required this.notifyParent,
     required this.nomicsApi,
   }) : super(key: key);
@@ -191,12 +192,13 @@ class _WalletsState extends State<Wallets> {
                   page++;
                   List localCharts = [];
                   try {
-                    localCharts =
-                        await fetchCharts(page.round(), data['assets'], widget.nomicsApi);
+                    localCharts = await fetchCharts(
+                        page.round(), data['assets'], widget.nomicsApi);
                   } catch (err) {
                     localCharts = await Future.delayed(
                         const Duration(seconds: 1), () async {
-                      return await fetchCharts(page.round(), data['assets'], widget.nomicsApi);
+                      return await fetchCharts(
+                          page.round(), data['assets'], widget.nomicsApi);
                     });
                   }
                   aggregateList[1] += localCharts[1];
@@ -256,46 +258,48 @@ class _WalletsState extends State<Wallets> {
                                     notifyParent: widget.notifyParent,
                                     name: snapshot.data![1][index]["name"],
                                     icon:
-                                    "https://corsproxy.garvshah.workers.dev/?" +
-                                        snapshot.data![1][index]["logo_url"],
+                                        "https://corsproxy.garvshah.workers.dev/?" +
+                                            snapshot.data![1][index]
+                                                ["logo_url"],
                                     rate: data[snapshot.data![1][index]["id"]]
                                         .toString(),
                                     day: (() {
                                       try {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["1d"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                            [index]["1d"]["price_change_pct"]);
                                       } catch (err) {
                                         return 0.0;
                                       }
                                     }()),
                                     week: (() {
                                       try {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["7d"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                            [index]["7d"]["price_change_pct"]);
                                       } catch (err) {
                                         return 0.0;
                                       }
                                     }()),
                                     month: (() {
                                       try {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["30d"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                            [index]["30d"]["price_change_pct"]);
                                       } catch (err) {
                                         return 0.0;
                                       }
                                     }()),
                                     year: (() {
                                       try {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["365d"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                                [index]["365d"]
+                                            ["price_change_pct"]);
                                       } catch (err) {
                                         return 0.0;
                                       }
                                     }()),
                                     ytd: (() {
                                       try {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["ytd"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                            [index]["ytd"]["price_change_pct"]);
                                       } catch (err) {
                                         return 0.0;
                                       }
@@ -305,14 +309,14 @@ class _WalletsState extends State<Wallets> {
                                     colorHex: color[1],
                                     altRate: snapshot.data![1][index]["price"],
                                     data: (() {
-                                      if (snapshot.data![0]
-                                          .chartData.isEmpty == true) {
+                                      if (snapshot.data![0].chartData.isEmpty ==
+                                          true) {
                                         return null;
                                       } else {
-                                        return snapshot.data![0]
-                                            .chartData[index];
+                                        return snapshot
+                                            .data![0].chartData[index];
                                       }
-                                    } ()),
+                                    }()),
                                     buy: false,
                                     index: index,
                                   );
@@ -334,7 +338,7 @@ class _WalletsState extends State<Wallets> {
                                             alignment: Alignment.center,
                                             child: Padding(
                                                 padding:
-                                                const EdgeInsets.all(16.0),
+                                                    const EdgeInsets.all(16.0),
                                                 child: Text(
                                                   '${snapshot.error}',
                                                   textAlign: TextAlign.center,
@@ -378,57 +382,65 @@ class _WalletsState extends State<Wallets> {
                                     icon: snapshot.data![1][index]["logo_url"],
                                     rate: data[snapshot.data![1][index]["id"]]
                                         .toString(),
-                                    day: double.parse(snapshot.data![1][index]
-                                    ["1d"]["price_change_pct"]),
+                                    day: (() {
+                                      if (snapshot.data![1][index]["1d"] ==
+                                          null) {
+                                        return null;
+                                      } else {
+                                        return double.parse(snapshot.data![1]
+                                            [index]["1d"]["price_change_pct"]);
+                                      }
+                                    }()),
                                     week: (() {
-                                      if (snapshot.data![1][index]
-                                      ["7d"] == null) {
+                                      if (snapshot.data![1][index]["7d"] ==
+                                          null) {
                                         return null;
                                       } else {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["7d"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                            [index]["7d"]["price_change_pct"]);
                                       }
-                                    } ()),
+                                    }()),
                                     month: (() {
-                                      if (snapshot.data![1][index]
-                                      ["30d"] == null) {
+                                      if (snapshot.data![1][index]["30d"] ==
+                                          null) {
                                         return null;
                                       } else {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["30d"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                            [index]["30d"]["price_change_pct"]);
                                       }
-                                    } ()),
+                                    }()),
                                     year: (() {
-                                      if (snapshot.data![1][index]
-                                      ["365d"] == null) {
+                                      if (snapshot.data![1][index]["365d"] ==
+                                          null) {
                                         return null;
                                       } else {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["365d"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                                [index]["365d"]
+                                            ["price_change_pct"]);
                                       }
-                                    } ()),
+                                    }()),
                                     ytd: (() {
-                                      if (snapshot.data![1][index]
-                                      ["ytd"] == null) {
+                                      if (snapshot.data![1][index]["ytd"] ==
+                                          null) {
                                         return null;
                                       } else {
-                                        return double.parse(snapshot.data![1][index]
-                                        ["ytd"]["price_change_pct"]);
+                                        return double.parse(snapshot.data![1]
+                                            [index]["ytd"]["price_change_pct"]);
                                       }
-                                    } ()),
+                                    }()),
                                     color: color[0],
                                     alt: snapshot.data![1][index]["id"],
                                     colorHex: color[1],
                                     altRate: snapshot.data![1][index]["price"],
                                     data: (() {
-                                      if (snapshot.data![0]
-                                          .chartData.isEmpty == true) {
+                                      if (snapshot.data![0].chartData.isEmpty ==
+                                          true) {
                                         return null;
                                       } else {
-                                        return snapshot.data![0]
-                                            .chartData[index];
+                                        return snapshot
+                                            .data![0].chartData[index];
                                       }
-                                    } ()),
+                                    }()),
                                     buy: false,
                                     index: index,
                                   );
@@ -450,7 +462,7 @@ class _WalletsState extends State<Wallets> {
                                             alignment: Alignment.center,
                                             child: Padding(
                                                 padding:
-                                                const EdgeInsets.all(16.0),
+                                                    const EdgeInsets.all(16.0),
                                                 child: Text(
                                                   '${snapshot.error}',
                                                   textAlign: TextAlign.center,
@@ -486,7 +498,8 @@ class _WalletsState extends State<Wallets> {
                       }),
                   onRefresh: () {
                     return Future.delayed(const Duration(seconds: 0), () async {
-                      var chartData = await fetchCharts(1, data['assets'], widget.nomicsApi);
+                      var chartData = await fetchCharts(
+                          1, data['assets'], widget.nomicsApi);
                       setState(() {
                         futureCharts =
                             Future.delayed(const Duration(seconds: 0), () {

@@ -275,7 +275,8 @@ class _WalletState extends State<Wallet> {
                                     return FittedBox(
                                       fit: BoxFit.fitWidth,
                                       child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            40, 0, 40, 0),
                                         child: Text(
                                           "You have ${data['USD']} USD available",
                                           textAlign: TextAlign.center,
@@ -1556,7 +1557,8 @@ class _WalletState extends State<Wallet> {
                                     return FittedBox(
                                       fit: BoxFit.fitWidth,
                                       child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            40, 0, 40, 0),
                                         child: Text(
                                           "You have ${data[widget.alt]} ${widget.name} available",
                                           textAlign: TextAlign.center,
@@ -2120,8 +2122,7 @@ class _WalletState extends State<Wallet> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 setState(() {
-                                                  chartDataList =
-                                                  widget.data!;
+                                                  chartDataList = widget.data!;
                                                   _chartDataSeries.clear();
                                                   bool setIconColour = false;
                                                   bool setGraphColour = false;
@@ -2130,20 +2131,17 @@ class _WalletState extends State<Wallet> {
                                                       mode.uniform) {
                                                     setIconColour = true;
                                                     setGraphColour = true;
-                                                  } else if (Config
-                                                      .getMode() ==
+                                                  } else if (Config.getMode() ==
                                                       mode.graphUniform) {
                                                     setGraphColour = true;
                                                     color[1] = "";
                                                   }
 
-                                                  if (setGraphColour ==
-                                                      true) {
-                                                    color[0] = charts
-                                                        .ColorUtil
+                                                  if (setGraphColour == true) {
+                                                    color[0] = charts.ColorUtil
                                                         .fromDartColor(
-                                                        HexColor.fromHex(
-                                                            uniformColour));
+                                                            HexColor.fromHex(
+                                                                uniformColour));
                                                   }
 
                                                   if (setIconColour == true) {
@@ -2155,46 +2153,44 @@ class _WalletState extends State<Wallet> {
                                                     charts.Series<PointModel,
                                                         num>(
                                                       colorFn: (_, __) =>
-                                                      color[0]!,
+                                                          color[0]!,
                                                       id: '${widget.name}',
                                                       data: chartDataList,
                                                       domainFn: (PointModel
-                                                      pointModel,
-                                                          _) =>
-                                                      pointModel.pointX,
+                                                                  pointModel,
+                                                              _) =>
+                                                          pointModel.pointX,
                                                       measureFn: (PointModel
-                                                      pointModel,
-                                                          _) =>
-                                                      pointModel.pointY,
+                                                                  pointModel,
+                                                              _) =>
+                                                          pointModel.pointY,
                                                     ),
                                                   );
 
                                                   // now change the 'Loading...' widget with the real chart widget
-                                                  lineChart =
-                                                      charts.LineChart(
-                                                        _chartDataSeries,
-                                                        defaultRenderer: charts
-                                                            .LineRendererConfig(
+                                                  lineChart = charts.LineChart(
+                                                    _chartDataSeries,
+                                                    defaultRenderer: charts
+                                                        .LineRendererConfig(
                                                             includeArea: true,
                                                             stacked: true),
-                                                        animate: true,
-                                                        animationDuration:
+                                                    animate: true,
+                                                    animationDuration:
                                                         const Duration(
-                                                            milliseconds:
-                                                            500),
-                                                        primaryMeasureAxis:
+                                                            milliseconds: 500),
+                                                    primaryMeasureAxis:
                                                         const charts
                                                             .NumericAxisSpec(
-                                                          renderSpec: charts
-                                                              .NoneRenderSpec(),
-                                                        ),
-                                                        domainAxis: const charts
-                                                            .NumericAxisSpec(
+                                                      renderSpec: charts
+                                                          .NoneRenderSpec(),
+                                                    ),
+                                                    domainAxis: const charts
+                                                        .NumericAxisSpec(
 //                showAxisLine: true,
-                                                          renderSpec: charts
-                                                              .NoneRenderSpec(),
-                                                        ),
-                                                      );
+                                                      renderSpec: charts
+                                                          .NoneRenderSpec(),
+                                                    ),
+                                                  );
                                                 });
                                               },
                                               child: const Text('OK'),
@@ -2207,8 +2203,8 @@ class _WalletState extends State<Wallet> {
                                       value != "0" &&
                                       value != "-0") {
                                     if (userData[widget.alt] -
-                                        double.parse(value) >
-                                        0 &&
+                                                double.parse(value) >
+                                            0 &&
                                         double.parse(value) >= 0) {
                                       wallets.locked = true;
 
@@ -2219,8 +2215,7 @@ class _WalletState extends State<Wallet> {
                                       });
 
                                       await fireStoreUserRef.update({
-                                        '${widget.alt}':
-                                        userData[widget.alt] -
+                                        '${widget.alt}': userData[widget.alt] -
                                             double.parse(value)
                                       });
 
@@ -2241,19 +2236,17 @@ class _WalletState extends State<Wallet> {
                                                   Navigator.pop(context);
                                                   setState(() {
                                                     chartDataList =
-                                                    widget.data!;
+                                                        widget.data!;
                                                     _chartDataSeries.clear();
-                                                    bool setIconColour =
-                                                    false;
-                                                    bool setGraphColour =
-                                                    false;
+                                                    bool setIconColour = false;
+                                                    bool setGraphColour = false;
 
                                                     if (Config.getMode() ==
                                                         mode.uniform) {
                                                       setIconColour = true;
                                                       setGraphColour = true;
                                                     } else if (Config
-                                                        .getMode() ==
+                                                            .getMode() ==
                                                         mode.graphUniform) {
                                                       setGraphColour = true;
                                                       color[1] = "";
@@ -2262,64 +2255,61 @@ class _WalletState extends State<Wallet> {
                                                     if (setGraphColour ==
                                                         true) {
                                                       color[0] = charts
-                                                          .ColorUtil
+                                                              .ColorUtil
                                                           .fromDartColor(
-                                                          HexColor.fromHex(
-                                                              uniformColour));
+                                                              HexColor.fromHex(
+                                                                  uniformColour));
                                                     }
 
-                                                    if (setIconColour ==
-                                                        true) {
-                                                      color[1] =
-                                                          uniformColour;
+                                                    if (setIconColour == true) {
+                                                      color[1] = uniformColour;
                                                     }
 
                                                     // construct you're chart data series
                                                     _chartDataSeries.add(
-                                                      charts.Series<
-                                                          PointModel, num>(
+                                                      charts.Series<PointModel,
+                                                          num>(
                                                         colorFn: (_, __) =>
-                                                        color[0]!,
+                                                            color[0]!,
                                                         id: '${widget.name}',
                                                         data: chartDataList,
                                                         domainFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointX,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointX,
                                                         measureFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointY,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointY,
                                                       ),
                                                     );
 
                                                     // now change the 'Loading...' widget with the real chart widget
                                                     lineChart =
                                                         charts.LineChart(
-                                                          _chartDataSeries,
-                                                          defaultRenderer: charts
-                                                              .LineRendererConfig(
-                                                              includeArea:
-                                                              true,
+                                                      _chartDataSeries,
+                                                      defaultRenderer: charts
+                                                          .LineRendererConfig(
+                                                              includeArea: true,
                                                               stacked: true),
-                                                          animate: true,
-                                                          animationDuration:
+                                                      animate: true,
+                                                      animationDuration:
                                                           const Duration(
                                                               milliseconds:
-                                                              500),
-                                                          primaryMeasureAxis:
+                                                                  500),
+                                                      primaryMeasureAxis:
                                                           const charts
                                                               .NumericAxisSpec(
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                          domainAxis: const charts
-                                                              .NumericAxisSpec(
-                                                            //                showAxisLine: true,
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                        );
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                      domainAxis: const charts
+                                                          .NumericAxisSpec(
+                                                        //                showAxisLine: true,
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                    );
                                                   });
                                                 },
                                                 child: const Text('OK'),
@@ -2329,8 +2319,8 @@ class _WalletState extends State<Wallet> {
                                         },
                                       );
                                     } else if (userData[widget.alt] -
-                                        double.parse(value) ==
-                                        0 ||
+                                                double.parse(value) ==
+                                            0 ||
                                         all) {
                                       wallets.locked = true;
 
@@ -2365,19 +2355,17 @@ class _WalletState extends State<Wallet> {
                                                   Navigator.pop(context);
                                                   setState(() {
                                                     chartDataList =
-                                                    widget.data!;
+                                                        widget.data!;
                                                     _chartDataSeries.clear();
-                                                    bool setIconColour =
-                                                    false;
-                                                    bool setGraphColour =
-                                                    false;
+                                                    bool setIconColour = false;
+                                                    bool setGraphColour = false;
 
                                                     if (Config.getMode() ==
                                                         mode.uniform) {
                                                       setIconColour = true;
                                                       setGraphColour = true;
                                                     } else if (Config
-                                                        .getMode() ==
+                                                            .getMode() ==
                                                         mode.graphUniform) {
                                                       setGraphColour = true;
                                                       color[1] = "";
@@ -2386,64 +2374,61 @@ class _WalletState extends State<Wallet> {
                                                     if (setGraphColour ==
                                                         true) {
                                                       color[0] = charts
-                                                          .ColorUtil
+                                                              .ColorUtil
                                                           .fromDartColor(
-                                                          HexColor.fromHex(
-                                                              uniformColour));
+                                                              HexColor.fromHex(
+                                                                  uniformColour));
                                                     }
 
-                                                    if (setIconColour ==
-                                                        true) {
-                                                      color[1] =
-                                                          uniformColour;
+                                                    if (setIconColour == true) {
+                                                      color[1] = uniformColour;
                                                     }
 
                                                     // construct you're chart data series
                                                     _chartDataSeries.add(
-                                                      charts.Series<
-                                                          PointModel, num>(
+                                                      charts.Series<PointModel,
+                                                          num>(
                                                         colorFn: (_, __) =>
-                                                        color[0]!,
+                                                            color[0]!,
                                                         id: '${widget.name}',
                                                         data: chartDataList,
                                                         domainFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointX,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointX,
                                                         measureFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointY,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointY,
                                                       ),
                                                     );
 
                                                     // now change the 'Loading...' widget with the real chart widget
                                                     lineChart =
                                                         charts.LineChart(
-                                                          _chartDataSeries,
-                                                          defaultRenderer: charts
-                                                              .LineRendererConfig(
-                                                              includeArea:
-                                                              true,
+                                                      _chartDataSeries,
+                                                      defaultRenderer: charts
+                                                          .LineRendererConfig(
+                                                              includeArea: true,
                                                               stacked: true),
-                                                          animate: true,
-                                                          animationDuration:
+                                                      animate: true,
+                                                      animationDuration:
                                                           const Duration(
                                                               milliseconds:
-                                                              500),
-                                                          primaryMeasureAxis:
+                                                                  500),
+                                                      primaryMeasureAxis:
                                                           const charts
                                                               .NumericAxisSpec(
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                          domainAxis: const charts
-                                                              .NumericAxisSpec(
-                                                            //                showAxisLine: true,
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                        );
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                      domainAxis: const charts
+                                                          .NumericAxisSpec(
+                                                        //                showAxisLine: true,
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                    );
                                                   });
                                                 },
                                                 child: const Text('OK'),
@@ -2466,19 +2451,17 @@ class _WalletState extends State<Wallet> {
                                                   Navigator.pop(context);
                                                   setState(() {
                                                     chartDataList =
-                                                    widget.data!;
+                                                        widget.data!;
                                                     _chartDataSeries.clear();
-                                                    bool setIconColour =
-                                                    false;
-                                                    bool setGraphColour =
-                                                    false;
+                                                    bool setIconColour = false;
+                                                    bool setGraphColour = false;
 
                                                     if (Config.getMode() ==
                                                         mode.uniform) {
                                                       setIconColour = true;
                                                       setGraphColour = true;
                                                     } else if (Config
-                                                        .getMode() ==
+                                                            .getMode() ==
                                                         mode.graphUniform) {
                                                       setGraphColour = true;
                                                       color[1] = "";
@@ -2487,64 +2470,61 @@ class _WalletState extends State<Wallet> {
                                                     if (setGraphColour ==
                                                         true) {
                                                       color[0] = charts
-                                                          .ColorUtil
+                                                              .ColorUtil
                                                           .fromDartColor(
-                                                          HexColor.fromHex(
-                                                              uniformColour));
+                                                              HexColor.fromHex(
+                                                                  uniformColour));
                                                     }
 
-                                                    if (setIconColour ==
-                                                        true) {
-                                                      color[1] =
-                                                          uniformColour;
+                                                    if (setIconColour == true) {
+                                                      color[1] = uniformColour;
                                                     }
 
                                                     // construct you're chart data series
                                                     _chartDataSeries.add(
-                                                      charts.Series<
-                                                          PointModel, num>(
+                                                      charts.Series<PointModel,
+                                                          num>(
                                                         colorFn: (_, __) =>
-                                                        color[0]!,
+                                                            color[0]!,
                                                         id: '${widget.name}',
                                                         data: chartDataList,
                                                         domainFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointX,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointX,
                                                         measureFn: (PointModel
-                                                        pointModel,
-                                                            _) =>
-                                                        pointModel.pointY,
+                                                                    pointModel,
+                                                                _) =>
+                                                            pointModel.pointY,
                                                       ),
                                                     );
 
                                                     // now change the 'Loading...' widget with the real chart widget
                                                     lineChart =
                                                         charts.LineChart(
-                                                          _chartDataSeries,
-                                                          defaultRenderer: charts
-                                                              .LineRendererConfig(
-                                                              includeArea:
-                                                              true,
+                                                      _chartDataSeries,
+                                                      defaultRenderer: charts
+                                                          .LineRendererConfig(
+                                                              includeArea: true,
                                                               stacked: true),
-                                                          animate: true,
-                                                          animationDuration:
+                                                      animate: true,
+                                                      animationDuration:
                                                           const Duration(
                                                               milliseconds:
-                                                              500),
-                                                          primaryMeasureAxis:
+                                                                  500),
+                                                      primaryMeasureAxis:
                                                           const charts
                                                               .NumericAxisSpec(
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                          domainAxis: const charts
-                                                              .NumericAxisSpec(
-                                                            //                showAxisLine: true,
-                                                            renderSpec: charts
-                                                                .NoneRenderSpec(),
-                                                          ),
-                                                        );
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                      domainAxis: const charts
+                                                          .NumericAxisSpec(
+                                                        //                showAxisLine: true,
+                                                        renderSpec: charts
+                                                            .NoneRenderSpec(),
+                                                      ),
+                                                    );
                                                   });
                                                 },
                                                 child: const Text('OK'),
@@ -2589,10 +2569,10 @@ class _WalletState extends State<Wallet> {
                                           data: chartDataList,
                                           domainFn:
                                               (PointModel pointModel, _) =>
-                                          pointModel.pointX,
+                                                  pointModel.pointX,
                                           measureFn:
                                               (PointModel pointModel, _) =>
-                                          pointModel.pointY,
+                                                  pointModel.pointY,
                                         ),
                                       );
 
@@ -2600,18 +2580,18 @@ class _WalletState extends State<Wallet> {
                                       lineChart = charts.LineChart(
                                         _chartDataSeries,
                                         defaultRenderer:
-                                        charts.LineRendererConfig(
-                                            includeArea: true,
-                                            stacked: true),
+                                            charts.LineRendererConfig(
+                                                includeArea: true,
+                                                stacked: true),
                                         animate: true,
                                         animationDuration:
-                                        const Duration(milliseconds: 500),
+                                            const Duration(milliseconds: 500),
                                         primaryMeasureAxis:
-                                        const charts.NumericAxisSpec(
+                                            const charts.NumericAxisSpec(
                                           renderSpec: charts.NoneRenderSpec(),
                                         ),
                                         domainAxis:
-                                        const charts.NumericAxisSpec(
+                                            const charts.NumericAxisSpec(
                                           //                showAxisLine: true,
                                           renderSpec: charts.NoneRenderSpec(),
                                         ),
@@ -3181,27 +3161,27 @@ class _WalletState extends State<Wallet> {
                                   child: CachedNetworkImage(
                                     imageUrl: "${widget.icon}",
                                     placeholder: (context, url) =>
-                                    const CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                    (() {
-                                        if (widget.icon?.split(".").last == "svg") {
-                                          return SvgPicture.network(
-                                            "${widget.icon}",
-                                            semanticsLabel: 'crypto logo',
-                                            placeholderBuilder:
-                                                (BuildContext context) =>
-                                            const CircularProgressIndicator(),
-                                          );
-                                        } else {
-                                          return const Icon(Icons.error);
-                                        }
+                                        const CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) => (() {
+                                      if (widget.icon?.split(".").last ==
+                                          "svg") {
+                                        return SvgPicture.network(
+                                          "${widget.icon}",
+                                          semanticsLabel: 'crypto logo',
+                                          placeholderBuilder: (BuildContext
+                                                  context) =>
+                                              const CircularProgressIndicator(),
+                                        );
+                                      } else {
+                                        return const Icon(Icons.error);
+                                      }
                                     }()),
                                   ),
                                   height: 25.0,
                                   width: 25.0),
                             );
                           }
-                        } ()),
+                        }()),
                         SizedBox(
                           width: (MediaQuery.of(context).size.width) * (2 / 5) -
                               22.5,

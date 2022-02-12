@@ -244,11 +244,12 @@ class _BuyState extends State<Buy> {
                     padding: const EdgeInsets.all(8.0),
                     child: PaginatedSearchBar<ExampleItem>(
                       containerDecoration: (() {
-                        if (Theme.of(context).brightness ==
-                            Brightness.light) {
+                        if (Theme.of(context).brightness == Brightness.light) {
                           return null;
                         } else {
-                          return BoxDecoration(color: Colors.grey.shade800, borderRadius: BorderRadius.circular(8));
+                          return BoxDecoration(
+                              color: Colors.grey.shade800,
+                              borderRadius: BorderRadius.circular(8));
                         }
                       }()),
                       hintText: "Search for Cryptocurrencies",
@@ -266,9 +267,14 @@ class _BuyState extends State<Buy> {
                                 builder: (context) => (() {
                                       return Scaffold(
                                         appBar: AppBar(
-                                          title: const Text("Search Results..."),
-                                          backgroundColor: Theme.of(context).primaryColor,
-                                          foregroundColor: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
+                                          title:
+                                              const Text("Search Results..."),
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
+                                          foregroundColor: Theme.of(context)
+                                              .appBarTheme
+                                              .toolbarTextStyle!
+                                              .color,
                                         ),
                                         body: ListView.builder(
                                             shrinkWrap: true,
@@ -276,7 +282,10 @@ class _BuyState extends State<Buy> {
                                             physics:
                                                 const AlwaysScrollableScrollPhysics(),
                                             primary: false,
-                                            itemCount: searchQuery.split(':')[1].split(",").length,
+                                            itemCount: searchQuery
+                                                .split(':')[1]
+                                                .split(",")
+                                                .length,
                                             itemBuilder: (BuildContext context,
                                                 int index) {
                                               if (kIsWeb) {
@@ -294,44 +303,106 @@ class _BuyState extends State<Buy> {
                                                             [index]["name"],
                                                         icon:
                                                             "https://corsproxy.garvshah.workers.dev/?" +
-                                                                snapshot.data![1]
-                                                                        [index]
-                                                                    ["logo_url"],
+                                                                snapshot.data![
+                                                                            1]
+                                                                        [index][
+                                                                    "logo_url"],
                                                         rate: snapshot.data![1]
                                                             [index]["price"],
-                                                        day: double.parse(snapshot
-                                                                    .data![1]
-                                                                [index]["1d"]
-                                                            ["price_change_pct"]),
-                                                        week: double.parse(snapshot
-                                                                    .data![1]
-                                                                [index]["7d"]
-                                                            ["price_change_pct"]),
-                                                        month: double.parse(snapshot
-                                                                    .data![1]
-                                                                [index]["30d"]
-                                                            ["price_change_pct"]),
-                                                        year: double.parse(snapshot
-                                                                    .data![1]
-                                                                [index]["365d"]
-                                                            ["price_change_pct"]),
-                                                        ytd: double.parse(snapshot
-                                                                    .data![1]
-                                                                [index]["ytd"]
-                                                            ["price_change_pct"]),
+                                                        day: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["1d"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["1d"][
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        week: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["7d"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["7d"][
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        month: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["30d"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["30d"][
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        year: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["365d"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["365d"]
+                                                                    [
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        ytd: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["ytd"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["ytd"][
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
                                                         color: color[0],
                                                         alt: snapshot.data![1]
                                                             [index]["id"],
                                                         colorHex: color[1],
                                                         data: (() {
-                                                          if (snapshot.data![0]
-                                                              .chartData.isEmpty == true) {
+                                                          if (snapshot
+                                                                  .data![0]
+                                                                  .chartData
+                                                                  .isEmpty ==
+                                                              true) {
                                                             return null;
                                                           } else {
-                                                            return snapshot.data![0]
-                                                                .chartData[index];
+                                                            return snapshot
+                                                                    .data![0]
+                                                                    .chartData[
+                                                                index];
                                                           }
-                                                        } ()),
+                                                        }()),
                                                         buy: true,
                                                         index: index,
                                                       );
@@ -358,10 +429,9 @@ class _BuyState extends State<Buy> {
                                                                     Alignment
                                                                         .center,
                                                                 child: Padding(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                                .all(
-                                                                            16.0),
+                                                                    padding: const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
                                                                     child: Text(
                                                                       '${snapshot.error}',
                                                                       textAlign:
@@ -381,16 +451,19 @@ class _BuyState extends State<Buy> {
                                                           shape:
                                                               RoundedRectangleBorder(
                                                             borderRadius:
-                                                                BorderRadius.all(
-                                                              Radius.circular(10),
+                                                                BorderRadius
+                                                                    .all(
+                                                              Radius.circular(
+                                                                  10),
                                                             ),
                                                           ),
                                                           child: SizedBox(
                                                             height: 25.0,
                                                             width: 25.0,
                                                             child: Align(
-                                                              alignment: Alignment
-                                                                  .center,
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
                                                               child:
                                                                   CircularProgressIndicator(),
                                                             ),
@@ -418,7 +491,8 @@ class _BuyState extends State<Buy> {
                                                         day: (() {
                                                           try {
                                                             return double.parse(
-                                                                snapshot.data![1][
+                                                                snapshot.data![1]
+                                                                            [
                                                                             index]
                                                                         ["1d"][
                                                                     "price_change_pct"]);
@@ -429,7 +503,8 @@ class _BuyState extends State<Buy> {
                                                         week: (() {
                                                           try {
                                                             return double.parse(
-                                                                snapshot.data![1][
+                                                                snapshot.data![1]
+                                                                            [
                                                                             index]
                                                                         ["7d"][
                                                                     "price_change_pct"]);
@@ -440,7 +515,8 @@ class _BuyState extends State<Buy> {
                                                         month: (() {
                                                           try {
                                                             return double.parse(
-                                                                snapshot.data![1][
+                                                                snapshot.data![1]
+                                                                            [
                                                                             index]
                                                                         ["30d"][
                                                                     "price_change_pct"]);
@@ -451,9 +527,11 @@ class _BuyState extends State<Buy> {
                                                         year: (() {
                                                           try {
                                                             return double.parse(
-                                                                snapshot.data![1][
+                                                                snapshot.data![1]
+                                                                            [
                                                                             index]
-                                                                        ["365d"][
+                                                                        ["365d"]
+                                                                    [
                                                                     "price_change_pct"]);
                                                           } catch (err) {
                                                             return 0.0;
@@ -462,7 +540,8 @@ class _BuyState extends State<Buy> {
                                                         ytd: (() {
                                                           try {
                                                             return double.parse(
-                                                                snapshot.data![1][
+                                                                snapshot.data![1]
+                                                                            [
                                                                             index]
                                                                         ["ytd"][
                                                                     "price_change_pct"]);
@@ -475,14 +554,19 @@ class _BuyState extends State<Buy> {
                                                             [index]["id"],
                                                         colorHex: color[1],
                                                         data: (() {
-                                                          if (snapshot.data![0]
-                                                              .chartData.isEmpty == true) {
+                                                          if (snapshot
+                                                                  .data![0]
+                                                                  .chartData
+                                                                  .isEmpty ==
+                                                              true) {
                                                             return null;
                                                           } else {
-                                                            return snapshot.data![0]
-                                                                .chartData[index];
+                                                            return snapshot
+                                                                    .data![0]
+                                                                    .chartData[
+                                                                index];
                                                           }
-                                                        } ()),
+                                                        }()),
                                                         buy: true,
                                                         index: index,
                                                       );
@@ -509,10 +593,9 @@ class _BuyState extends State<Buy> {
                                                                     Alignment
                                                                         .center,
                                                                 child: Padding(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                                .all(
-                                                                            16.0),
+                                                                    padding: const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
                                                                     child: Text(
                                                                       '${snapshot.error}',
                                                                       textAlign:
@@ -532,16 +615,19 @@ class _BuyState extends State<Buy> {
                                                           shape:
                                                               RoundedRectangleBorder(
                                                             borderRadius:
-                                                                BorderRadius.all(
-                                                              Radius.circular(10),
+                                                                BorderRadius
+                                                                    .all(
+                                                              Radius.circular(
+                                                                  10),
                                                             ),
                                                           ),
                                                           child: SizedBox(
                                                             height: 25.0,
                                                             width: 25.0,
                                                             child: Align(
-                                                              alignment: Alignment
-                                                                  .center,
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
                                                               child:
                                                                   CircularProgressIndicator(),
                                                             ),
@@ -561,11 +647,12 @@ class _BuyState extends State<Buy> {
 
                           var itemList = _itemList
                               .where((item) => item
-                              .toLowerCase()
-                              .contains(searchQuery.toLowerCase()))
+                                  .toLowerCase()
+                                  .contains(searchQuery.toLowerCase()))
                               .toList();
 
-                          itemList = itemList.map((item) => searchMap[item]).toList();
+                          itemList =
+                              itemList.map((item) => searchMap[item]).toList();
 
                           var idData = fetchCharts(1, widget.nomicsApi,
                               'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${itemList.take(100).join(",")}');
@@ -574,295 +661,377 @@ class _BuyState extends State<Buy> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => (() {
-                                  return Scaffold(
-                                    appBar: AppBar(
-                                      title: const Text("Search Results..."),
-                                      backgroundColor: Theme.of(context).primaryColor,
-                                      foregroundColor: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
-                                    ),
-                                    body: ListView.builder(
-                                        shrinkWrap: true,
-                                        cacheExtent: 9999,
-                                        physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                        primary: false,
-                                        itemCount: itemList.take(75).length,
-                                        itemBuilder: (BuildContext context,
-                                            int index) {
-                                          if (kIsWeb) {
-                                            return FutureBuilder<List>(
-                                              future: idData,
-                                              builder: (context, snapshot) {
-                                                if (snapshot.hasData) {
-                                                  aggregateList =
-                                                  snapshot.data!;
-                                                  return Wallet(
-                                                    buttonActive: true,
-                                                    notifyParent:
-                                                    widget.notifyParent,
-                                                    name: snapshot.data![1]
-                                                    [index]["name"],
-                                                    icon:
-                                                    "https://corsproxy.garvshah.workers.dev/?" +
-                                                        snapshot.data![1]
-                                                        [index]
-                                                        ["logo_url"],
-                                                    rate: snapshot.data![1]
-                                                    [index]["price"],
-                                                    day: double.parse(snapshot
-                                                        .data![1]
-                                                    [index]["1d"]
-                                                    ["price_change_pct"]),
-                                                    week: double.parse(snapshot
-                                                        .data![1]
-                                                    [index]["7d"]
-                                                    ["price_change_pct"]),
-                                                    month: double.parse(snapshot
-                                                        .data![1]
-                                                    [index]["30d"]
-                                                    ["price_change_pct"]),
-                                                    year: double.parse(snapshot
-                                                        .data![1]
-                                                    [index]["365d"]
-                                                    ["price_change_pct"]),
-                                                    ytd: double.parse(snapshot
-                                                        .data![1]
-                                                    [index]["ytd"]
-                                                    ["price_change_pct"]),
-                                                    color: color[0],
-                                                    alt: snapshot.data![1]
-                                                    [index]["id"],
-                                                    colorHex: color[1],
-                                                    data: (() {
-                                                      if (snapshot.data![0]
-                                                          .chartData.isEmpty == true) {
-                                                        return null;
-                                                      } else {
-                                                        return snapshot.data![0]
-                                                            .chartData[index];
-                                                      }
-                                                    } ()),
-                                                    buy: true,
-                                                    index: index,
-                                                  );
-                                                } else if (snapshot
-                                                    .hasError) {
-                                                  return SizedBox(
-                                                    width: 20.0,
-                                                    height: 288.0,
-                                                    child: Card(
-                                                        shape:
-                                                        const RoundedRectangleBorder(
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .all(
-                                                            Radius.circular(
-                                                                10),
-                                                          ),
-                                                        ),
-                                                        child: SizedBox(
-                                                          height: 25.0,
-                                                          width: 25.0,
-                                                          child: Align(
-                                                            alignment:
-                                                            Alignment
-                                                                .center,
-                                                            child: Padding(
-                                                                padding:
-                                                                const EdgeInsets
-                                                                    .all(
-                                                                    16.0),
-                                                                child: Text(
-                                                                  '${snapshot.error}',
-                                                                  textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                                )),
-                                                          ),
-                                                        )),
-                                                  );
-                                                }
+                                      return Scaffold(
+                                        appBar: AppBar(
+                                          title:
+                                              const Text("Search Results..."),
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
+                                          foregroundColor: Theme.of(context)
+                                              .appBarTheme
+                                              .toolbarTextStyle!
+                                              .color,
+                                        ),
+                                        body: ListView.builder(
+                                            shrinkWrap: true,
+                                            cacheExtent: 9999,
+                                            physics:
+                                                const AlwaysScrollableScrollPhysics(),
+                                            primary: false,
+                                            itemCount: itemList.take(75).length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              if (kIsWeb) {
+                                                return FutureBuilder<List>(
+                                                  future: idData,
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      aggregateList =
+                                                          snapshot.data!;
+                                                      return Wallet(
+                                                        buttonActive: true,
+                                                        notifyParent:
+                                                            widget.notifyParent,
+                                                        name: snapshot.data![1]
+                                                            [index]["name"],
+                                                        icon:
+                                                            "https://corsproxy.garvshah.workers.dev/?" +
+                                                                snapshot.data![
+                                                                            1]
+                                                                        [index][
+                                                                    "logo_url"],
+                                                        rate: snapshot.data![1]
+                                                            [index]["price"],
+                                                        day: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["1d"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["1d"][
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        week: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["7d"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["7d"][
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        month: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["30d"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["30d"][
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        year: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["365d"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["365d"]
+                                                                    [
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        ytd: (() {
+                                                          if (snapshot.data![1]
+                                                                      [index]
+                                                                  ["ytd"] ==
+                                                              null) {
+                                                            return null;
+                                                          } else {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["ytd"][
+                                                                    "price_change_pct"]);
+                                                          }
+                                                        }()),
+                                                        color: color[0],
+                                                        alt: snapshot.data![1]
+                                                            [index]["id"],
+                                                        colorHex: color[1],
+                                                        data: (() {
+                                                          if (snapshot
+                                                                  .data![0]
+                                                                  .chartData
+                                                                  .isEmpty ==
+                                                              true) {
+                                                            return null;
+                                                          } else {
+                                                            return snapshot
+                                                                    .data![0]
+                                                                    .chartData[
+                                                                index];
+                                                          }
+                                                        }()),
+                                                        buy: true,
+                                                        index: index,
+                                                      );
+                                                    } else if (snapshot
+                                                        .hasError) {
+                                                      return SizedBox(
+                                                        width: 20.0,
+                                                        height: 288.0,
+                                                        child: Card(
+                                                            shape:
+                                                                const RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .all(
+                                                                Radius.circular(
+                                                                    10),
+                                                              ),
+                                                            ),
+                                                            child: SizedBox(
+                                                              height: 25.0,
+                                                              width: 25.0,
+                                                              child: Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Padding(
+                                                                    padding: const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
+                                                                    child: Text(
+                                                                      '${snapshot.error}',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                    )),
+                                                              ),
+                                                            )),
+                                                      );
+                                                    }
 
-                                                // By default, show a loading spinner.
-                                                return const SizedBox(
-                                                  width: 20.0,
-                                                  height: 288.0,
-                                                  child: Card(
-                                                      shape:
-                                                      RoundedRectangleBorder(
-                                                        borderRadius:
-                                                        BorderRadius.all(
-                                                          Radius.circular(10),
-                                                        ),
-                                                      ),
-                                                      child: SizedBox(
-                                                        height: 25.0,
-                                                        width: 25.0,
-                                                        child: Align(
-                                                          alignment: Alignment
-                                                              .center,
-                                                          child:
-                                                          CircularProgressIndicator(),
-                                                        ),
-                                                      )),
-                                                );
-                                              },
-                                            );
-                                          } else {
-                                            return FutureBuilder<List>(
-                                              future: idData,
-                                              builder: (context, snapshot) {
-                                                if (snapshot.hasData) {
-                                                  aggregateList =
-                                                  snapshot.data!;
-                                                  return Wallet(
-                                                    buttonActive: true,
-                                                    notifyParent:
-                                                    widget.notifyParent,
-                                                    name: snapshot.data![1]
-                                                    [index]["name"],
-                                                    icon: snapshot.data![1]
-                                                    [index]["logo_url"],
-                                                    rate: snapshot.data![1]
-                                                    [index]["price"],
-                                                    day: (() {
-                                                      try {
-                                                        return double.parse(
-                                                            snapshot.data![1][
-                                                            index]
-                                                            ["1d"][
-                                                            "price_change_pct"]);
-                                                      } catch (err) {
-                                                        return 0.0;
-                                                      }
-                                                    }()),
-                                                    week: (() {
-                                                      try {
-                                                        return double.parse(
-                                                            snapshot.data![1][
-                                                            index]
-                                                            ["7d"][
-                                                            "price_change_pct"]);
-                                                      } catch (err) {
-                                                        return 0.0;
-                                                      }
-                                                    }()),
-                                                    month: (() {
-                                                      try {
-                                                        return double.parse(
-                                                            snapshot.data![1][
-                                                            index]
-                                                            ["30d"][
-                                                            "price_change_pct"]);
-                                                      } catch (err) {
-                                                        return 0.0;
-                                                      }
-                                                    }()),
-                                                    year: (() {
-                                                      try {
-                                                        return double.parse(
-                                                            snapshot.data![1][
-                                                            index]
-                                                            ["365d"][
-                                                            "price_change_pct"]);
-                                                      } catch (err) {
-                                                        return 0.0;
-                                                      }
-                                                    }()),
-                                                    ytd: (() {
-                                                      try {
-                                                        return double.parse(
-                                                            snapshot.data![1][
-                                                            index]
-                                                            ["ytd"][
-                                                            "price_change_pct"]);
-                                                      } catch (err) {
-                                                        return 0.0;
-                                                      }
-                                                    }()),
-                                                    color: color[0],
-                                                    alt: snapshot.data![1]
-                                                    [index]["id"],
-                                                    colorHex: color[1],
-                                                    data: (() {
-                                                      if (snapshot.data![0]
-                                                          .chartData.isEmpty == true) {
-                                                        return null;
-                                                      } else {
-                                                        return snapshot.data![0]
-                                                            .chartData[index];
-                                                      }
-                                                    } ()),
-                                                    buy: true,
-                                                    index: index,
-                                                  );
-                                                } else if (snapshot
-                                                    .hasError) {
-                                                  return SizedBox(
-                                                    width: 20.0,
-                                                    height: 288.0,
-                                                    child: Card(
-                                                        shape:
-                                                        const RoundedRectangleBorder(
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .all(
-                                                            Radius.circular(
-                                                                10),
-                                                          ),
-                                                        ),
-                                                        child: SizedBox(
-                                                          height: 25.0,
-                                                          width: 25.0,
-                                                          child: Align(
-                                                            alignment:
-                                                            Alignment
-                                                                .center,
-                                                            child: Padding(
-                                                                padding:
-                                                                const EdgeInsets
+                                                    // By default, show a loading spinner.
+                                                    return const SizedBox(
+                                                      width: 20.0,
+                                                      height: 288.0,
+                                                      child: Card(
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
                                                                     .all(
-                                                                    16.0),
-                                                                child: Text(
-                                                                  '${snapshot.error}',
-                                                                  textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                                )),
+                                                              Radius.circular(
+                                                                  10),
+                                                            ),
                                                           ),
-                                                        )),
-                                                  );
-                                                }
-
-                                                // By default, show a loading spinner.
-                                                return const SizedBox(
-                                                  width: 20.0,
-                                                  height: 288.0,
-                                                  child: Card(
-                                                      shape:
-                                                      RoundedRectangleBorder(
-                                                        borderRadius:
-                                                        BorderRadius.all(
-                                                          Radius.circular(10),
-                                                        ),
-                                                      ),
-                                                      child: SizedBox(
-                                                        height: 25.0,
-                                                        width: 25.0,
-                                                        child: Align(
-                                                          alignment: Alignment
-                                                              .center,
-                                                          child:
-                                                          CircularProgressIndicator(),
-                                                        ),
-                                                      )),
+                                                          child: SizedBox(
+                                                            height: 25.0,
+                                                            width: 25.0,
+                                                            child: Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            ),
+                                                          )),
+                                                    );
+                                                  },
                                                 );
-                                              },
-                                            );
-                                          }
-                                        }),
-                                  );
-                                }())),
+                                              } else {
+                                                return FutureBuilder<List>(
+                                                  future: idData,
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      aggregateList =
+                                                          snapshot.data!;
+                                                      return Wallet(
+                                                        buttonActive: true,
+                                                        notifyParent:
+                                                            widget.notifyParent,
+                                                        name: snapshot.data![1]
+                                                            [index]["name"],
+                                                        icon: snapshot.data![1]
+                                                            [index]["logo_url"],
+                                                        rate: snapshot.data![1]
+                                                            [index]["price"],
+                                                        day: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["1d"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        week: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["7d"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        month: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["30d"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        year: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["365d"]
+                                                                    [
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        ytd: (() {
+                                                          try {
+                                                            return double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["ytd"][
+                                                                    "price_change_pct"]);
+                                                          } catch (err) {
+                                                            return 0.0;
+                                                          }
+                                                        }()),
+                                                        color: color[0],
+                                                        alt: snapshot.data![1]
+                                                            [index]["id"],
+                                                        colorHex: color[1],
+                                                        data: (() {
+                                                          if (snapshot
+                                                                  .data![0]
+                                                                  .chartData
+                                                                  .isEmpty ==
+                                                              true) {
+                                                            return null;
+                                                          } else {
+                                                            return snapshot
+                                                                    .data![0]
+                                                                    .chartData[
+                                                                index];
+                                                          }
+                                                        }()),
+                                                        buy: true,
+                                                        index: index,
+                                                      );
+                                                    } else if (snapshot
+                                                        .hasError) {
+                                                      return SizedBox(
+                                                        width: 20.0,
+                                                        height: 288.0,
+                                                        child: Card(
+                                                            shape:
+                                                                const RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .all(
+                                                                Radius.circular(
+                                                                    10),
+                                                              ),
+                                                            ),
+                                                            child: SizedBox(
+                                                              height: 25.0,
+                                                              width: 25.0,
+                                                              child: Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Padding(
+                                                                    padding: const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
+                                                                    child: Text(
+                                                                      '${snapshot.error}',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                    )),
+                                                              ),
+                                                            )),
+                                                      );
+                                                    }
+
+                                                    // By default, show a loading spinner.
+                                                    return const SizedBox(
+                                                      width: 20.0,
+                                                      height: 288.0,
+                                                      child: Card(
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(
+                                                              Radius.circular(
+                                                                  10),
+                                                            ),
+                                                          ),
+                                                          child: SizedBox(
+                                                            height: 25.0,
+                                                            width: 25.0,
+                                                            child: Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            ),
+                                                          )),
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            }),
+                                      );
+                                    }())),
                           );
                         }
                       },
@@ -871,7 +1040,6 @@ class _BuyState extends State<Buy> {
                         required pageSize,
                         required searchQuery,
                       }) async {
-
                         var searchMap = (await searchGet).data()! as Map;
 
                         /*var idData = await fetchCharts(1, widget.nomicsApi,
@@ -918,299 +1086,343 @@ class _BuyState extends State<Buy> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => (() {
-                                      return Scaffold(
-                                        appBar: AppBar(
-                                          title: Text(item.title,),
-                                          backgroundColor: Theme.of(context).primaryColor,
-                                          foregroundColor: Theme.of(context).appBarTheme.toolbarTextStyle!.color,
-                                        ),
-                                        body: ListView.builder(
-                                            shrinkWrap: true,
-                                            cacheExtent: 9999,
-                                            physics:
-                                            const AlwaysScrollableScrollPhysics(),
-                                            primary: false,
-                                            itemCount: 1,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              if (kIsWeb) {
-                                                return FutureBuilder<List>(
-                                                  future: searchResponse,
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot.hasData) {
-                                                      aggregateList =
-                                                      snapshot.data!;
-                                                      return Wallet(
-                                                        buttonActive: true,
-                                                        notifyParent:
-                                                        widget.notifyParent,
-                                                        name: snapshot.data![1]
-                                                        [index]["name"],
-                                                        icon:
-                                                        "https://corsproxy.garvshah.workers.dev/?" +
-                                                            snapshot.data![1]
-                                                            [index]
-                                                            ["logo_url"],
-                                                        rate: snapshot.data![1]
-                                                        [index]["price"],
-                                                        day: double.parse(snapshot
-                                                            .data![1]
-                                                        [index]["1d"]
-                                                        ["price_change_pct"]),
-                                                        week: double.parse(snapshot
-                                                            .data![1]
-                                                        [index]["7d"]
-                                                        ["price_change_pct"]),
-                                                        month: double.parse(snapshot
-                                                            .data![1]
-                                                        [index]["30d"]
-                                                        ["price_change_pct"]),
-                                                        year: double.parse(snapshot
-                                                            .data![1]
-                                                        [index]["365d"]
-                                                        ["price_change_pct"]),
-                                                        ytd: double.parse(snapshot
-                                                            .data![1]
-                                                        [index]["ytd"]
-                                                        ["price_change_pct"]),
-                                                        color: color[0],
-                                                        alt: snapshot.data![1]
-                                                        [index]["id"],
-                                                        colorHex: color[1],
-                                                        data: (() {
-                                                          if (snapshot.data![0]
-                                                              .chartData.isEmpty == true) {
-                                                            return null;
-                                                          } else {
-                                                            return snapshot.data![0]
-                                                                .chartData[index];
-                                                          }
-                                                        } ()),
-                                                        buy: true,
-                                                        index: index,
-                                                      );
-                                                    } else if (snapshot
-                                                        .hasError) {
-                                                      return SizedBox(
-                                                        width: 20.0,
-                                                        height: 288.0,
-                                                        child: Card(
-                                                            shape:
-                                                            const RoundedRectangleBorder(
-                                                              borderRadius:
-                                                              BorderRadius
-                                                                  .all(
-                                                                Radius.circular(
-                                                                    10),
-                                                              ),
-                                                            ),
-                                                            child: SizedBox(
-                                                              height: 25.0,
-                                                              width: 25.0,
-                                                              child: Align(
-                                                                alignment:
-                                                                Alignment
-                                                                    .center,
-                                                                child: Padding(
-                                                                    padding:
-                                                                    const EdgeInsets
+                                          return Scaffold(
+                                            appBar: AppBar(
+                                              title: Text(
+                                                item.title,
+                                              ),
+                                              backgroundColor: Theme.of(context)
+                                                  .primaryColor,
+                                              foregroundColor: Theme.of(context)
+                                                  .appBarTheme
+                                                  .toolbarTextStyle!
+                                                  .color,
+                                            ),
+                                            body: ListView.builder(
+                                                shrinkWrap: true,
+                                                cacheExtent: 9999,
+                                                physics:
+                                                    const AlwaysScrollableScrollPhysics(),
+                                                primary: false,
+                                                itemCount: 1,
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int index) {
+                                                  if (kIsWeb) {
+                                                    return FutureBuilder<List>(
+                                                      future: searchResponse,
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        if (snapshot.hasData) {
+                                                          aggregateList =
+                                                              snapshot.data!;
+                                                          return Wallet(
+                                                            buttonActive: true,
+                                                            notifyParent: widget
+                                                                .notifyParent,
+                                                            name: snapshot
+                                                                    .data![1]
+                                                                [index]["name"],
+                                                            icon: "https://corsproxy.garvshah.workers.dev/?" +
+                                                                snapshot.data![
+                                                                            1]
+                                                                        [index][
+                                                                    "logo_url"],
+                                                            rate: snapshot
+                                                                    .data![1][
+                                                                index]["price"],
+                                                            day: double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["1d"][
+                                                                    "price_change_pct"]),
+                                                            week: double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["7d"][
+                                                                    "price_change_pct"]),
+                                                            month: double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["30d"][
+                                                                    "price_change_pct"]),
+                                                            year: double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["365d"]
+                                                                    [
+                                                                    "price_change_pct"]),
+                                                            ytd: double.parse(
+                                                                snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["ytd"][
+                                                                    "price_change_pct"]),
+                                                            color: color[0],
+                                                            alt: snapshot
+                                                                    .data![1]
+                                                                [index]["id"],
+                                                            colorHex: color[1],
+                                                            data: (() {
+                                                              if (snapshot
+                                                                      .data![0]
+                                                                      .chartData
+                                                                      .isEmpty ==
+                                                                  true) {
+                                                                return null;
+                                                              } else {
+                                                                return snapshot
+                                                                        .data![0]
+                                                                        .chartData[
+                                                                    index];
+                                                              }
+                                                            }()),
+                                                            buy: true,
+                                                            index: index,
+                                                          );
+                                                        } else if (snapshot
+                                                            .hasError) {
+                                                          return SizedBox(
+                                                            width: 20.0,
+                                                            height: 288.0,
+                                                            child: Card(
+                                                                shape:
+                                                                    const RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .all(
+                                                                    Radius
+                                                                        .circular(
+                                                                            10),
+                                                                  ),
+                                                                ),
+                                                                child: SizedBox(
+                                                                  height: 25.0,
+                                                                  width: 25.0,
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    child: Padding(
+                                                                        padding: const EdgeInsets.all(16.0),
+                                                                        child: Text(
+                                                                          '${snapshot.error}',
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        )),
+                                                                  ),
+                                                                )),
+                                                          );
+                                                        }
+
+                                                        // By default, show a loading spinner.
+                                                        return const SizedBox(
+                                                          width: 20.0,
+                                                          height: 288.0,
+                                                          child: Card(
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
                                                                         .all(
-                                                                        16.0),
-                                                                    child: Text(
-                                                                      '${snapshot.error}',
-                                                                      textAlign:
-                                                                      TextAlign
+                                                                  Radius
+                                                                      .circular(
+                                                                          10),
+                                                                ),
+                                                              ),
+                                                              child: SizedBox(
+                                                                height: 25.0,
+                                                                width: 25.0,
+                                                                child: Align(
+                                                                  alignment:
+                                                                      Alignment
                                                                           .center,
-                                                                    )),
-                                                              ),
-                                                            )),
-                                                      );
-                                                    }
-
-                                                    // By default, show a loading spinner.
-                                                    return const SizedBox(
-                                                      width: 20.0,
-                                                      height: 288.0,
-                                                      child: Card(
-                                                          shape:
-                                                          RoundedRectangleBorder(
-                                                            borderRadius:
-                                                            BorderRadius.all(
-                                                              Radius.circular(10),
-                                                            ),
-                                                          ),
-                                                          child: SizedBox(
-                                                            height: 25.0,
-                                                            width: 25.0,
-                                                            child: Align(
-                                                              alignment: Alignment
-                                                                  .center,
-                                                              child:
-                                                              CircularProgressIndicator(),
-                                                            ),
-                                                          )),
+                                                                  child:
+                                                                      CircularProgressIndicator(),
+                                                                ),
+                                                              )),
+                                                        );
+                                                      },
                                                     );
-                                                  },
-                                                );
-                                              } else {
-                                                return FutureBuilder<List>(
-                                                  future: searchResponse,
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot.hasData) {
-                                                      print("kim kim ${snapshot.data![1]
-                                                      [index]["name"]} - ${snapshot.data![0]
-                                                          .chartData.isEmpty}");
+                                                  } else {
+                                                    return FutureBuilder<List>(
+                                                      future: searchResponse,
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        if (snapshot.hasData) {
+                                                          print(
+                                                              "kim kim ${snapshot.data![1][index]["name"]} - ${snapshot.data![0].chartData.isEmpty}");
 
-                                                      aggregateList =
-                                                      snapshot.data!;
-                                                      return Wallet(
-                                                        buttonActive: true,
-                                                        notifyParent:
-                                                        widget.notifyParent,
-                                                        name: snapshot.data![1]
-                                                        [index]["name"],
-                                                        icon: snapshot.data![1]
-                                                        [index]["logo_url"],
-                                                        rate: snapshot.data![1]
-                                                        [index]["price"],
-                                                        day: (() {
-                                                          try {
-                                                            return double.parse(
-                                                                snapshot.data![1][
-                                                                index]
-                                                                ["1d"][
-                                                                "price_change_pct"]);
-                                                          } catch (err) {
-                                                            return 0.0;
-                                                          }
-                                                        }()),
-                                                        week: (() {
-                                                          try {
-                                                            return double.parse(
-                                                                snapshot.data![1][
-                                                                index]
-                                                                ["7d"][
-                                                                "price_change_pct"]);
-                                                          } catch (err) {
-                                                            return 0.0;
-                                                          }
-                                                        }()),
-                                                        month: (() {
-                                                          try {
-                                                            return double.parse(
-                                                                snapshot.data![1][
-                                                                index]
-                                                                ["30d"][
-                                                                "price_change_pct"]);
-                                                          } catch (err) {
-                                                            return 0.0;
-                                                          }
-                                                        }()),
-                                                        year: (() {
-                                                          try {
-                                                            return double.parse(
-                                                                snapshot.data![1][
-                                                                index]
-                                                                ["365d"][
-                                                                "price_change_pct"]);
-                                                          } catch (err) {
-                                                            return 0.0;
-                                                          }
-                                                        }()),
-                                                        ytd: (() {
-                                                          try {
-                                                            return double.parse(
-                                                                snapshot.data![1][
-                                                                index]
-                                                                ["ytd"][
-                                                                "price_change_pct"]);
-                                                          } catch (err) {
-                                                            return 0.0;
-                                                          }
-                                                        }()),
-                                                        color: color[0],
-                                                        alt: snapshot.data![1]
-                                                        [index]["id"],
-                                                        colorHex: color[1],
-                                                        data: (() {
-                                                          if (snapshot.data![0]
-                                                              .chartData.isEmpty == true) {
-                                                            return null;
-                                                          } else {
-                                                            return snapshot.data![0]
-                                                                .chartData[index];
-                                                          }
-                                                        } ()),
-                                                        buy: true,
-                                                        index: index,
-                                                      );
-                                                    } else if (snapshot
-                                                        .hasError) {
-                                                      return SizedBox(
-                                                        width: 20.0,
-                                                        height: 288.0,
-                                                        child: Card(
-                                                            shape:
-                                                            const RoundedRectangleBorder(
-                                                              borderRadius:
-                                                              BorderRadius
-                                                                  .all(
-                                                                Radius.circular(
-                                                                    10),
-                                                              ),
-                                                            ),
-                                                            child: SizedBox(
-                                                              height: 25.0,
-                                                              width: 25.0,
-                                                              child: Align(
-                                                                alignment:
-                                                                Alignment
-                                                                    .center,
-                                                                child: Padding(
-                                                                    padding:
-                                                                    const EdgeInsets
+                                                          aggregateList =
+                                                              snapshot.data!;
+                                                          return Wallet(
+                                                            buttonActive: true,
+                                                            notifyParent: widget
+                                                                .notifyParent,
+                                                            name: snapshot
+                                                                    .data![1]
+                                                                [index]["name"],
+                                                            icon: snapshot
+                                                                        .data![
+                                                                    1][index]
+                                                                ["logo_url"],
+                                                            rate: snapshot
+                                                                    .data![1][
+                                                                index]["price"],
+                                                            day: (() {
+                                                              try {
+                                                                return double.parse(
+                                                                    snapshot.data![1][index]
+                                                                            [
+                                                                            "1d"]
+                                                                        [
+                                                                        "price_change_pct"]);
+                                                              } catch (err) {
+                                                                return 0.0;
+                                                              }
+                                                            }()),
+                                                            week: (() {
+                                                              try {
+                                                                return double.parse(
+                                                                    snapshot.data![1][index]
+                                                                            [
+                                                                            "7d"]
+                                                                        [
+                                                                        "price_change_pct"]);
+                                                              } catch (err) {
+                                                                return 0.0;
+                                                              }
+                                                            }()),
+                                                            month: (() {
+                                                              try {
+                                                                return double.parse(
+                                                                    snapshot.data![1][index]
+                                                                            [
+                                                                            "30d"]
+                                                                        [
+                                                                        "price_change_pct"]);
+                                                              } catch (err) {
+                                                                return 0.0;
+                                                              }
+                                                            }()),
+                                                            year: (() {
+                                                              try {
+                                                                return double.parse(snapshot.data![1]
+                                                                            [
+                                                                            index]
+                                                                        ["365d"]
+                                                                    [
+                                                                    "price_change_pct"]);
+                                                              } catch (err) {
+                                                                return 0.0;
+                                                              }
+                                                            }()),
+                                                            ytd: (() {
+                                                              try {
+                                                                return double.parse(
+                                                                    snapshot.data![1][index]
+                                                                            [
+                                                                            "ytd"]
+                                                                        [
+                                                                        "price_change_pct"]);
+                                                              } catch (err) {
+                                                                return 0.0;
+                                                              }
+                                                            }()),
+                                                            color: color[0],
+                                                            alt: snapshot
+                                                                    .data![1]
+                                                                [index]["id"],
+                                                            colorHex: color[1],
+                                                            data: (() {
+                                                              if (snapshot
+                                                                      .data![0]
+                                                                      .chartData
+                                                                      .isEmpty ==
+                                                                  true) {
+                                                                return null;
+                                                              } else {
+                                                                return snapshot
+                                                                        .data![0]
+                                                                        .chartData[
+                                                                    index];
+                                                              }
+                                                            }()),
+                                                            buy: true,
+                                                            index: index,
+                                                          );
+                                                        } else if (snapshot
+                                                            .hasError) {
+                                                          return SizedBox(
+                                                            width: 20.0,
+                                                            height: 288.0,
+                                                            child: Card(
+                                                                shape:
+                                                                    const RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .all(
+                                                                    Radius
+                                                                        .circular(
+                                                                            10),
+                                                                  ),
+                                                                ),
+                                                                child: SizedBox(
+                                                                  height: 25.0,
+                                                                  width: 25.0,
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    child: Padding(
+                                                                        padding: const EdgeInsets.all(16.0),
+                                                                        child: Text(
+                                                                          '${snapshot.error}',
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        )),
+                                                                  ),
+                                                                )),
+                                                          );
+                                                        }
+
+                                                        // By default, show a loading spinner.
+                                                        return const SizedBox(
+                                                          width: 20.0,
+                                                          height: 288.0,
+                                                          child: Card(
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
                                                                         .all(
-                                                                        16.0),
-                                                                    child: Text(
-                                                                      '${snapshot.error}',
-                                                                      textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                    )),
+                                                                  Radius
+                                                                      .circular(
+                                                                          10),
+                                                                ),
                                                               ),
-                                                            )),
-                                                      );
-                                                    }
-
-                                                    // By default, show a loading spinner.
-                                                    return const SizedBox(
-                                                      width: 20.0,
-                                                      height: 288.0,
-                                                      child: Card(
-                                                          shape:
-                                                          RoundedRectangleBorder(
-                                                            borderRadius:
-                                                            BorderRadius.all(
-                                                              Radius.circular(10),
-                                                            ),
-                                                          ),
-                                                          child: SizedBox(
-                                                            height: 25.0,
-                                                            width: 25.0,
-                                                            child: Align(
-                                                              alignment: Alignment
-                                                                  .center,
-                                                              child:
-                                                              CircularProgressIndicator(),
-                                                            ),
-                                                          )),
+                                                              child: SizedBox(
+                                                                height: 25.0,
+                                                                width: 25.0,
+                                                                child: Align(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child:
+                                                                      CircularProgressIndicator(),
+                                                                ),
+                                                              )),
+                                                        );
+                                                      },
                                                     );
-                                                  },
-                                                );
-                                              }
-                                            }),
-                                      );
-                                    }())),
+                                                  }
+                                                }),
+                                          );
+                                        }())),
                               );
 
                               /*var idData = await fetchCharts(
@@ -1234,14 +1446,11 @@ class _BuyState extends State<Buy> {
                                 return Text(item.title);
                               } else {
                                 return Text(
-                                    item.title,
-                                  style: const TextStyle(
-                                    color: Colors.grey
-                                  ),
+                                  item.title,
+                                  style: const TextStyle(color: Colors.grey),
                                 );
                               }
-                            }())
-                        );
+                            }()));
                       },
                     ),
                   );
@@ -1279,28 +1488,56 @@ class _BuyState extends State<Buy> {
                             icon: "https://corsproxy.garvshah.workers.dev/?" +
                                 snapshot.data![1][index]["logo_url"],
                             rate: snapshot.data![1][index]["price"],
-                            day: double.parse(snapshot.data![1][index]["1d"]
-                                ["price_change_pct"]),
-                            week: double.parse(snapshot.data![1][index]["7d"]
-                                ["price_change_pct"]),
-                            month: double.parse(snapshot.data![1][index]["30d"]
-                                ["price_change_pct"]),
-                            year: double.parse(snapshot.data![1][index]["365d"]
-                                ["price_change_pct"]),
-                            ytd: double.parse(snapshot.data![1][index]["ytd"]
-                                ["price_change_pct"]),
+                            day: (() {
+                              if (snapshot.data![1][index]["1d"] == null) {
+                                return null;
+                              } else {
+                                return double.parse(snapshot.data![1][index]
+                                    ["1d"]["price_change_pct"]);
+                              }
+                            }()),
+                            week: (() {
+                              if (snapshot.data![1][index]["7d"] == null) {
+                                return null;
+                              } else {
+                                return double.parse(snapshot.data![1][index]
+                                    ["7d"]["price_change_pct"]);
+                              }
+                            }()),
+                            month: (() {
+                              if (snapshot.data![1][index]["30d"] == null) {
+                                return null;
+                              } else {
+                                return double.parse(snapshot.data![1][index]
+                                    ["30d"]["price_change_pct"]);
+                              }
+                            }()),
+                            year: (() {
+                              if (snapshot.data![1][index]["365d"] == null) {
+                                return null;
+                              } else {
+                                return double.parse(snapshot.data![1][index]
+                                    ["365d"]["price_change_pct"]);
+                              }
+                            }()),
+                            ytd: (() {
+                              if (snapshot.data![1][index]["ytd"] == null) {
+                                return null;
+                              } else {
+                                return double.parse(snapshot.data![1][index]
+                                    ["ytd"]["price_change_pct"]);
+                              }
+                            }()),
                             color: color[0],
                             alt: snapshot.data![1][index]["id"],
                             colorHex: color[1],
                             data: (() {
-                              if (snapshot.data![0]
-                                  .chartData.isEmpty == true) {
+                              if (snapshot.data![0].chartData.isEmpty == true) {
                                 return null;
                               } else {
-                                return snapshot.data![0]
-                                    .chartData[index];
+                                return snapshot.data![0].chartData[index];
                               }
-                            } ()),
+                            }()),
                             buy: true,
                             index: index,
                           );
@@ -1407,14 +1644,12 @@ class _BuyState extends State<Buy> {
                             alt: snapshot.data![1][index]["id"],
                             colorHex: color[1],
                             data: (() {
-                              if (snapshot.data![0]
-                                  .chartData.isEmpty == true) {
+                              if (snapshot.data![0].chartData.isEmpty == true) {
                                 return null;
                               } else {
-                                return snapshot.data![0]
-                                    .chartData[index];
+                                return snapshot.data![0].chartData[index];
                               }
-                            } ()),
+                            }()),
                             buy: true,
                             index: index,
                           );
