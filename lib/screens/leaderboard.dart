@@ -80,7 +80,7 @@ Future<List> fetchLeader(apiKey) async {
   }
 
   var cryptoResponse = await client.post(Uri.parse(
-      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&ids=${assetList.join(',')}'));
+      'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=1000000&ids=${assetList.join(',')}'));
 
   List<dynamic> cryptoFinal;
   final _random = Random();
@@ -89,21 +89,21 @@ Future<List> fetchLeader(apiKey) async {
   if (cryptoResponse.statusCode == 429) {
     cryptoResponse = await Future.delayed(const Duration(seconds: 1), () async {
       return await client.post(Uri.parse(
-          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&ids=${assetList.join(',')}'));
+          'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=1000000&ids=${assetList.join(',')}'));
     });
 
     if (cryptoResponse.statusCode == 429) {
       cryptoResponse =
           await Future.delayed(const Duration(seconds: 2), () async {
         return await client.post(Uri.parse(
-            'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&ids=${assetList.join(',')}'));
+            'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=1000000&ids=${assetList.join(',')}'));
       });
 
       if (cryptoResponse.statusCode == 429) {
         cryptoResponse =
             await Future.delayed(Duration(seconds: next(1, 5)), () async {
           return await client.post(Uri.parse(
-              'https://api.nomics.com/v1/currencies/ticker?key=$apiKey'));
+              'https://api.nomics.com/v1/currencies/ticker?key=$apiKey&per-page=1000000'));
         });
 
         cryptoFinal = jsonDecode(cryptoResponse.body);

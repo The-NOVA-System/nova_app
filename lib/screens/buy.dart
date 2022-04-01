@@ -81,15 +81,30 @@ Future<List> fetchCharts(pageInternal, apiKey, [urlString]) async {
         jsonDecode(cryptoResponse.body)
       ];
     } else if (chartResponse.statusCode == 429 || decodeError == true) {
+      if (chartResponse.body.contains(RegExp(r"You don't have permissions to access this endpoint. Check your API key and our documentation at docs.nomics.com for details.", caseSensitive: false))) {
+        throw Exception(
+            "Hey, sorry! The app is temporarily down, as our providers changed their pricing plan, effectively breaking our app. We're definitely working on getting is fixed ASAP, so please hang in tight while we work on refactoring the app. Thank you for your understanding!");
+      } else {
+        throw Exception(
+            "woah woah woah, slow down! the api we use only allows 1 request per second (cause we're on the free plan). reload again, just a bit slower :)");
+      }
+    } else {
+      if (chartResponse.body.contains(RegExp(r"You don't have permissions to access this endpoint. Check your API key and our documentation at docs.nomics.com for details.", caseSensitive: false))) {
+        throw Exception(
+            "Hey, sorry! The app is temporarily down, as our providers changed their pricing plan, effectively breaking our app. We're definitely working on getting is fixed ASAP, so please hang in tight while we work on refactoring the app. Thank you for your understanding!");
+      } else {
+        throw Exception(
+            'Failed to load charts with ${chartResponse.statusCode}: ${chartResponse.body}');
+      }
+    }
+  } else {
+    if (chartResponse.body.contains(RegExp(r"You don't have permissions to access this endpoint. Check your API key and our documentation at docs.nomics.com for details.", caseSensitive: false))) {
       throw Exception(
-          "woah woah woah, slow down! the api we use only allows 1 request per second (cause we're on the free plan). reload again, just a bit slower :)");
+          "Hey, sorry! The app is temporarily down, as our providers changed their pricing plan, effectively breaking our app. We're definitely working on getting is fixed ASAP, so please hang in tight while we work on refactoring the app. Thank you for your understanding!");
     } else {
       throw Exception(
           'Failed to load charts with ${chartResponse.statusCode}: ${chartResponse.body}');
     }
-  } else {
-    throw Exception(
-        'Failed to load charts with ${chartResponse.statusCode}: ${chartResponse.body}');
   }
 }
 
@@ -260,7 +275,7 @@ class _BuyState extends State<Buy> {
 
                         if (searchQuery.split(':')[0] == 'ids') {
                           var idData = fetchCharts(1, widget.nomicsApi,
-                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchQuery.split(':')[1]}');
+                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchQuery.split(':')[1]}&per-page=1000000');
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -655,7 +670,7 @@ class _BuyState extends State<Buy> {
                               itemList.map((item) => searchMap[item]).toList();
 
                           var idData = fetchCharts(1, widget.nomicsApi,
-                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${itemList.take(100).join(",")}');
+                              'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${itemList.take(100).join(",")}&per-page=1000000');
 
                           Navigator.push(
                             context,
@@ -1081,7 +1096,7 @@ class _BuyState extends State<Buy> {
                               var searchResponse = fetchCharts(
                                   1,
                                   widget.nomicsApi,
-                                  'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchMap[item.title]}');
+                                  'https://api.nomics.com/v1/currencies/ticker?key=${widget.nomicsApi}&ids=${searchMap[item.title]}&per-page=1000000');
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
