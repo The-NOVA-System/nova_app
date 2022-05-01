@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// view documentation here: https://github.com/The-NOVA-System/nova_app/tree/feat-rewrite#theme-data
+
 class AppThemes {
   static ThemeData lightTheme = ThemeData(
     backgroundColor: const Color(0xfffcfcff),

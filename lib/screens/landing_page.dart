@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterfire_ui/auth.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-import '../utils/functions.dart';
 import 'home.dart';
 import 'login_page.dart';
+
+// view documentation here: https://github.com/The-NOVA-System/nova_app/tree/feat-rewrite#landing-page
 
 class AuthGate extends StatelessWidget {
   const AuthGate({Key? key}) : super(key: key);

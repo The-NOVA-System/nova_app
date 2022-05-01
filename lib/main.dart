@@ -5,6 +5,8 @@ import 'package:nova/utils/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+// view documentation here: https://github.com/The-NOVA-System/nova_app/tree/feat-rewrite#adaptive-theme
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

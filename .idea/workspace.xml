@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="435417e8-e401-46c9-b169-320c1fed2d1b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/gh-pages.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/gh-pages.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/landing_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/landing_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/login_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/login_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/utils/theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils/theme.dart" afterDir="false" />
     </list>
     <list id="c86bb461-92d5-42d4-881b-ed0291a3294d" name="Changes by natsukirogers" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -95,7 +95,7 @@
       <updated>1651032552851</updated>
       <workItem from="1651032558443" duration="1260000" />
       <workItem from="1651304413484" duration="4282000" />
-      <workItem from="1651382697686" duration="18005000" />
+      <workItem from="1651382697686" duration="18318000" />
     </task>
     <servers />
   </component>
