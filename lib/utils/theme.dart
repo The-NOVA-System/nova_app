@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // view documentation here: https://github.com/The-NOVA-System/nova_app/tree/feat-rewrite#theme-data
 
 class AppThemes {
+  /// light mode theme
   static ThemeData lightTheme = ThemeData(
     backgroundColor: const Color(0xfffcfcff),
     primaryColorLight: Colors.black,
@@ -20,6 +21,7 @@ class AppThemes {
     textSelectionTheme: const TextSelectionThemeData(cursorColor: Colors.indigo),
   );
 
+  /// dark mode theme
   static ThemeData darkTheme = ThemeData(
     backgroundColor: Colors.black,
     primaryColorLight: const Color(0xfffcfcff),

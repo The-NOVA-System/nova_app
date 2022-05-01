@@ -22,7 +22,7 @@ class AuthGate extends StatelessWidget {
               return LoginPage();
             }
 
-            // Render your application if authenticated
+            // If user is signed in and all checks are passed
             return const HomePage();
           },
         );

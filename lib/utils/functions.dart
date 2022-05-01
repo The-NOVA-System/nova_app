@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterfire_ui/auth.dart';
 
+/// creates the header for a login page using an image
 HeaderBuilder headerImage(String assetName) {
   return (context, constraints, _) {
     return Padding(
@@ -15,6 +16,7 @@ HeaderBuilder headerImage(String assetName) {
   };
 }
 
+/// creates the header for a login page using an icon
 HeaderBuilder headerIcon(IconData icon) {
   return (context, constraints, shrinkOffset) {
     return Padding(
@@ -28,6 +30,7 @@ HeaderBuilder headerIcon(IconData icon) {
   };
 }
 
+/// creates the side image for a login page using an image
 SideBuilder sideImage(String assetName) {
   return (context, constraints) {
     return Center(
@@ -42,6 +45,7 @@ SideBuilder sideImage(String assetName) {
   };
 }
 
+/// creates the side image for a login page using an icon
 SideBuilder sideIcon(IconData icon) {
   return (context, constraints) {
     return Padding(
@@ -55,6 +59,7 @@ SideBuilder sideIcon(IconData icon) {
   };
 }
 
+/// gets the firebase app id for the current user's platform
 String getClientID() {
   if (kIsWeb) {
     return '9939219864-s86mneko4kqcpfn1uqu7ka8eft6b09vr.apps.googleusercontent.com';

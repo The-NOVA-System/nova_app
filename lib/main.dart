@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 // view documentation here: https://github.com/The-NOVA-System/nova_app/tree/feat-rewrite#adaptive-theme
 
 void main() async {
+  // initialise firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -18,6 +19,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  // creates the app theming using the Adaptive Theme package
   @override
   Widget build(BuildContext context) {
     return AdaptiveTheme(
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
         title: 'The Nova System',
         theme: theme,
         darkTheme: darkTheme,
-        home: const AuthGate(),
+        home: const AuthGate(), // leads to the AuthGate, to handle user status
       ),
     );
   }
