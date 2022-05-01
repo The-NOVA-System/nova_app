@@ -16,7 +16,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: '2.10.0'
-          channel: 'stable'  
+          channel: 'stable'
       - name: Setup SSH Keys and Put Firebase Files Into Place
         run: |
           SSH_PATH="$HOME/.ssh"
