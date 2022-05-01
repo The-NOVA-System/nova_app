@@ -1,5 +1,7 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'landing_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,9 +11,15 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            AdaptiveTheme.of(context).toggleThemeMode();
+            FirebaseAuth.instance.signOut();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AuthGate()),
+            );
+
           },
-          child: const Icon(Icons.accessibility)
+          child: const Icon(Icons.logout)
       ),
       appBar: AppBar(
         title: const Text('Homepage'),
