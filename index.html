@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+    Fore more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+  -->
+  <base href="/nova_app/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="an app to mimic cryptocurrency transactions">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="chat">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Nova System</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" type="text/css" href="splash/style.css">
+</head>
+<body style="position: fixed; inset: 0px; overflow: hidden; padding: 0px; margin: 0px; user-select: none; touch-action: none; font: 14px sans-serif; color: red;">
+<!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+<div style="width:15vw; margin:0 auto; position: absolute; left: 50%; top: 50%; -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%);">
+  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><style>.cls-1{fill:#011469;}.cls-2{fill:#137dc5;}</style></defs><rect class="cls-1" width="400" height="400" rx="100"/><g id="nova_logo_small" data-name="nova logo small"><path class="cls-2" d="M236.54,236.61a531.54,531.54,0,0,1-56,49A81.66,81.66,0,0,0,200,288a82.9,82.9,0,0,0,82.81-82.81,81.7,81.7,0,0,0-2.1-18.23A549.88,549.88,0,0,1,236.54,236.61Z"/><path class="cls-2" d="M148.72,270.14c20.54-13.82,43.48-33.12,65.85-55.48,20-20,37.5-40.51,51.1-59.64a82.64,82.64,0,0,0-65.74-32.64c-1.7,0-3.34.16-5,.26a26,26,0,1,1-40.46,13.43,82.61,82.61,0,0,0-5.72,134.07Zm71.92-106.37a10.36,10.36,0,1,1-10.37,10.36A10.37,10.37,0,0,1,220.64,163.77Zm-58.93,22.84a25.88,25.88,0,1,1-25.87,25.88A25.91,25.91,0,0,1,161.71,186.61Z"/><path class="cls-2" d="M306.08,93.86c-14.29-14.24-50.55,7.31-74,24a92.71,92.71,0,0,1,11,4.9c33-22.58,51.45-25.71,55.6-21.54,3.58,3.58,2.4,16.67-12.67,41.8-14.31,23.84-37.11,51.88-64.18,79C160.7,283.16,110.29,308,101.13,298.83,97.3,295,99.65,279.1,118.35,250a87.42,87.42,0,0,1-5.1-11.07C97.46,262.29,81,293.31,93.79,306.14c3.18,3.17,7.57,4.64,12.9,4.64,27,0,78.5-37.48,122.53-81.49,27.65-27.67,51-56.43,65.73-81C311.27,121.11,315,102.79,306.08,93.86Z"/></g></svg>
+</div>
+<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+
+<!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+<!-- This script installs service_worker.js to provide PWA functionality to
+     application. For more information, see:
+     https://developers.google.com/web/fundamentals/primers/service-workers -->
+<script>
+  // TODO: Replace the following with your app's Firebase project configuration
+  // For Firebase JavaScript SDK v7.20.0 and later, `measurementId` is an optional field
+  var firebaseConfig = {
+    apiKey: "AIzaSyD6bbXvfqULo1LwRyPbpSYlZ_Dm1C77E7M",
+    authDomain: "nova-system.firebaseapp.com",
+    projectId: "nova-system",
+    storageBucket: "nova-system.appspot.com",
+    messagingSenderId: "9939219864",
+    appId: "1:9939219864:web:47f47fb92485860469e7ed",
+    measurementId: "G-RRTQ04Z5C5"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('flutter-first-frame', function () {
+      navigator.serviceWorker.register('flutter_service_worker.js?v=103609687');
+    });
+  }
+</script>
+
+<script src="main.dart.js" type="application/javascript"></script>
+</body>
+</html>
